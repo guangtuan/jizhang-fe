@@ -1,0 +1,10 @@
+.app {
+  height: 100vh;
+  margin: auto;
+  width: 60%;
+}
+
+.create {
+  margin-top: 16px;
+  float: right;
+}
