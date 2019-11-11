@@ -9,11 +9,16 @@ import styles from './app.module.css';
 import Details from '../details';
 import Subjects from '../subjects';
 import Users from '../users';
+import Accounts from '../accounts';
 
 const pages = [
     {
         title: "用户",
         comp: Users
+    },
+    {
+        title: "账户",
+        comp: Accounts
     },
     {
         title: "明细",
