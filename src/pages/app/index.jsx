@@ -10,6 +10,7 @@ import Details from '../details';
 import Subjects from '../subjects';
 import Users from '../users';
 import Accounts from '../accounts';
+import AccountStates from '../accountStates';
 
 const pages = [
     {
@@ -19,6 +20,10 @@ const pages = [
     {
         title: "账户",
         comp: Accounts
+    },
+    {
+        title: "结算记录",
+        comp: AccountStates
     },
     {
         title: "明细",

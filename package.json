@@ -5,6 +5,7 @@
   "dependencies": {
     "@rematch/core": "^1.1.0",
     "axios": "^0.19.0",
+    "dayjs": "^1.8.17",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",
     "ramda": "^0.26.1",
