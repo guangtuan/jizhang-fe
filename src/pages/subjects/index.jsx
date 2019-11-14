@@ -1,29 +1,29 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Table, Button, Dialog, Form, Input } from 'element-react';
 import * as R from 'ramda';
-import { Table } from 'element-react';
+import styles from './subjects.module.css';
 
-function Subject({ subjects }) {
-
-    const notEmpty = R.pipe(R.isEmpty, R.not);
-
-    useEffect(() => {
-    }, []);
+function Subjects({
+    subjects, subjectCreation,
+    loadSubjects, createSubject,
+    showDialog, hideDialog, changeProperty
+}) {
 
     const columns = [
         {
-            label: '标识',
-            prop: 'key'
-        },
-        {
-            label: '名称',
+            label: 'name',
             prop: 'name'
         },
         {
-            label: '描述',
-            prop: 'desc'
+            label: 'description',
+            prop: 'description'
         }
-    ]
+    ];
+
+    useEffect(() => {
+        loadSubjects();
+    }, []);
 
     return (
         <div>
@@ -32,16 +32,68 @@ function Subject({ subjects }) {
                 columns={columns}
                 data={subjects}
                 border={true}
-                rowKey={R.prop('uuid')}
+                rowKey={R.prop('id')}
             />
+            <Button
+                className={styles.add}
+                type="primary"
+                onClick={showDialog}>
+                添加科目
+            </Button>
+            <Dialog
+                title="添加科目"
+                size="tiny"
+                visible={subjectCreation.dialogVisibility}
+                onCancel={hideDialog}
+                lockScroll={false}>
+                <Dialog.Body>
+                    <Form>
+                        <Form.Item>
+                            <Input
+                                placeholder="请输入科目名称"
+                                onChange={val => {
+                                    changeProperty({
+                                        key: 'name',
+                                        val: val
+                                    });
+                                }}
+                            ></Input>
+                        </Form.Item>
+                        <Form.Item>
+                            <Input
+                                placeholder="请输入科目描述"
+                                onChange={val => {
+                                    changeProperty({
+                                        key: 'description',
+                                        val: val
+                                    });
+                                }}
+                            ></Input>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button
+                                onClick={() => {
+                                    const pack = R.pick(['name', 'description', 'tags'])(subjectCreation);
+                                    createSubject(pack).then(hideDialog)
+                                }}
+                            >确定</Button>
+                        </Form.Item>
+                    </Form>
+                </Dialog.Body>
+            </Dialog>
         </div>
     )
 
 };
 
-const mapState = R.pick(["subjects"]);
+const mapState = R.pick(["subjects", "subjectCreation"]);
 
 const mapDispatch = dispatch => ({
+    loadSubjects: dispatch.subjects.load,
+    createSubject: dispatch.subjects.create,
+    showDialog: dispatch.subjectCreation.showDialog,
+    hideDialog: dispatch.subjectCreation.hideDialog,
+    changeProperty: dispatch.subjectCreation.changeProperty
 });
 
-export default connect(mapState, mapDispatch)(Subject);
+export default connect(mapState, mapDispatch)(Subjects);
