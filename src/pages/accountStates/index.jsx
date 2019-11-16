@@ -14,11 +14,11 @@ function AccountStates({
 
     const columns = [
         {
-            label: 'account',
-            prop: 'account'
+            label: '账户名称',
+            prop: 'accountName'
         },
         {
-            label: 'amount',
+            label: '结算余额',
             render: function (data) {
                 return (
                     <span>
@@ -28,7 +28,7 @@ function AccountStates({
             }
         },
         {
-            label: 'createdAt',
+            label: '结算日期',
             render: function (data) {
                 return (
                     <span>
@@ -63,6 +63,7 @@ function AccountStates({
                 size="tiny"
                 visible={accountStateCreation.dialogVisibility}
                 onCancel={hideDialog}
+                rowKey={R.prop('id')}
                 lockScroll={false}>
                 <Dialog.Body>
                     <Form>
@@ -70,14 +71,14 @@ function AccountStates({
                             <Select
                                 onChange={val => {
                                     changeProperty({
-                                        key: 'account',
+                                        key: 'accountId',
                                         val: val
                                     });
                                 }}
                                 placeholder="请选择">
                                 {
                                     (accounts || []).map(account => {
-                                        return <Select.Option key={account.id} label={account.name} value={account.name} />
+                                        return <Select.Option key={account.id} label={account.name} value={account.id} />
                                     })
                                 }
                             </Select>
@@ -107,7 +108,7 @@ function AccountStates({
                         <Form.Item>
                             <Button
                                 onClick={() => {
-                                    const pack = R.pick(['createdAt', 'account', 'amount'])(accountStateCreation);
+                                    const pack = R.pick(['createdAt', 'accountId', 'amount'])(accountStateCreation);
                                     createAccountState(pack).then(hideDialog)
                                 }}
                             >确定</Button>

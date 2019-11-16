@@ -4,7 +4,7 @@ export const accountCreation = {
     state: {
         dialogVisibility: false,
         type: '',
-        user: '',
+        userId: '',
         name: '',
         description: ''
     },

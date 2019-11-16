@@ -12,11 +12,11 @@ function Users({
 
     const columns = [
         {
-            label: 'account',
+            label: '账号',
             prop: 'account'
         },
         {
-            label: 'username',
+            label: '用户名',
             prop: 'username'
         }
     ];
@@ -32,7 +32,7 @@ function Users({
                 columns={columns}
                 data={users}
                 border={true}
-                rowKey={R.prop('uuid')}
+                rowKey={R.prop('id')}
             />
             <Button
                 className={styles.add}

@@ -13,27 +13,27 @@ function Details({
 }) {
     const columns = [
         {
-            label: 'user',
-            prop: 'user'
+            label: '用户',
+            prop: 'username'
         },
         {
-            label: 'source',
-            prop: 'source'
+            label: '来源账户',
+            prop: 'sourceAccountName'
         },
         {
-            label: 'dest',
-            prop: 'dest'
+            label: '目标账户',
+            prop: 'destAccountName'
         },
         {
             label: '科目',
-            prop: 'subject'
+            prop: 'subjectName'
         },
         {
             label: '备注',
             prop: 'remark'
         },
         {
-            label: 'amount',
+            label: '金额',
             render: function (data) {
                 return (
                     <span>
@@ -99,14 +99,14 @@ function Details({
                             <Select
                                 onChange={val => {
                                     changeProperty({
-                                        key: 'user',
+                                        key: 'userId',
                                         val: val
                                     });
                                 }}
                                 placeholder="请选择用户">
                                 {
                                     (users || []).map(user => {
-                                        return <Select.Option key={user.id} label={user.username} value={user.account} />
+                                        return <Select.Option key={user.id} label={user.username} value={user.id} />
                                     })
                                 }
                             </Select>
@@ -115,14 +115,14 @@ function Details({
                             <Select
                                 onChange={val => {
                                     changeProperty({
-                                        key: 'source',
+                                        key: 'sourceAccountId',
                                         val: val
                                     });
                                 }}
                                 placeholder="请选择来源账户">
                                 {
                                     (accounts || []).map(account => {
-                                        return <Select.Option key={account.id} label={account.name} value={account.name} />
+                                        return <Select.Option key={account.id} label={account.name} value={account.id} />
                                     })
                                 }
                             </Select>
@@ -131,14 +131,14 @@ function Details({
                             <Select
                                 onChange={val => {
                                     changeProperty({
-                                        key: 'dest',
+                                        key: 'destAccountId',
                                         val: val
                                     });
                                 }}
                                 placeholder="请选择目标账户">
                                 {
                                     (accounts || []).map(account => {
-                                        return <Select.Option key={account.id} label={account.name} value={account.name} />
+                                        return <Select.Option key={account.id} label={account.name} value={account.id} />
                                     })
                                 }
                             </Select>
@@ -147,14 +147,14 @@ function Details({
                             <Select
                                 onChange={val => {
                                     changeProperty({
-                                        key: 'subject',
+                                        key: 'subjectId',
                                         val: val
                                     });
                                 }}
                                 placeholder="请选择科目">
                                 {
                                     (subjects || []).map(subject => {
-                                        return <Select.Option key={subject.id} label={subject.name} value={subject.name} />
+                                        return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
                                     })
                                 }
                             </Select>
@@ -173,7 +173,7 @@ function Details({
                         <Form.Item>
                             <Button
                                 onClick={() => {
-                                    const pack = R.pick(['user', 'source', 'dest', 'subject', 'remark', 'amount'])(detailCreation);
+                                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount'])(detailCreation);
                                     createDetail(pack).then(hideDialog)
                                 }}
                             >确定</Button>

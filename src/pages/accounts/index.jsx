@@ -2,36 +2,43 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Table, Button, Dialog, Form, Input, Select } from 'element-react';
 import * as R from 'ramda';
-import styles from './account.module.css';
+import styles from './accounts.module.css';
 
 function Accounts({
     users,
+    accountTypeDefine,
     accounts, accountCreation,
-    loadAccount, createAccount,
+    loadAccounts, createAccount,
     showDialog, hideDialog, changeProperty
 }) {
 
     const columns = [
         {
-            label: 'type',
-            prop: 'type'
+            label: '账户类型',
+            render: function ({ type }) {
+                return (
+                    <span>
+                        <span>{R.prop("name")(R.find(R.propEq('value', type))(accountTypeDefine))}</span>
+                    </span>
+                )
+            }
         },
         {
-            label: 'user',
-            prop: 'user'
-        },
-        {
-            label: 'name',
+            label: '账户名字',
             prop: 'name'
         },
         {
-            label: 'description',
+            label: '所属用户',
+            prop: 'username'
+        },
+        {
+            label: '描述',
             prop: 'description'
         }
     ];
 
     useEffect(() => {
-        loadAccount();
+        loadAccounts();
     }, []);
 
     return (
@@ -50,30 +57,30 @@ function Accounts({
                 添加账户
             </Button>
             <Dialog
-                title="添加用户"
+                title="添加账户"
                 size="tiny"
                 visible={accountCreation.dialogVisibility}
                 onCancel={hideDialog}
                 lockScroll={false}>
                 <Dialog.Body>
                     <Form>
-                        <Form.Item>
+                        <Form.Item label="所属用户">
                             <Select
                                 onChange={val => {
                                     changeProperty({
-                                        key: 'user',
+                                        key: 'userId',
                                         val: val
                                     });
                                 }}
-                                placeholder="请选择">
+                                placeholder="请选择所属用户">
                                 {
                                     (users || []).map(user => {
-                                        return <Select.Option key={user.account} label={user.username} value={user.account} />
+                                        return <Select.Option key={user.id} label={user.username} value={user.id} />
                                     })
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item label="账户类型">
                             <Select
                                 onChange={val => {
                                     changeProperty({
@@ -81,24 +88,15 @@ function Accounts({
                                         val: val
                                     });
                                 }}
-                                placeholder="请选择">
+                                placeholder="请选择账户类型">
                                 {
-                                    [
-                                        {
-                                            name: "资产",
-                                            value: "assets"
-                                        },
-                                        {
-                                            name: "负债",
-                                            value: "liabilities"
-                                        }
-                                    ].map(({ name, value }) => {
+                                    accountTypeDefine.map(({ name, value }) => {
                                         return <Select.Option key={value} label={name} value={value} />
                                     })
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item label="描述">
                             <Input
                                 placeholder="请输入描述"
                                 onChange={val => {
@@ -109,7 +107,7 @@ function Accounts({
                                 }}
                             ></Input>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item label="账户名称">
                             <Input
                                 placeholder="请输入账户名称"
                                 onChange={val => {
@@ -123,7 +121,7 @@ function Accounts({
                         <Form.Item>
                             <Button
                                 onClick={() => {
-                                    const pack = R.pick(['user', 'type', 'name', 'description'])(accountCreation);
+                                    const pack = R.pick(['userId', 'type', 'name', 'description'])(accountCreation);
                                     createAccount(pack).then(hideDialog)
                                 }}
                             >确定</Button>
@@ -136,10 +134,12 @@ function Accounts({
 
 };
 
-const mapState = R.pick(["users", "accounts", "accountCreation"]);
+const mapState = R.pick([
+    "users", "accounts", "accountCreation", "accountTypeDefine"
+]);
 
 const mapDispatch = dispatch => ({
-    loadAccount: dispatch.accounts.load,
+    loadAccounts: dispatch.accounts.load,
     createAccount: dispatch.accounts.create,
     showDialog: dispatch.accountCreation.showDialog,
     hideDialog: dispatch.accountCreation.hideDialog,
