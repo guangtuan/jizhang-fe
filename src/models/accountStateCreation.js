@@ -7,7 +7,7 @@ export const accountStateCreation = {
     state: {
         dialogVisibility: false,
         createdAt: new Date(),
-        account: '',
+        accountId: -1,
         amount: 0
     },
     reducers: {

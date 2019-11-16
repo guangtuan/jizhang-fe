@@ -3,10 +3,10 @@ import * as R from 'ramda';
 export const detailCreation = {
     state: {
         dialogVisibility: false,
-        user: '',
-        source: '',
-        dest: '',
-        subject: '',
+        userId: -1,
+        sourceAccountId: -1,
+        destAccountId: -1,
+        subjectId: '',
         remark: '',
         amount: 0
     },
