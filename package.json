@@ -4,10 +4,12 @@
   "private": true,
   "dependencies": {
     "@rematch/core": "^1.1.0",
+    "@rematch/select": "^2.0.5",
     "axios": "^0.19.0",
     "dayjs": "^1.8.17",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",
+    "query-string": "^6.9.0",
     "ramda": "^0.26.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
