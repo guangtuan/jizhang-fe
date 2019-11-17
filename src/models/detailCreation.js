@@ -8,7 +8,8 @@ export const detailCreation = {
         destAccountId: -1,
         subjectId: '',
         remark: '',
-        amount: 0
+        amount: undefined,
+        createdAt: new Date()
     },
     reducers: {
         changeProperty: (state, payload) => {
@@ -19,6 +20,18 @@ export const detailCreation = {
         },
         hideDialog: (state, payload) => {
             return R.assoc('dialogVisibility', false)(state);
+        },
+        clear: (state, payload) => {
+            return {
+                dialogVisibility: false,
+                userId: -1,
+                sourceAccountId: -1,
+                destAccountId: -1,
+                subjectId: -1,
+                remark: '',
+                amount: undefined,
+                createdAt: new Date()
+            }
         }
     },
     effects: dispatch => ({

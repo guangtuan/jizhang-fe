@@ -7,7 +7,8 @@ import styles from './subjects.module.css';
 function Subjects({
     subjects, subjectCreation,
     loadSubjects, createSubject,
-    showDialog, hideDialog, changeProperty
+    showDialog, hideDialog, changeProperty,
+    clear
 }) {
 
     const columns = [
@@ -50,6 +51,7 @@ function Subjects({
                     <Form>
                         <Form.Item>
                             <Input
+                                value={subjectCreation.name}
                                 placeholder="请输入科目名称"
                                 onChange={val => {
                                     changeProperty({
@@ -61,6 +63,7 @@ function Subjects({
                         </Form.Item>
                         <Form.Item>
                             <Input
+                                value={subjectCreation.description}
                                 placeholder="请输入科目描述"
                                 onChange={val => {
                                     changeProperty({
@@ -74,7 +77,7 @@ function Subjects({
                             <Button
                                 onClick={() => {
                                     const pack = R.pick(['name', 'description', 'tags'])(subjectCreation);
-                                    createSubject(pack).then(hideDialog)
+                                    createSubject(pack).then(clear)
                                 }}
                             >确定</Button>
                         </Form.Item>
@@ -93,7 +96,8 @@ const mapDispatch = dispatch => ({
     createSubject: dispatch.subjects.create,
     showDialog: dispatch.subjectCreation.showDialog,
     hideDialog: dispatch.subjectCreation.hideDialog,
-    changeProperty: dispatch.subjectCreation.changeProperty
+    changeProperty: dispatch.subjectCreation.changeProperty,
+    clear: dispatch.subjectCreation.clear
 });
 
 export default connect(mapState, mapDispatch)(Subjects);

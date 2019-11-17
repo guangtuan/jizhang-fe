@@ -7,8 +7,8 @@ export const accountStateCreation = {
     state: {
         dialogVisibility: false,
         createdAt: new Date(),
-        accountId: -1,
-        amount: 0
+        accountId: undefined,
+        amount: undefined
     },
     reducers: {
         changeProperty: (state, payload) => {
@@ -19,6 +19,14 @@ export const accountStateCreation = {
         },
         hideDialog: (state, payload) => {
             return R.assoc('dialogVisibility', false)(state);
+        },
+        clear: (state, payload) => {
+            return {
+                dialogVisibility: false,
+                createdAt: new Date(),
+                accountId: undefined,
+                amount: undefined
+            }
         }
     },
     effects: dispatch => ({

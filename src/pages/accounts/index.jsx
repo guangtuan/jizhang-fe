@@ -9,7 +9,7 @@ function Accounts({
     accountTypeDefine,
     accounts, accountCreation,
     loadAccounts, createAccount,
-    showDialog, hideDialog, changeProperty
+    showDialog, hideDialog, changeProperty, clearForm
 }) {
 
     const columns = [
@@ -122,7 +122,7 @@ function Accounts({
                             <Button
                                 onClick={() => {
                                     const pack = R.pick(['userId', 'type', 'name', 'description'])(accountCreation);
-                                    createAccount(pack).then(hideDialog)
+                                    createAccount(pack).then(clearForm)
                                 }}
                             >确定</Button>
                         </Form.Item>
@@ -143,7 +143,8 @@ const mapDispatch = dispatch => ({
     createAccount: dispatch.accounts.create,
     showDialog: dispatch.accountCreation.showDialog,
     hideDialog: dispatch.accountCreation.hideDialog,
-    changeProperty: dispatch.accountCreation.changeProperty
+    changeProperty: dispatch.accountCreation.changeProperty,
+    clearForm: dispatch.accountCreation.clear
 });
 
 export default connect(mapState, mapDispatch)(Accounts);

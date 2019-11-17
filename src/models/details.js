@@ -1,29 +1,42 @@
-import { post, get } from '../core/request';
+import { post, get, del } from '../core/request';
 import * as R from 'ramda';
 
 export const details = {
-    state: [],
+    state: {
+        content: [],
+        pageable: {
+            pageNumber: 0,
+            pageSize: 10
+        }
+    },
     reducers: {
         set: (state, payload) => {
             return payload;
         },
-        append: (state, payload) => {
-            return R.append(payload)(state)
+        pageChange: (state, payload) => {
+            state.pageable.pageNumber = payload
+            return state
         }
     },
     effects: dispatch => ({
         load: async (payload, rootState) => {
             const details = await get({
-                path: "api/details"
+                path: "api/details",
+                payload
             });
             dispatch.details.set(details)
         },
         create: async (payload, rootState) => {
-            const detail = await post({
+            await post({
                 path: "api/details",
                 data: payload
             });
-            dispatch.details.append(detail)
+            return true;
+        },
+        del: async (payload, rootState) => {
+            await del({
+                path: `api/details/${payload}`
+            });
             return true;
         }
     })

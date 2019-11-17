@@ -4,7 +4,7 @@ export const accountCreation = {
     state: {
         dialogVisibility: false,
         type: '',
-        userId: '',
+        userId: -1,
         name: '',
         description: ''
     },
@@ -17,6 +17,15 @@ export const accountCreation = {
         },
         hideDialog: (state, payload) => {
             return R.assoc('dialogVisibility', false)(state);
+        },
+        clear: (state, payload) => {
+            return {
+                dialogVisibility: false,
+                type: '',
+                userId: -1,
+                name: '',
+                description: ''
+            }
         }
     },
     effects: dispatch => ({
