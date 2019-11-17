@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input, Select, DatePicker } from 'element-react';
+import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination } from 'element-react';
 import * as R from 'ramda';
 import styles from './accountStates.module.css';
 import Dayjs from 'dayjs';
@@ -9,8 +9,14 @@ function AccountStates({
     accounts,
     accountStates, accountStateCreation,
     loadAccountStates, createAccountState,
-    showDialog, hideDialog, changeProperty
+    showDialog, hideDialog, changeProperty,
+    pageChange, clear
 }) {
+
+    const transformToQuery = R.applySpec({
+        page: R.pipe(R.prop('pageable'), R.prop('pageNumber')),
+        size: R.pipe(R.prop('pageable'), R.prop('pageSize'))
+    });
 
     const columns = [
         {
@@ -40,7 +46,7 @@ function AccountStates({
     ];
 
     useEffect(() => {
-        loadAccountStates();
+        loadAccountStates(transformToQuery(accountStates));
     }, []);
 
     return (
@@ -48,16 +54,27 @@ function AccountStates({
             <Table
                 defaultExpandAll={true}
                 columns={columns}
-                data={accountStates}
+                data={accountStates.content}
                 border={true}
                 rowKey={R.prop('id')}
             />
-            <Button
-                className={styles.add}
-                type="primary"
-                onClick={showDialog}>
-                添加结算记录
+            <div>
+                <Pagination
+                    onCurrentChange={page => {
+                        pageChange(page - 1)
+                        console.log(JSON.stringify(transformToQuery(accountStates)))
+                        loadAccountStates(transformToQuery(accountStates));
+                    }}
+                    className={styles.page}
+                    layout="prev, pager, next"
+                    total={accountStates.totalElements} />
+                <Button
+                    className={styles.add}
+                    type="primary"
+                    onClick={showDialog}>
+                    添加结算记录
             </Button>
+            </div>
             <Dialog
                 title="添加结算记录"
                 size="tiny"
@@ -85,17 +102,19 @@ function AccountStates({
                         </Form.Item>
                         <Form.Item>
                             <Input
+                                value={accountStateCreation.amount}
                                 placeholder="请输入金额（单位：元）"
                                 onChange={val => {
                                     changeProperty({
                                         key: 'amount',
-                                        val: parseFloat(val) * 100
+                                        val
                                     });
                                 }}
                             ></Input>
                         </Form.Item>
                         <Form.Item>
                             <DatePicker
+                                value={accountStateCreation.createdAt}
                                 placeholder="请选择结算日期"
                                 onChange={date => {
                                     changeProperty({
@@ -109,7 +128,11 @@ function AccountStates({
                             <Button
                                 onClick={() => {
                                     const pack = R.pick(['createdAt', 'accountId', 'amount'])(accountStateCreation);
-                                    createAccountState(pack).then(hideDialog)
+                                    pack.amount = parseFloat(pack.amount) * 100
+                                    createAccountState(pack).then(() => {
+                                        clear()
+                                        loadAccountStates(transformToQuery(accountStates))
+                                    })
                                 }}
                             >确定</Button>
                         </Form.Item>
@@ -128,7 +151,9 @@ const mapDispatch = dispatch => ({
     createAccountState: dispatch.accountStates.create,
     showDialog: dispatch.accountStateCreation.showDialog,
     hideDialog: dispatch.accountStateCreation.hideDialog,
-    changeProperty: dispatch.accountStateCreation.changeProperty
+    changeProperty: dispatch.accountStateCreation.changeProperty,
+    pageChange: dispatch.accountStates.pageChange,
+    clear: dispatch.accountStateCreation.clear
 });
 
 export default connect(mapState, mapDispatch)(AccountStates);

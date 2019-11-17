@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input, Select, DatePicker } from 'element-react';
+import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination } from 'element-react';
 import * as R from 'ramda';
 import styles from './details.module.css';
 import Dayjs from 'dayjs';
@@ -9,8 +9,15 @@ function Details({
     accounts, users, subjects,
     details, detailCreation,
     loadDetails, createDetail,
-    showDialog, hideDialog, changeProperty
+    showDialog, hideDialog, changeProperty,
+    pageChange, clear, delDetail
 }) {
+
+    const transformToQuery = R.applySpec({
+        page: R.pipe(R.prop('pageable'), R.prop('pageNumber')),
+        size: R.pipe(R.prop('pageable'), R.prop('pageSize'))
+    });
+
     const columns = [
         {
             label: '用户',
@@ -21,12 +28,12 @@ function Details({
             prop: 'sourceAccountName'
         },
         {
-            label: '目标账户',
-            prop: 'destAccountName'
-        },
-        {
             label: '科目',
             prop: 'subjectName'
+        },
+        {
+            label: '目标账户',
+            prop: 'destAccountName'
         },
         {
             label: '备注',
@@ -65,11 +72,24 @@ function Details({
                     )
                 }
             }
+        },
+        {
+            label: '操作',
+            render: function (data) {
+                return <Button
+                    type='danger'
+                    onClick={() => {
+                        delDetail(data.id).then(
+                            loadDetails(transformToQuery(details))
+                        )
+                    }}
+                >删除</Button>
+            }
         }
     ];
 
     useEffect(() => {
-        loadDetails();
+        loadDetails(transformToQuery(details));
     }, []);
 
     return (
@@ -77,10 +97,19 @@ function Details({
             <Table
                 defaultExpandAll={true}
                 columns={columns}
-                data={details}
+                data={details.content}
                 border={true}
                 rowKey={R.prop('id')}
             />
+            <Pagination
+                onCurrentChange={page => {
+                    pageChange(page - 1)
+                    console.log(JSON.stringify(transformToQuery(details)))
+                    loadDetails(transformToQuery(details));
+                }}
+                className={styles.page}
+                layout="prev, pager, next"
+                total={details.totalElements} />
             <Button
                 className={styles.add}
                 type="primary"
@@ -97,6 +126,7 @@ function Details({
                     <Form>
                         <Form.Item>
                             <Select
+                                value={detailCreation.userId}
                                 onChange={val => {
                                     changeProperty({
                                         key: 'userId',
@@ -113,6 +143,7 @@ function Details({
                         </Form.Item>
                         <Form.Item>
                             <Select
+                                value={detailCreation.sourceAccountId}
                                 onChange={val => {
                                     changeProperty({
                                         key: 'sourceAccountId',
@@ -129,6 +160,7 @@ function Details({
                         </Form.Item>
                         <Form.Item>
                             <Select
+                                value={detailCreation.destAccountId}
                                 onChange={val => {
                                     changeProperty({
                                         key: 'destAccountId',
@@ -145,6 +177,7 @@ function Details({
                         </Form.Item>
                         <Form.Item>
                             <Select
+                                value={detailCreation.subjectId}
                                 onChange={val => {
                                     changeProperty({
                                         key: 'subjectId',
@@ -161,20 +194,37 @@ function Details({
                         </Form.Item>
                         <Form.Item>
                             <Input
+                                value={detailCreation.amount}
                                 placeholder="请输入金额（单位：元）"
                                 onChange={val => {
                                     changeProperty({
                                         key: 'amount',
-                                        val: parseFloat(val) * 100
+                                        val: val
                                     });
                                 }}
                             ></Input>
                         </Form.Item>
                         <Form.Item>
+                            <DatePicker
+                                value={detailCreation.createdAt}
+                                placeholder="请选择消费日期"
+                                onChange={date => {
+                                    changeProperty({
+                                        key: 'createdAt',
+                                        val: date
+                                    });
+                                }}
+                            />
+                        </Form.Item>
+                        <Form.Item>
                             <Button
                                 onClick={() => {
-                                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount'])(detailCreation);
-                                    createDetail(pack).then(hideDialog)
+                                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailCreation);
+                                    pack.amount = pack.amount * 100
+                                    createDetail(pack).then(() => {
+                                        clear()
+                                        loadDetails(transformToQuery(details))
+                                    })
                                 }}
                             >确定</Button>
                         </Form.Item>
@@ -191,9 +241,12 @@ const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailCrea
 const mapDispatch = dispatch => ({
     loadDetails: dispatch.details.load,
     createDetail: dispatch.details.create,
+    delDetail: dispatch.details.del,
     showDialog: dispatch.detailCreation.showDialog,
     hideDialog: dispatch.detailCreation.hideDialog,
-    changeProperty: dispatch.detailCreation.changeProperty
+    changeProperty: dispatch.detailCreation.changeProperty,
+    pageChange: dispatch.details.pageChange,
+    clear: dispatch.detailCreation.clear
 });
 
 export default connect(mapState, mapDispatch)(Details);

@@ -16,6 +16,14 @@ export const subjectCreation = {
         },
         hideDialog: (state, payload) => {
             return R.assoc('dialogVisibility', false)(state);
+        },
+        clear: () => {
+            return {
+                dialogVisibility: false,
+                name: '',
+                description: '',
+                tags: ''
+            }
         }
     },
     effects: dispatch => ({
