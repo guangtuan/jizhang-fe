@@ -1,10 +1,5 @@
 import axios from 'axios';
-
-const SUCCESS_CODES = [200, 201];
-const NO_ACCESS_CODES = [401, 403];
-const CLIENT_ERROR = [400, 409];
-const SERVER_ERROR_CODES = [500];
-const NOT_FOUND_CODES = [404];
+import queryString from 'query-string';
 
 export const TOKEN_KEY = 'token'
 
@@ -34,15 +29,13 @@ const getFromWindow = () => {
     }
 };
 
-export const get = async ({ path }) => {
-    console.log("process.env.REACT_APP_HOST", process.env.REACT_APP_HOST);
+export const get = async ({ path, payload }) => {
     const fullUrl = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
-    const data = await axios.get(fullUrl);
-    return data.data
+    const resp = await axios.get([fullUrl, queryString.stringify(payload)].join('?'));
+    return resp.data
 };
 
 export const post = async ({ path, data }) => {
-    console.log("process.env.REACT_APP_HOST", process.env.REACT_APP_HOST);
     const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
     const resp = await axios({
         headers: { 'content-type': 'application/json' },
@@ -52,3 +45,14 @@ export const post = async ({ path, data }) => {
     });
     return resp.data;
 };
+
+export const del = async ({ path, data }) => {
+    const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
+    const resp = await axios({
+        headers: { 'content-type': 'application/json' },
+        method: 'delete',
+        url,
+        data: JSON.stringify(data)
+    });
+    return resp.data;
+}
