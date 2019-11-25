@@ -2,28 +2,36 @@ import { post, get } from '../core/request';
 import * as R from 'ramda';
 
 export const subjects = {
-    state: [],
+    name: 'subjects',
+    state: {
+        content: [],
+        pageable: {
+            pageNumber: 0,
+            pageSize: 10
+        }
+    },
     reducers: {
         set: (state, payload) => {
             return payload;
         },
-        append: (state, payload) => {
-            return R.append(payload)(state)
+        pageChange: (state, payload) => {
+            state.pageable.pageNumber = payload
+            return state
         }
     },
     effects: dispatch => ({
         load: async (payload, rootState) => {
             const subjects = await get({
-                path: "api/subjects"
+                path: "api/subjects",
+                payload
             });
             dispatch.subjects.set(subjects)
         },
         create: async (payload, rootState) => {
-            const subject = await post({
+            await post({
                 path: "api/subjects",
                 data: payload
             });
-            dispatch.subjects.append(subject)
             return true;
         }
     })

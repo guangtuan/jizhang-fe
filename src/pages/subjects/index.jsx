@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input } from 'element-react';
+import { Table, Button, Dialog, Form, Input, Pagination } from 'element-react';
 import * as R from 'ramda';
 import styles from './subjects.module.css';
 
@@ -8,8 +8,13 @@ function Subjects({
     subjects, subjectCreation,
     loadSubjects, createSubject,
     showDialog, hideDialog, changeProperty,
-    clear
+    clear, pageChange
 }) {
+
+    const transformToQuery = R.applySpec({
+        page: R.pipe(R.prop('pageable'), R.prop('pageNumber')),
+        size: R.pipe(R.prop('pageable'), R.prop('pageSize'))
+    });
 
     const columns = [
         {
@@ -23,7 +28,7 @@ function Subjects({
     ];
 
     useEffect(() => {
-        loadSubjects();
+        loadSubjects(transformToQuery(subjects));
     }, []);
 
     return (
@@ -31,10 +36,18 @@ function Subjects({
             <Table
                 defaultExpandAll={true}
                 columns={columns}
-                data={subjects}
+                data={subjects.content}
                 border={true}
                 rowKey={R.prop('id')}
             />
+            <Pagination
+                onCurrentChange={page => {
+                    pageChange(page - 1)
+                    loadSubjects(transformToQuery(subjects));
+                }}
+                className={styles.page}
+                layout="prev, pager, next"
+                total={subjects.totalElements} />
             <Button
                 className={styles.add}
                 type="primary"
@@ -97,7 +110,8 @@ const mapDispatch = dispatch => ({
     showDialog: dispatch.subjectCreation.showDialog,
     hideDialog: dispatch.subjectCreation.hideDialog,
     changeProperty: dispatch.subjectCreation.changeProperty,
-    clear: dispatch.subjectCreation.clear
+    clear: dispatch.subjectCreation.clear,
+    pageChange: dispatch.subjects.pageChange
 });
 
 export default connect(mapState, mapDispatch)(Subjects);
