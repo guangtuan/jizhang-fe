@@ -1,9 +1,8 @@
 .add {
     margin-top: 8px;
-    float: left;
+    float: right;
 }
 
-.page {
-    margin-top: 8px;
-    float: right;
+.subjectTag {
+    margin: 4px;
 }

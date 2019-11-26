@@ -7,7 +7,7 @@ export const subjects = {
         content: [],
         pageable: {
             pageNumber: 0,
-            pageSize: 10
+            pageSize: 100
         }
     },
     reducers: {

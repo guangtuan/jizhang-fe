@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input, Pagination } from 'element-react';
+import { Layout, Button, Dialog, Form, Input, Card } from 'element-react';
 import * as R from 'ramda';
 import styles from './subjects.module.css';
 
@@ -8,7 +8,7 @@ function Subjects({
     subjects, subjectCreation,
     loadSubjects, createSubject,
     showDialog, hideDialog, changeProperty,
-    clear, pageChange
+    clear
 }) {
 
     const transformToQuery = R.applySpec({
@@ -16,38 +16,20 @@ function Subjects({
         size: R.pipe(R.prop('pageable'), R.prop('pageSize'))
     });
 
-    const columns = [
-        {
-            label: 'name',
-            prop: 'name'
-        },
-        {
-            label: 'description',
-            prop: 'description'
-        }
-    ];
-
     useEffect(() => {
         loadSubjects(transformToQuery(subjects));
     }, []);
 
     return (
-        <div>
-            <Table
-                defaultExpandAll={true}
-                columns={columns}
-                data={subjects.content}
-                border={true}
-                rowKey={R.prop('id')}
-            />
-            <Pagination
-                onCurrentChange={page => {
-                    pageChange(page - 1)
-                    loadSubjects(transformToQuery(subjects));
-                }}
-                className={styles.page}
-                layout="prev, pager, next"
-                total={subjects.totalElements} />
+        <div className={styles.tags}>
+            {subjects.content.map(sub => (
+                <Layout.Col span={3} offset={0}>
+                    <Card type="gray" className={styles.subjectTag}>
+                        <div>{sub.name}</div>
+                        <div>{sub.description}</div>
+                    </Card>
+                </Layout.Col>
+            ))}
             <Button
                 className={styles.add}
                 type="primary"
@@ -110,8 +92,7 @@ const mapDispatch = dispatch => ({
     showDialog: dispatch.subjectCreation.showDialog,
     hideDialog: dispatch.subjectCreation.hideDialog,
     changeProperty: dispatch.subjectCreation.changeProperty,
-    clear: dispatch.subjectCreation.clear,
-    pageChange: dispatch.subjects.pageChange
+    clear: dispatch.subjectCreation.clear
 });
 
 export default connect(mapState, mapDispatch)(Subjects);
