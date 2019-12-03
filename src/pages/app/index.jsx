@@ -11,8 +11,13 @@ import Subjects from '../subjects';
 import Users from '../users';
 import Accounts from '../accounts';
 import AccountStates from '../accountStates';
+import Statistics from '../statistics';
 
 const pages = [
+    {
+        title: "统计",
+        comp: Statistics
+    },
     {
         title: "用户",
         comp: Users
