@@ -1,18 +1,18 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination } from 'element-react';
+import { Button, DateRangePicker, Form, Checkbox } from 'element-react';
 import * as R from 'ramda';
 import styles from './statistics.module.css';
-import Dayjs from 'dayjs';
 import { Chart, Geom, Axis, Tooltip, Legend, Coord } from 'bizcharts';
 
 function Statistics({
     statistics, accounts, users, subjects,
-    loadStatistics
+    loadStatistics, setDateRange
 }) {
 
     useEffect(() => {
-        loadStatistics();
+        const [start, end] = statistics.dateRange.map(d => d.getTime());
+        loadStatistics({ start, end });
     }, []);
 
     // 定义度量
@@ -23,7 +23,7 @@ function Statistics({
 
     return (
         <div>
-            <Chart width={1500} height={600} data={statistics.content} scale={cols}>
+            <Chart width={1400} height={600} data={statistics.content} scale={cols}>
                 {/* X 轴 */}
                 <Axis name="subjectName" />
                 {/* Y 轴 */}
@@ -32,11 +32,30 @@ function Statistics({
                 <Tooltip />
                 <Geom type="interval" position="subjectName*total" color="subjectName" />
             </Chart>
-            <Button
-                className={styles.query}
-                type="primary">
-                查询
-            </Button>
+            <div>支出{statistics.content.map(R.prop('total')).reduce((acc, cur) => acc + cur, 0)}元</div>
+            <br></br>
+            <Form>
+                <Form.Item>
+                    <DateRangePicker
+                        value={statistics.dateRange}
+                        placeholder="选择日期范围"
+                        onChange={date => {
+                            setDateRange(date)
+                        }}
+                    ></DateRangePicker>
+                </Form.Item>
+                <Form.Item>
+                    <Button
+                        onClick={() => {
+                            const [start, end] = statistics.dateRange.map(d => d.getTime());
+                            loadStatistics({ start, end });
+                        }}
+                        className={styles.query}
+                        type="primary">
+                        查询
+                    </Button>
+                </Form.Item>
+            </Form>
         </div>
     )
 
@@ -45,7 +64,8 @@ function Statistics({
 const mapState = R.pick(["accounts", "users", "statistics", 'subjects']);
 
 const mapDispatch = dispatch => ({
-    loadStatistics: dispatch.statistics.query
+    loadStatistics: dispatch.statistics.query,
+    setDateRange: dispatch.statistics.setDateRange
 });
 
 export default connect(mapState, mapDispatch)(Statistics);
