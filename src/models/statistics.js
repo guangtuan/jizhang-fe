@@ -8,20 +8,30 @@ export const statistics = {
         dateRange: [
             dayjs().subtract(1, 'month').set("date", 1).toDate(),
             dayjs().set("date", 1).set("date", 0).toDate()
-        ]
+        ],
+        subjects: []
     },
     reducers: {
         setContent: (state, payload) => {
             return R.assoc('content', payload)(state);
         },
         setDateRange: (state, payload) => {
-            state.dateRange = payload
-            return state
+            state.dateRange = payload;
+            return state;
+        },
+        changeSubjects: (state, payload) => {
+            const { id, action } = payload;
+            if (action === 'remove') {
+                state.subjects = state.subjects.filter(sub => sub !== id);
+            } else {
+                state.subjects.push(id);
+            }
+            return state;
         }
     },
     effects: dispatch => ({
         query: async (payload, rootState) => {
-            const result = await get({ path: 'api/stats', payload });
+            const result = await post({ path: 'api/stats', data: payload });
             dispatch.statistics.setContent(result);
             return true;
         }
