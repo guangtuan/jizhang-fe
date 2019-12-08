@@ -6,7 +6,7 @@ export const details = {
         content: [],
         pageable: {
             pageNumber: 0,
-            pageSize: 10
+            pageSize: 15
         }
     },
     reducers: {
