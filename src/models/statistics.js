@@ -6,8 +6,8 @@ export const statistics = {
     state: {
         content: [],
         dateRange: [
-            dayjs().subtract(1, 'month').set("date", 1).toDate(),
-            dayjs().set("date", 1).set("date", 0).toDate()
+            dayjs().set("date", 1).toDate(),
+            new Date()
         ],
         subjects: []
     },
