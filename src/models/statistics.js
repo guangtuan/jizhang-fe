@@ -1,4 +1,4 @@
-import {post, get} from '../core/request';
+import {post} from '../core/request';
 import * as R from 'ramda';
 import dayjs from 'dayjs';
 

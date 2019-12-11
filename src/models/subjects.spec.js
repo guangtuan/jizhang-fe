@@ -1,4 +1,4 @@
-import {init, dispatch} from '@rematch/core';
+import {init} from '@rematch/core';
 
 describe('subjects', () => {
   beforeEach(() => {
