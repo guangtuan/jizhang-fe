@@ -1,5 +1,4 @@
 import {post, get} from '../core/request';
-import * as R from 'ramda';
 
 export const subjects = {
   name: 'subjects',

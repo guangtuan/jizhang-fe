@@ -1,5 +1,4 @@
 import {post, get, del} from '../core/request';
-import * as R from 'ramda';
 
 export const details = {
   state: {
