@@ -1,0 +1,15 @@
+#!/bin/bash
+image=jizhang-fe
+container=jizhang-fe
+
+if [ -z "$JIZHANG_FE_PORT" ]
+then
+    echo "please set env vir: JIZHANG_FE_PORT"
+    exit 1
+fi
+
+docker stop $container && docker rm $container
+
+docker run --name $container \
+  -p ${JIZHANG_FE_PORT}:80 \
+  -d $image
