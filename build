@@ -1,0 +1,5 @@
+#!/bin/bash
+
+image=jizhang-fe
+
+docker build . -t $image
