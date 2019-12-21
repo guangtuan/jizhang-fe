@@ -124,7 +124,7 @@ function Details({
                 lockScroll={false}>
                 <Dialog.Body>
                     <Form>
-                        <Form.Item>
+                        <Form.Item label="用户">
                             <Select
                                 value={detailCreation.userId}
                                 onChange={val => {
@@ -141,7 +141,7 @@ function Details({
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item label="来源账户">
                             <Select
                                 value={detailCreation.sourceAccountId}
                                 onChange={val => {
@@ -158,7 +158,7 @@ function Details({
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item label="目标账户">
                             <Select
                                 value={detailCreation.destAccountId}
                                 onChange={val => {
@@ -175,7 +175,7 @@ function Details({
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item>
+                        <Form.Item label="科目">
                             <Select
                                 value={detailCreation.subjectId}
                                 onChange={val => {
@@ -211,6 +211,18 @@ function Details({
                             ></Input>
                         </Form.Item>
                         <Form.Item>
+                            <Input
+                                value={detailCreation.remark}
+                                placeholder="输入备注"
+                                onChange={val => {
+                                    changeProperty({
+                                        key: 'remark',
+                                        val: val
+                                    });
+                                }}
+                            ></Input>
+                        </Form.Item>
+                        <Form.Item label="消费日期">
                             <DatePicker
                                 value={detailCreation.createdAt}
                                 placeholder="请选择消费日期"
