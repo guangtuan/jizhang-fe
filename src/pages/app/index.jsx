@@ -1,11 +1,17 @@
-import React from 'react';
+import React from "react";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    useHistory
+} from "react-router-dom";
 import { connect } from 'react-redux';
+
 import 'element-theme-default';
-import { Tabs, Button } from 'element-react';
 
 import * as R from 'ramda';
-
 import styles from './app.module.css';
+
 import Details from '../details';
 import Subjects from '../subjects';
 import Users from '../users';
@@ -13,51 +19,97 @@ import Accounts from '../accounts';
 import AccountStates from '../accountStates';
 import Statistics from '../statistics';
 
+import { Layout, Menu } from 'element-react';
+
 const pages = [
     {
-        title: "统计",
-        comp: Statistics
+        title: "明细",
+        component: Details,
+        path: 'details'
     },
     {
         title: "用户",
-        comp: Users
+        component: Users,
+        path: 'users'
     },
     {
         title: "账户",
-        comp: Accounts
-    },
-    {
-        title: "结算记录",
-        comp: AccountStates
-    },
-    {
-        title: "明细",
-        comp: Details
+        component: Accounts,
+        path: 'accounts'
     },
     {
         title: "科目",
-        comp: Subjects
+        component: Subjects,
+        path: 'subjects'
+    },
+    {
+        title: "统计",
+        component: Statistics,
+        path: 'statistics'
+    },
+    {
+        title: "结算记录",
+        component: AccountStates,
+        path: 'accountStates'
     }
 ];
 
-function App({ }) {
+function CreateMenu(props) {
+    let history = useHistory();
+
+    function createHandleFunction(indexPath) {
+        console.log("call me", indexPath);
+        history.push(indexPath);
+    }
+
     return (
-        <div className={styles.app}>
-            <Tabs
-                activeName="0">
-                {pages.map((page, index) => {
-                    return (
-                        <Tabs.Pane
-                            key={index}
-                            label={page.title}
-                            name={index.toString()}
-                        >
-                            <page.comp key={index}></page.comp>
-                        </Tabs.Pane>
-                    )
-                })}
-            </Tabs>
-        </div>
+        <Menu defaultActive="details" onSelect={createHandleFunction}>
+            {
+                props.pages.map((page, index) => (
+                    <Menu.Item
+                        key={page.title}
+                        index={page.path}
+                        path={page.path}
+                    >{page.title}</Menu.Item>
+                ))
+            }
+        </Menu>
+    );
+}
+
+export function App() {
+
+    return (
+        <Router>
+            <div className={styles.topBar}></div>
+            <Layout.Row>
+                <Layout.Col span="2" >
+                    <CreateMenu pages={pages}></CreateMenu>
+                </Layout.Col>
+                <Layout.Col span="20" className={styles.content}>
+                    <Switch>
+                        <Route exact path="/details">
+                            <Details />
+                        </Route>
+                        <Route path="/users">
+                            <Users />
+                        </Route>
+                        <Route path="/accounts">
+                            <Accounts />
+                        </Route>
+                        <Route path="/subjects">
+                            <Subjects />
+                        </Route>
+                        <Route path="/statistics">
+                            <Statistics />
+                        </Route>
+                        <Route path="/accountStates">
+                            <AccountStates />
+                        </Route>
+                    </Switch>
+                </Layout.Col>
+            </Layout.Row>
+        </Router>
     );
 }
 
