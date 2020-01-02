@@ -209,8 +209,8 @@ function Details({
                                 placeholder="请选择科目">
                                 {
                                     (() => {
-                                        if (subjects.content !== null && subjects.content.length !== 0) {
-                                            return subjects.content.map(subject => {
+                                        if (subjects !== null && subjects.length !== 0) {
+                                            return subjects.map(subject => {
                                                 return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
                                             })
                                         } else {

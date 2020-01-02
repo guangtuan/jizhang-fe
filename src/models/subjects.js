@@ -1,22 +1,12 @@
-import {post, get} from '../core/request';
+import { post, get } from '../core/request';
 
 export const subjects = {
   name: 'subjects',
-  state: {
-    content: [],
-    pageable: {
-      pageNumber: 0,
-      pageSize: 100,
-    },
-  },
+  state: [],
   reducers: {
     set: (state, payload) => {
       return payload;
-    },
-    pageChange: (state, payload) => {
-      state.pageable.pageNumber = payload;
-      return state;
-    },
+    }
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
@@ -32,6 +22,6 @@ export const subjects = {
         data: payload,
       });
       return true;
-    },
-  }),
+    }
+  })
 };

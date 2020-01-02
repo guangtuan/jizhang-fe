@@ -13,7 +13,7 @@ function Statistics({
     const load = () => {
         let toPass = statistics.subjects;
         if (toPass.length === 0) {
-            toPass = subjects.content;
+            toPass = subjects;
         }
         if (toPass.length === 0) {
             return;
@@ -23,7 +23,7 @@ function Statistics({
     };
 
     useEffect(() => {
-        subjects.content.map(sub => sub.id).forEach(id => {
+        subjects.map(sub => sub.id).forEach(id => {
             changeSubjects({ id, action: "add" });
         });
         load();
@@ -40,7 +40,7 @@ function Statistics({
             <Form>
                 <Form.Item label="科目">
                     <div className={styles.subjects}>
-                        {subjects.content.map(subject => (
+                        {subjects.map(subject => (
                             <Checkbox
                                 onChange={checked => {
                                     if (checked) {
@@ -58,12 +58,15 @@ function Statistics({
                 </Form.Item>
                 <Form.Item label="日期范围">
                     <DateRangePicker
-                        value={statistics.dateRange}
+                        value={statistics.dateRange.map(l => new Date(l))}
                         placeholder="选择日期范围"
                         onChange={date => {
                             setDateRange(date)
                         }}
                     ></DateRangePicker>
+                </Form.Item>
+                <Form.Item label="本月支出">
+                    <span>{statistics.content.map(R.prop('total')).reduce((acc, cur) => acc + cur, 0)}元</span>
                 </Form.Item>
                 <Form.Item>
                     <Button
@@ -91,7 +94,6 @@ function Statistics({
                             <Tooltip />
                             <Geom type="interval" position="subjectName*total" color="subjectName" />
                         </Chart>
-                        <div>支出{statistics.content.map(R.prop('total')).reduce((acc, cur) => acc + cur, 0)}元</div>
                     </div>
                 )
             })()}

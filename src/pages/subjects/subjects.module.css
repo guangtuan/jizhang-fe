@@ -6,3 +6,8 @@
 .subjectTag {
     margin: 4px;
 }
+
+.description {
+    font-size: 12px;
+    color: darkolivegreen;
+}
