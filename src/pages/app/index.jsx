@@ -25,32 +25,32 @@ const pages = [
     {
         title: "明细",
         component: Details,
-        path: 'details'
+        path: '/'
     },
     {
         title: "用户",
         component: Users,
-        path: 'users'
+        path: '/users'
     },
     {
         title: "账户",
         component: Accounts,
-        path: 'accounts'
+        path: '/accounts'
     },
     {
         title: "科目",
         component: Subjects,
-        path: 'subjects'
+        path: '/subjects'
     },
     {
         title: "统计",
         component: Statistics,
-        path: 'statistics'
+        path: '/statistics'
     },
     {
         title: "结算记录",
         component: AccountStates,
-        path: 'accountStates'
+        path: '/accountStates'
     }
 ];
 
@@ -88,7 +88,7 @@ export function App() {
                 </Layout.Col>
                 <Layout.Col span="20" className={styles.content}>
                     <Switch>
-                        <Route exact path="/details">
+                        <Route exact path="/">
                             <Details />
                         </Route>
                         <Route path="/users">
