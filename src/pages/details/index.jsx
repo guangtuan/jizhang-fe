@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination } from 'element-react';
+import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination, Loading } from 'element-react';
 import * as R from 'ramda';
 import styles from './details.module.css';
 import Dayjs from 'dayjs';
+import { useState } from 'react';
 
 function Details({
     accounts, users, subjects,
     details, detailCreation,
-    loadDetails, createDetail,
+    loadDetails, loadUsers, loadSubjects, loadAccounts, createDetail,
     showDialog, hideDialog, changeProperty,
     pageChange, clear, delDetail
 }) {
@@ -17,6 +18,9 @@ function Details({
         page: R.pipe(R.prop('pageable'), R.prop('pageNumber')),
         size: R.pipe(R.prop('pageable'), R.prop('pageSize'))
     });
+
+    const [initLoaidng, setInitLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     const columns = [
         {
@@ -62,7 +66,7 @@ function Details({
         {
             label: '更新时间',
             render: function (data) {
-                if (data.updatedAt == null || data.updatedAt == undefined) {
+                if (data.updatedAt === null || data.updatedAt === undefined) {
                     return <span></span>
                 } else {
                     return (
@@ -79,8 +83,12 @@ function Details({
                 return <Button
                     type='danger'
                     onClick={() => {
+                        setDeleteLoading(true)
                         delDetail(data.id).then(
-                            loadDetails(transformToQuery(details))
+                            () => {
+                                setDeleteLoading(false)
+                                loadDetails(transformToQuery(details))
+                            }
                         )
                     }}
                 >删除</Button>
@@ -89,7 +97,21 @@ function Details({
     ];
 
     useEffect(() => {
-        loadDetails(transformToQuery(details));
+        async function fetchdata() {
+            setInitLoading(true);
+            try {
+                await Promise.all([
+                    loadDetails(transformToQuery(details)),
+                    loadUsers(),
+                    loadSubjects(),
+                    loadAccounts()
+                ]);
+            } catch (error) {
+                setInitLoading(false);
+            }
+            setInitLoading(false);
+        }
+        fetchdata();
     }, []);
 
     return (
@@ -249,6 +271,8 @@ function Details({
                     </Form>
                 </Dialog.Body>
             </Dialog>
+            <Loading loading={deleteLoading}></Loading>
+            <Loading loading={initLoaidng}></Loading>
         </div>
     )
 
@@ -258,6 +282,9 @@ const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailCrea
 
 const mapDispatch = dispatch => ({
     loadDetails: dispatch.details.load,
+    loadUsers: dispatch.users.load,
+    loadSubjects: dispatch.subjects.load,
+    loadAccounts: dispatch.accounts.load,
     createDetail: dispatch.details.create,
     delDetail: dispatch.details.del,
     showDialog: dispatch.detailCreation.showDialog,
