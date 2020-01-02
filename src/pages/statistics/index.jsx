@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Button, DateRangePicker, Form, Checkbox } from 'element-react';
 import * as R from 'ramda';
 import styles from './statistics.module.css';
-import { Chart, Geom, Axis, Tooltip, Legend, Coord } from 'bizcharts';
+import { Chart, Geom, Axis, Tooltip, Legend, Label } from 'bizcharts';
 
 function Statistics({
     statistics, accounts, users, subjects,
@@ -92,12 +92,15 @@ function Statistics({
                             <Axis name="total" />
                             <Legend position="top" dy={-20} />
                             <Tooltip />
-                            <Geom type="interval" position="subjectName*total" color="subjectName" />
+                            <Geom type="interval" position="subjectName*total" color="subjectName">
+                                <Label content="total">
+                                </Label>
+                            </Geom>
                         </Chart>
                     </div>
                 )
             })()}
-        </div>
+        </div >
     )
 
 };
