@@ -22,11 +22,11 @@ function Subjects({
 
     return (
         <div className={styles.tags}>
-            {subjects.content.map(sub => (
-                <Layout.Col span={3} offset={0} key={sub.id}>
-                    <Card type="gray" className={styles.subjectTag}>
+            {subjects.map(sub => (
+                <Layout.Col span={4} offset={0} >
+                    <Card type="gray" className={styles.subjectTag} key={sub.id}>
                         <div>{sub.name}</div>
-                        <div>{sub.description}</div>
+                        <div className={styles.description}>{sub.description}</div>
                     </Card>
                 </Layout.Col>
             ))}
