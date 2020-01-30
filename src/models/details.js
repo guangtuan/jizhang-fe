@@ -1,4 +1,5 @@
-import {post, get, del} from '../core/request';
+import { post, get, del } from '../core/request';
+import { __, prop, propEq, when, map, curry, assoc, find, findIndex, update } from 'ramda';
 
 export const details = {
   state: {
@@ -9,6 +10,10 @@ export const details = {
     },
   },
   reducers: {
+    updateSingleRow: (state, payload) => {
+      const indexToUpdate = findIndex(propEq('id', payload.id))(prop('content')(state))
+      return assoc('content', update(indexToUpdate, payload)(prop('content')(state)))(state)
+    },
     set: (state, payload) => {
       return payload;
     },

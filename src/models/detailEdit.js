@@ -19,18 +19,19 @@ export const detailEdit = {
             return {};
         },
         set: (state, payload) => {
-            payload.createdAt = new Date(payload.createdAt);
-            payload.amount = payload.amount / 100;
-            return payload;
+            return R.compose(
+                R.assoc('amount', payload.amount / 100),
+                R.assoc('createdAt', new Date(payload.createdAt))
+            )(payload)
         },
     },
     effects: (dispatch) => ({
         update: async (payload, rootState) => {
-            await put({
+            const resp = await put({
                 path: `api/details/${payload.id}`,
                 data: payload.payload
             });
-            return true;
+            return resp;
         },
     })
 };
