@@ -4,7 +4,11 @@ import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination, Loa
 import * as R from 'ramda';
 import styles from './detailEdit.module.css';
 
-function DetailEdit({ detailEdit, hideDialog, changeProperty, users, accounts, subjects, updateDetail, clear }) {
+function DetailEdit({
+    detailEdit, hideDialog, changeProperty,
+    users, accounts, subjects,
+    updateDetail, clear, updateSingleRow
+}) {
     return (<Dialog
         title="编辑明细"
         size="tiny"
@@ -128,9 +132,11 @@ function DetailEdit({ detailEdit, hideDialog, changeProperty, users, accounts, s
                         onClick={() => {
                             const pack = R.pick(['id', 'userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailEdit);
                             pack.amount = pack.amount * 100
-                            updateDetail({ payload: pack, id: pack.id }).then(() => {
+                            updateDetail({ payload: pack, id: pack.id }).then(updated => {
                                 clear()
                                 hideDialog()
+                                console.log(JSON.stringify(updated))
+                                updateSingleRow(updated)
                             })
                         }}
                     >确定</Button>
@@ -147,7 +153,8 @@ const mapDispatch = dispatch => ({
     showDialog: dispatch.detailEdit.showDialog,
     hideDialog: dispatch.detailEdit.hideDialog,
     changeProperty: dispatch.detailEdit.changeProperty,
-    clear: dispatch.detailEdit.clear
+    clear: dispatch.detailEdit.clear,
+    updateSingleRow: dispatch.details.updateSingleRow
 });
 
 export default connect(mapState, mapDispatch)(DetailEdit);

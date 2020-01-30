@@ -87,7 +87,6 @@ function Details({
                         <Button
                             type='primary'
                             onClick={() => {
-                                debugger
                                 setEdittingDetail(data)
                                 showEditDialog()
                             }}
