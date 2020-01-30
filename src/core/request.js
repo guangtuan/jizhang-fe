@@ -29,16 +29,16 @@ const getFromWindow = () => {
   }
 };
 
-export const get = async ({path, payload}) => {
+export const get = async ({ path, payload }) => {
   const fullUrl = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
   const resp = await axios.get([fullUrl, queryString.stringify(payload)].join('?'));
   return resp.data;
 };
 
-export const post = async ({path, data}) => {
+export const post = async ({ path, data }) => {
   const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
   const resp = await axios({
-    headers: {'content-type': 'application/json'},
+    headers: { 'content-type': 'application/json' },
     method: 'post',
     url,
     data: JSON.stringify(data),
@@ -46,10 +46,21 @@ export const post = async ({path, data}) => {
   return resp.data;
 };
 
-export const del = async ({path, data}) => {
+export const put = async ({ path, data }) => {
   const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
   const resp = await axios({
-    headers: {'content-type': 'application/json'},
+    headers: { 'content-type': 'application/json' },
+    method: 'put',
+    url,
+    data: JSON.stringify(data),
+  });
+  return resp.data;
+};
+
+export const del = async ({ path, data }) => {
+  const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
+  const resp = await axios({
+    headers: { 'content-type': 'application/json' },
     method: 'delete',
     url,
     data: JSON.stringify(data),
