@@ -7,3 +7,8 @@
     margin-top: 8px;
     float: right;
 }
+
+.opts {
+    display: flex;
+    align-content: center; /* Can be changed in the live sample */
+}

@@ -10,3 +10,4 @@ export * from './accountStates';
 export * from './accountStateCreation';
 export * from './accountTypeDefine';
 export * from './statistics';
+export * from './detailEdit';

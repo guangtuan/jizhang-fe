@@ -5,13 +5,15 @@ import * as R from 'ramda';
 import styles from './details.module.css';
 import Dayjs from 'dayjs';
 import { useState } from 'react';
+import DetailEdit from './detailEdit';
 
 function Details({
     accounts, users, subjects,
     details, detailCreation,
     loadDetails, loadUsers, loadSubjects, loadAccounts, createDetail,
     showDialog, hideDialog, changeProperty,
-    pageChange, clear, delDetail
+    pageChange, clear, delDetail,
+    setEdittingDetail, showEditDialog
 }) {
 
     const transformToQuery = R.applySpec({
@@ -80,18 +82,30 @@ function Details({
         {
             label: '操作',
             render: function (data) {
-                return <Button
-                    type='danger'
-                    onClick={() => {
-                        setDeleteLoading(true)
-                        delDetail(data.id).then(
-                            () => {
-                                setDeleteLoading(false)
-                                loadDetails(transformToQuery(details))
-                            }
-                        )
-                    }}
-                >删除</Button>
+                return (
+                    <div className={styles.opts}>
+                        <Button
+                            type='primary'
+                            onClick={() => {
+                                debugger
+                                setEdittingDetail(data)
+                                showEditDialog()
+                            }}
+                        >编辑</Button>
+                        <Button
+                            type='danger'
+                            onClick={() => {
+                                setDeleteLoading(true)
+                                delDetail(data.id).then(
+                                    () => {
+                                        setDeleteLoading(false)
+                                        loadDetails(transformToQuery(details))
+                                    }
+                                )
+                            }}
+                        >删除</Button>
+                    </div>
+                )
             }
         }
     ];
@@ -273,6 +287,7 @@ function Details({
             </Dialog>
             <Loading loading={deleteLoading}></Loading>
             <Loading loading={initLoaidng}></Loading>
+            <DetailEdit></DetailEdit>
         </div>
     )
 
@@ -289,9 +304,11 @@ const mapDispatch = dispatch => ({
     delDetail: dispatch.details.del,
     showDialog: dispatch.detailCreation.showDialog,
     hideDialog: dispatch.detailCreation.hideDialog,
+    showEditDialog: dispatch.detailEdit.showDialog,
     changeProperty: dispatch.detailCreation.changeProperty,
     pageChange: dispatch.details.pageChange,
-    clear: dispatch.detailCreation.clear
+    clear: dispatch.detailCreation.clear,
+    setEdittingDetail: dispatch.detailEdit.set
 });
 
 export default connect(mapState, mapDispatch)(Details);
