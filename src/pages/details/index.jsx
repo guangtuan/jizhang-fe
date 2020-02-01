@@ -16,11 +16,6 @@ function Details({
     setEdittingDetail, showEditDialog
 }) {
 
-    const transformToQuery = R.applySpec({
-        page: R.pipe(R.prop('pageable'), R.prop('pageNumber')),
-        size: R.pipe(R.prop('pageable'), R.prop('pageSize'))
-    });
-
     const [initLoaidng, setInitLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -98,7 +93,7 @@ function Details({
                                 delDetail(data.id).then(
                                     () => {
                                         setDeleteLoading(false)
-                                        loadDetails(transformToQuery(details))
+                                        loadDetails()
                                     }
                                 )
                             }}
@@ -114,7 +109,7 @@ function Details({
             setInitLoading(true);
             try {
                 await Promise.all([
-                    loadDetails(transformToQuery(details)),
+                    loadDetails(),
                     loadUsers(),
                     loadSubjects(),
                     loadAccounts()
@@ -139,12 +134,11 @@ function Details({
             <Pagination
                 onCurrentChange={page => {
                     pageChange(page - 1)
-                    console.log(JSON.stringify(transformToQuery(details)))
-                    loadDetails(transformToQuery(details));
+                    loadDetails();
                 }}
                 className={styles.page}
                 layout="prev, pager, next"
-                total={details.totalElements} />
+                total={details.total} />
             <Button
                 className={styles.add}
                 type="primary"
@@ -276,7 +270,7 @@ function Details({
                                     pack.amount = pack.amount * 100
                                     createDetail(pack).then(() => {
                                         clear()
-                                        loadDetails(transformToQuery(details))
+                                        loadDetails()
                                     })
                                 }}
                             >确定</Button>

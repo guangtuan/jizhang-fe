@@ -29,9 +29,9 @@ const getFromWindow = () => {
   }
 };
 
-export const get = async ({ path, payload }) => {
+export const get = async ({ path, data }) => {
   const fullUrl = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
-  const resp = await axios.get([fullUrl, queryString.stringify(payload)].join('?'));
+  const resp = await axios.get([fullUrl, queryString.stringify(data)].join('?'));
   return resp.data;
 };
 
