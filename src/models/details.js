@@ -1,12 +1,16 @@
 import { post, get, del } from '../core/request';
-import { __, prop, propEq, when, map, curry, assoc, find, findIndex, update } from 'ramda';
+import { __, prop, propEq, assoc, findIndex, update, merge, compose } from 'ramda';
 
 export const details = {
   state: {
     content: [],
-    pageable: {
-      pageNumber: 0,
-      pageSize: 15,
+    total: 0,
+    query: {
+      page: 0,
+      size: 15,
+      queryParam: {
+        subjectIds: []
+      }
     },
   },
   reducers: {
@@ -18,17 +22,25 @@ export const details = {
       return payload;
     },
     pageChange: (state, payload) => {
-      state.pageable.pageNumber = payload;
+      state.query.page = payload;
       return state;
     },
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
-      const details = await get({
-        path: 'api/details',
-        payload,
+      const details = await post({
+        path: 'api/details/query',
+        data: rootState.details.query
       });
-      dispatch.details.set(details);
+      const modify = compose(
+        assoc(
+          'content', details.content
+        ),
+        assoc('total', details.total)
+      )
+      dispatch.details.set(
+        modify(rootState.details)
+      );
     },
     create: async (payload, rootState) => {
       await post({
