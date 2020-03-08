@@ -18,6 +18,7 @@ import Users from '../users';
 import Accounts from '../accounts';
 import AccountStates from '../accountStates';
 import Statistics from '../statistics';
+import Login from '../login';
 
 import { Layout, Menu } from 'element-react';
 
@@ -77,43 +78,61 @@ function CreateMenu(props) {
     );
 }
 
-export function App() {
+function getContent(login) {
+    if (!login) {
+        return (
+            <Login />
+        );
+    } else {
+        return (
+            <div>
+                <div className={styles.topBar}></div>
+                <Layout.Row>
+                    <Layout.Col span="2" >
+                        <CreateMenu pages={pages}></CreateMenu>
+                    </Layout.Col>
+                    <Layout.Col span="20" className={styles.content}>
+                        <Switch>
+                            <Route exact path="/">
+                                <Details />
+                            </Route>
+                            <Route path="/users">
+                                <Users />
+                            </Route>
+                            <Route path="/accounts">
+                                <Accounts />
+                            </Route>
+                            <Route path="/subjects">
+                                <Subjects />
+                            </Route>
+                            <Route path="/statistics">
+                                <Statistics />
+                            </Route>
+                            <Route path="/accountStates">
+                                <AccountStates />
+                            </Route>
+                        </Switch>
+                    </Layout.Col>
+                </Layout.Row>
+            </div>
+        )
+    }
+}
+
+export function App({ session }) {
+
+    function ifLogin() {
+        return !!session.token;
+    }
 
     return (
         <Router>
-            <div className={styles.topBar}></div>
-            <Layout.Row>
-                <Layout.Col span="2" >
-                    <CreateMenu pages={pages}></CreateMenu>
-                </Layout.Col>
-                <Layout.Col span="20" className={styles.content}>
-                    <Switch>
-                        <Route exact path="/">
-                            <Details />
-                        </Route>
-                        <Route path="/users">
-                            <Users />
-                        </Route>
-                        <Route path="/accounts">
-                            <Accounts />
-                        </Route>
-                        <Route path="/subjects">
-                            <Subjects />
-                        </Route>
-                        <Route path="/statistics">
-                            <Statistics />
-                        </Route>
-                        <Route path="/accountStates">
-                            <AccountStates />
-                        </Route>
-                    </Switch>
-                </Layout.Col>
-            </Layout.Row>
+            {getContent(ifLogin())}
         </Router>
     );
 }
 
-const mapState = R.pick(['currentRecord']);
+const mapState = R.pick(['currentRecord', 'session']);
 
 const mapDispatch = dispatch => ({
 });
