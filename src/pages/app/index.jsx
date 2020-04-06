@@ -135,6 +135,7 @@ export function App({ session }) {
 const mapState = R.pick(['currentRecord', 'session']);
 
 const mapDispatch = dispatch => ({
+    init: dispatch.session.init
 });
 
 export default connect(mapState, mapDispatch)(App);

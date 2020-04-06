@@ -1,15 +1,25 @@
-import { post } from '../core/request';
+import { post } from '../core/request'
+
+const SESSION_KEY = "SESSION";
+
+const state = (() => {
+    const sessionJSON = localStorage.getItem(SESSION_KEY)
+    if (sessionJSON) {
+        return JSON.parse(sessionJSON)
+    } else {
+        return null
+    }
+})()
 
 export const session = {
-    state: {
-        token: undefined
-    },
+    state,
     reducers: {
         set: (state, payload) => {
-            return payload;
+            return payload
         },
         clear: (state, payload) => {
-            return undefined;
+            localStorage.removeItem(SESSION_KEY)
+            return undefined
         }
     },
     effects: (dispatch) => ({
@@ -20,16 +30,17 @@ export const session = {
                     username: payload.username,
                     password: payload.password
                 }
-            });
-            dispatch.session.set(session);
+            })
+            localStorage.setItem(SESSION_KEY, JSON.stringify(session))
+            dispatch.session.set(session)
         },
         logout: async (payload, rootState) => {
             await post({
                 path: 'logout',
                 data: payload,
-            });
-            dispatch.session.clear();
-            return true;
+            })
+            dispatch.session.clear()
+            return true
         }
     })
-};
+}
