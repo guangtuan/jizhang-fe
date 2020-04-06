@@ -70,6 +70,7 @@ function DetailEdit({
                 </Form.Item>
                 <Form.Item label="科目">
                     <Select
+                        filterable={true}
                         value={detailEdit.subjectId}
                         onChange={val => {
                             changeProperty({

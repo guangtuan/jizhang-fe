@@ -1,23 +1,69 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination, Loading } from 'element-react';
-import * as R from 'ramda';
-import styles from './details.module.css';
-import Dayjs from 'dayjs';
-import { useState } from 'react';
-import DetailEdit from './detailEdit';
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+import { Table, Button, Dialog, Form, Input, Select, DatePicker, Pagination, Loading } from 'element-react'
+import * as R from 'ramda'
+import styles from './details.module.css'
+import Dayjs from 'dayjs'
+import { useState } from 'react'
+import DetailEdit from './detailEdit'
 
 function Details({
     accounts, users, subjects,
     details, detailCreation,
     loadDetails, loadUsers, loadSubjects, loadAccounts, createDetail,
     showDialog, hideDialog, changeProperty,
-    pageChange, clear, delDetail,
+    clear, delDetail,
     setEdittingDetail, showEditDialog
 }) {
 
-    const [initLoaidng, setInitLoading] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [initLoaidng, setInitLoading] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
+
+    const [sourceAccountId, setSourceAccountId] = useState(null)
+    const [destAccountId, setDestAccountId] = useState(null)
+    const [subjectIds, setSubjectIds] = useState([])
+    const [start, setStart] = useState(null)
+    const [end, setEnd] = useState(null)
+    const [page, setPage] = useState(1)
+    const size = 15
+
+    const load = async () => {
+        console.log('load with', page)
+        await loadDetails({
+            page: page - 1,
+            size,
+            queryParam: {
+                sourceAccountId,
+                destAccountId,
+                start,
+                end,
+                subjectIds
+            }
+        })
+    }
+
+    const renderOperationButtons = function (data) {
+        return (
+            <div className={styles.opts}>
+                <Button
+                    type='primary'
+                    onClick={() => {
+                        setEdittingDetail(data)
+                        showEditDialog()
+                    }}
+                >编辑</Button>
+                <Button
+                    type='danger'
+                    onClick={async () => {
+                        setDeleteLoading(true)
+                        await delDetail(data.id)
+                        await load()
+                        setDeleteLoading(false)
+                    }}
+                >删除</Button>
+            </div>
+        )
+    }
 
     const columns = [
         {
@@ -42,23 +88,11 @@ function Details({
         },
         {
             label: '金额',
-            render: function (data) {
-                return (
-                    <span>
-                        <span>{data.amount / 100}元</span>
-                    </span>
-                )
-            }
+            render: ({ amount }) => (<span>{amount / 100}元</span>)
         },
         {
             label: '创建时间',
-            render: function (data) {
-                return (
-                    <span>
-                        <span>{Dayjs(data.createdAt).format("YYYY-MM-DD")}</span>
-                    </span>
-                )
-            }
+            render: (data) => (<span>{Dayjs(data.createdAt).format("YYYY-MM-DD")}</span>)
         },
         {
             label: '更新时间',
@@ -76,54 +110,80 @@ function Details({
         },
         {
             label: '操作',
-            render: function (data) {
-                return (
-                    <div className={styles.opts}>
-                        <Button
-                            type='primary'
-                            onClick={() => {
-                                setEdittingDetail(data)
-                                showEditDialog()
-                            }}
-                        >编辑</Button>
-                        <Button
-                            type='danger'
-                            onClick={() => {
-                                setDeleteLoading(true)
-                                delDetail(data.id).then(
-                                    () => {
-                                        setDeleteLoading(false)
-                                        loadDetails()
-                                    }
-                                )
-                            }}
-                        >删除</Button>
-                    </div>
-                )
-            }
+            render: renderOperationButtons
         }
-    ];
+    ]
 
     useEffect(() => {
         async function fetchdata() {
-            setInitLoading(true);
+            setInitLoading(true)
             try {
                 await Promise.all([
-                    loadDetails(),
+                    load(),
                     loadUsers(),
                     loadSubjects(),
                     loadAccounts()
-                ]);
+                ])
             } catch (error) {
-                setInitLoading(false);
+                console.log(error)
+                setInitLoading(false)
             }
-            setInitLoading(false);
+            setInitLoading(false)
         }
-        fetchdata();
-    }, []);
+        fetchdata()
+    }, [page])
 
     return (
         <div>
+            <Form inline>
+                <Form.Item label="来源账户">
+                    <Select
+                        clearable={true}
+                        value={sourceAccountId}
+                        onChange={setSourceAccountId}
+                        placeholder="请选择来源账户">
+                        {(accounts || []).map(account => {
+                            return <Select.Option key={account.id} label={account.name} value={account.id} />
+                        })}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="目标账户">
+                    <Select
+                        clearable={true}
+                        value={destAccountId}
+                        onChange={setDestAccountId}
+                        placeholder="请选择目标账户">
+                        {(accounts || []).map(account => {
+                            return <Select.Option key={account.id} label={account.name} value={account.id} />
+                        })}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="科目">
+                    <Select
+                        multiple={true}
+                        clearable={true}
+                        value={subjectIds}
+                        onChange={setSubjectIds}
+                        placeholder="请选择科目">
+                        {(subjects || []).map(subject => {
+                            return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
+                        })}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="从">
+                    <DatePicker
+                        onChange={setStart}
+                        value={start}
+                    ></DatePicker>
+                </Form.Item>
+                <Form.Item label="到">
+                    <DatePicker
+                        onChange={setEnd}
+                        value={end}
+                    ></DatePicker>
+                </Form.Item>
+                <Button onClick={load}>查询</Button>
+            </Form>
             <Table
                 defaultExpandAll={true}
                 columns={columns}
@@ -132,10 +192,7 @@ function Details({
                 rowKey={R.prop('id')}
             />
             <Pagination
-                onCurrentChange={page => {
-                    pageChange(page - 1)
-                    loadDetails();
-                }}
+                onCurrentChange={setPage}
                 className={styles.page}
                 layout="prev, pager, next"
                 total={details.total} />
@@ -160,7 +217,7 @@ function Details({
                                     changeProperty({
                                         key: 'userId',
                                         val: val
-                                    });
+                                    })
                                 }}
                                 placeholder="请选择用户">
                                 {
@@ -177,7 +234,7 @@ function Details({
                                     changeProperty({
                                         key: 'sourceAccountId',
                                         val: val
-                                    });
+                                    })
                                 }}
                                 placeholder="请选择来源账户">
                                 {
@@ -194,7 +251,7 @@ function Details({
                                     changeProperty({
                                         key: 'destAccountId',
                                         val: val
-                                    });
+                                    })
                                 }}
                                 placeholder="请选择目标账户">
                                 {
@@ -206,12 +263,13 @@ function Details({
                         </Form.Item>
                         <Form.Item label="科目">
                             <Select
+                                filterable={true}
                                 value={detailCreation.subjectId}
                                 onChange={val => {
                                     changeProperty({
                                         key: 'subjectId',
                                         val: val
-                                    });
+                                    })
                                 }}
                                 placeholder="请选择科目">
                                 {
@@ -235,7 +293,7 @@ function Details({
                                     changeProperty({
                                         key: 'amount',
                                         val: val
-                                    });
+                                    })
                                 }}
                             ></Input>
                         </Form.Item>
@@ -247,7 +305,7 @@ function Details({
                                     changeProperty({
                                         key: 'remark',
                                         val: val
-                                    });
+                                    })
                                 }}
                             ></Input>
                         </Form.Item>
@@ -259,18 +317,18 @@ function Details({
                                     changeProperty({
                                         key: 'createdAt',
                                         val: date
-                                    });
+                                    })
                                 }}
                             />
                         </Form.Item>
                         <Form.Item>
                             <Button
                                 onClick={() => {
-                                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailCreation);
+                                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailCreation)
                                     pack.amount = pack.amount * 100
                                     createDetail(pack).then(() => {
                                         clear()
-                                        loadDetails()
+                                        load()
                                     })
                                 }}
                             >确定</Button>
@@ -284,9 +342,9 @@ function Details({
         </div>
     )
 
-};
+}
 
-const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailCreation']);
+const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailCreation'])
 
 const mapDispatch = dispatch => ({
     loadDetails: dispatch.details.load,
@@ -299,9 +357,8 @@ const mapDispatch = dispatch => ({
     hideDialog: dispatch.detailCreation.hideDialog,
     showEditDialog: dispatch.detailEdit.showDialog,
     changeProperty: dispatch.detailCreation.changeProperty,
-    pageChange: dispatch.details.pageChange,
     clear: dispatch.detailCreation.clear,
     setEdittingDetail: dispatch.detailEdit.set
-});
+})
 
-export default connect(mapState, mapDispatch)(Details);
+export default connect(mapState, mapDispatch)(Details)

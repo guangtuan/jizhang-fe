@@ -4,14 +4,7 @@ import { __, prop, propEq, assoc, findIndex, update, merge, compose } from 'ramd
 export const details = {
   state: {
     content: [],
-    total: 0,
-    query: {
-      page: 0,
-      size: 15,
-      queryParam: {
-        subjectIds: []
-      }
-    },
+    total: 0
   },
   reducers: {
     updateSingleRow: (state, payload) => {
@@ -20,17 +13,13 @@ export const details = {
     },
     set: (state, payload) => {
       return payload;
-    },
-    pageChange: (state, payload) => {
-      state.query.page = payload;
-      return state;
-    },
+    }
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
       const details = await post({
         path: 'api/details/query',
-        data: rootState.details.query
+        data: payload
       });
       const modify = compose(
         assoc(
