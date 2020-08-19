@@ -10,11 +10,15 @@ export const subjects = {
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
-      const subjects = await get({
-        path: 'api/subjects',
-        payload,
-      });
-      dispatch.subjects.set(subjects);
+      try {
+        const subjects = await get({
+          path: 'api/subjects',
+          payload,
+        });
+        dispatch.subjects.set(subjects);
+      } catch (err) {
+
+      }
     },
     create: async (payload, rootState) => {
       await post({

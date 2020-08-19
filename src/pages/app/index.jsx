@@ -78,64 +78,69 @@ function CreateMenu(props) {
     );
 }
 
-function getContent(login) {
+function getContent(login, nickname) {
     if (!login) {
         return (
             <Login />
         );
-    } else {
-        return (
-            <div>
-                <div className={styles.topBar}></div>
-                <Layout.Row>
-                    <Layout.Col span="2" >
-                        <CreateMenu pages={pages}></CreateMenu>
-                    </Layout.Col>
-                    <Layout.Col span="20" className={styles.content}>
-                        <Switch>
-                            <Route exact path="/">
-                                <Details />
-                            </Route>
-                            <Route path="/users">
-                                <Users />
-                            </Route>
-                            <Route path="/accounts">
-                                <Accounts />
-                            </Route>
-                            <Route path="/subjects">
-                                <Subjects />
-                            </Route>
-                            <Route path="/statistics">
-                                <Statistics />
-                            </Route>
-                            <Route path="/accountStates">
-                                <AccountStates />
-                            </Route>
-                        </Switch>
-                    </Layout.Col>
-                </Layout.Row>
-            </div>
-        )
     }
+    return (
+        <div>
+            <Layout.Row>
+                <Layout.Col span="22" >
+                    <div className={styles.topBar}>
+                        <div className={styles.currentUser}>{nickname}</div>
+                    </div>
+                </Layout.Col>
+            </Layout.Row>
+            <Layout.Row>
+                <Layout.Col span="2" >
+                    <CreateMenu pages={pages}></CreateMenu>
+                </Layout.Col>
+                <Layout.Col span="20" className={styles.content}>
+                    <Switch>
+                        <Route exact path="/">
+                            <Details />
+                        </Route>
+                        <Route path="/users">
+                            <Users />
+                        </Route>
+                        <Route path="/accounts">
+                            <Accounts />
+                        </Route>
+                        <Route path="/subjects">
+                            <Subjects />
+                        </Route>
+                        <Route path="/statistics">
+                            <Statistics />
+                        </Route>
+                        <Route path="/accountStates">
+                            <AccountStates />
+                        </Route>
+                    </Switch>
+                </Layout.Col>
+            </Layout.Row>
+        </div>
+    )
 }
 
-export function App({ session }) {
+export function App({ session, logout }) {
 
     function ifLogin() {
-        return !!session.token;
+        return session && session.token && session.nickname;
     }
 
     return (
         <Router>
-            {getContent(ifLogin())}
+            {getContent(ifLogin(), R.prop('nickname')(session))}
         </Router>
     );
 }
 
-const mapState = R.pick(['currentRecord', 'session']);
+const mapState = R.pick(['session']);
 
 const mapDispatch = dispatch => ({
-    init: dispatch.session.init
+    logout: dispatch.session.logout
 });
 
 export default connect(mapState, mapDispatch)(App);
