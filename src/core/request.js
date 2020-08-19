@@ -1,69 +1,85 @@
-import axios from 'axios';
-import queryString from 'query-string';
+import axios from 'axios'
+import queryString from 'query-string'
+import { path } from 'ramda'
+import { session } from '../models/session'
 
-export const TOKEN_KEY = 'token';
+const SESSION_KEY = "SESSION"
 
-const getToken = () => localStorage.getItem(TOKEN_KEY);
-const clearToken = () => localStorage.removeItem(TOKEN_KEY);
-
-export class ServerError extends Error {
-  constructor(message) {
-    super();
-    this.message = message;
+axios.interceptors.response.use(
+  response => {
+    return response
+  },
+  error => {
+    console.log(error)
+    if (error.response) {
+      // clear token
+      if (error.response.status === 401) {
+        window.location.href = "/"
+      }
+      session.reducers.clear()
+    }
+    throw error
   }
-};
-
-export class ClientError extends Error {
-  constructor(message) {
-    super();
-    this.message = message;
-  }
-};
+)
 
 const getFromWindow = () => {
-  const ret = window.location.protocol + '//' + window.location.host;
-  if (window.location.port) {
-    return [ret, window.location.port].join(':');
+  return window.location.protocol + '//' + window.location.host
+}
+
+const getHeaders = () => {
+  const sessionStore = localStorage.getItem(SESSION_KEY)
+  if (sessionStore) {
+    const sessionCopy = JSON.parse(sessionStore)
+    return {
+      'content-type': 'application/json',
+      'email': path(['email'])(sessionCopy),
+      'token': path(['token'])(sessionCopy)
+    }
   } else {
-    return ret;
+    return {
+      'content-type': 'application/json'
+    }
   }
-};
+}
 
 export const get = async ({ path, data }) => {
-  const fullUrl = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
-  const resp = await axios.get([fullUrl, queryString.stringify(data)].join('?'));
-  return resp.data;
-};
+  const url = [path, queryString.stringify(data)].join('?')
+  const resp = await axios({
+    url,
+    headers: getHeaders(),
+    methods: 'get'
+  })
+  return resp.data
+}
 
 export const post = async ({ path, data }) => {
-  const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
   const resp = await axios({
-    headers: { 'content-type': 'application/json' },
+    headers: getHeaders(),
     method: 'post',
-    url,
+    url: path,
     data: JSON.stringify(data),
-  });
-  return resp.data;
-};
+  })
+  return resp.data
+}
 
 export const put = async ({ path, data }) => {
-  const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
+  const url = [getFromWindow(), path].join('/')
   const resp = await axios({
-    headers: { 'content-type': 'application/json' },
+    headers: getHeaders(),
     method: 'put',
     url,
     data: JSON.stringify(data),
-  });
-  return resp.data;
-};
+  })
+  return resp.data
+}
 
 export const del = async ({ path, data }) => {
-  const url = [process.env.REACT_APP_HOST || getFromWindow(), path].join('/');
+  const url = [getFromWindow(), path].join('/')
   const resp = await axios({
-    headers: { 'content-type': 'application/json' },
+    headers: getHeaders(),
     method: 'delete',
     url,
     data: JSON.stringify(data),
-  });
-  return resp.data;
-};
+  })
+  return resp.data
+}

@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 function Login({ login, session }) {
 
     const [password, setPassword] = useState("");
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
 
     let history = useHistory();
 
@@ -21,14 +21,14 @@ function Login({ login, session }) {
             <div className={styles.body}>
                 <Form>
                     <Form.Item>
-                        <Input value={username} onChange={setUsername} placeholder="输入账户"></Input>
+                        <Input value={email} onChange={setEmail} placeholder="输入账户"></Input>
                     </Form.Item>
                     <Form.Item>
                         <Input value={password} onChange={setPassword} type="password" placeholder="输入密码"></Input>
                     </Form.Item>
                     <Form.Item>
                         <Button onClick={async () => {
-                            await login({ password, username });
+                            await login({ password, email });
                             history.replace('/')
                         }}>登录</Button>
                     </Form.Item>

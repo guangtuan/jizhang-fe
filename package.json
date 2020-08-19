@@ -10,6 +10,7 @@
     "dayjs": "^1.8.17",
     "element-react": "^1.4.34",
     "element-theme-default": "^1.4.13",
+    "http-proxy-middleware": "^1.0.5",
     "query-string": "^6.9.0",
     "ramda": "^0.26.1",
     "react": "^16.9.0",
@@ -34,6 +35,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "proxy": "http://localhost:44444",
   "browserslist": {
     "production": [
       ">0.2%",

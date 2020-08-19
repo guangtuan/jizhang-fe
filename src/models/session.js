@@ -1,23 +1,26 @@
 import { post } from '../core/request'
 
-const SESSION_KEY = "SESSION";
+const SESSION_KEY = "SESSION"
 
 const state = (() => {
-    const sessionJSON = localStorage.getItem(SESSION_KEY)
-    if (sessionJSON) {
-        return JSON.parse(sessionJSON)
+    const sessionStore = localStorage.getItem(SESSION_KEY)
+    if (sessionStore) {
+        return JSON.parse(sessionStore)
     } else {
         return null
     }
 })()
 
 export const session = {
+    name: "session",
     state,
     reducers: {
         set: (state, payload) => {
+            console.log("model: session: set", JSON.stringify(payload))
             return payload
         },
         clear: (state, payload) => {
+            console.log("model: session: clear")
             localStorage.removeItem(SESSION_KEY)
             return undefined
         }
@@ -27,12 +30,12 @@ export const session = {
             const session = await post({
                 path: 'login',
                 data: {
-                    username: payload.username,
+                    email: payload.email,
                     password: payload.password
                 }
             })
             localStorage.setItem(SESSION_KEY, JSON.stringify(session))
-            dispatch.session.set(session)
+            return dispatch.session.set(session)
         },
         logout: async (payload, rootState) => {
             await post({
