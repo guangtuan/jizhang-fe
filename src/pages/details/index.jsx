@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Dialog, Form, Input, Select, DatePicker, Loading } from 'element-react'
+import { Dialog, Form, Input, DatePicker, Loading } from 'element-react'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,8 +17,11 @@ import styles from './details.module.css'
 import Dayjs from 'dayjs'
 import { useState } from 'react'
 import DetailEdit from './detailEdit'
-import { green } from '@material-ui/core/colors';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import AddIcon from '@material-ui/icons/Add';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -28,8 +31,34 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         bottom: theme.spacing(2),
         right: theme.spacing(2),
-    }
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+        maxWidth: 300,
+    },
+    chips: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    chip: {
+        margin: 2,
+    },
+    noLabel: {
+        marginTop: theme.spacing(3),
+    },
 }));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
 
 function Details({
     accounts, users, subjects,
@@ -45,11 +74,11 @@ function Details({
     const [initLoaidng, setInitLoading] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
 
-    const [sourceAccountId, setSourceAccountId] = useState(null)
-    const [destAccountId, setDestAccountId] = useState(null)
+    const [sourceAccountId, setSourceAccountId] = useState(undefined)
+    const [destAccountId, setDestAccountId] = useState(undefined)
     const [subjectIds, setSubjectIds] = useState([])
-    const [start, setStart] = useState(null)
-    const [end, setEnd] = useState(null)
+    const [start, setStart] = useState(undefined)
+    const [end, setEnd] = useState(undefined)
     const [page, setPage] = useState(0)
     const size = 15
 
@@ -165,55 +194,71 @@ function Details({
     return (
         <div>
             <div>
-                {/* <Form inline>
-                <Form.Item label="来源账户">
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="label_source_account">来源账户</InputLabel>
                     <Select
-                        clearable={true}
+                        labelId="label_source_account"
                         value={sourceAccountId}
-                        onChange={setSourceAccountId}
+                        MenuProps={MenuProps}
+                        onChange={(event) => setSourceAccountId(event.target.value)}
                         placeholder="请选择来源账户">
-                        {(accounts || []).map(account => {
-                            return <Select.Option key={account.id} label={account.name} value={account.id} />
-                        })}
+                        {
+                            (accounts || []).map(account => {
+                                return <MenuItem key={account.id} value={account.id} >{account.name}</MenuItem>
+                            })
+                        }
                     </Select>
-                </Form.Item>
-                <Form.Item label="目标账户">
+                </FormControl>
+                <FormControl className={classes.formControl}>
+
+                    <InputLabel id="label_desc_account">目标账户</InputLabel>
                     <Select
-                        clearable={true}
+                        labelId="label_desc_account"
                         value={destAccountId}
-                        onChange={setDestAccountId}
+                        MenuProps={MenuProps}
+                        onChange={(event) => setDestAccountId(event.target.value)}
                         placeholder="请选择目标账户">
                         {(accounts || []).map(account => {
-                            return <Select.Option key={account.id} label={account.name} value={account.id} />
+                            return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
                         })}
                     </Select>
-                </Form.Item>
-                <Form.Item label="科目">
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="label_subject">科目</InputLabel>
                     <Select
+                        labelId="label_subject"
                         multiple={true}
-                        clearable={true}
+                        MenuProps={MenuProps}
                         value={subjectIds}
-                        onChange={setSubjectIds}
+                        onChange={(event) => setSubjectIds(event.target.value)}
                         placeholder="请选择科目">
                         {(subjects || []).map(subject => {
-                            return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
+                            return <MenuItem key={subject.id} value={subject.id}>{subject.name}</MenuItem>
                         })}
                     </Select>
-                </Form.Item>
-                <Form.Item label="从">
+                </FormControl>
+                <FormControl className={classes.formControl}>
                     <DatePicker
                         onChange={setStart}
                         value={start}
                     ></DatePicker>
-                </Form.Item>
-                <Form.Item label="到">
+                </FormControl>
+                <FormControl className={classes.formControl}>
                     <DatePicker
                         onChange={setEnd}
                         value={end}
                     ></DatePicker>
-                </Form.Item>
-                <Button onClick={load}>查询</Button>
-            </Form> */}
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={load}
+                    >
+                        查询
+                    </Button>
+                </FormControl>
+                <FormControl className={classes.formControl}></FormControl>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="simple table" >
                         <TableHead>
@@ -262,131 +307,112 @@ function Details({
                     onCancel={hideDialog}
                     lockScroll={false}>
                     <Dialog.Body>
-                        <Form>
-                            <Form.Item label="用户">
-                                <Select
-                                    value={detailCreation.userId}
-                                    onChange={val => {
-                                        changeProperty({
-                                            key: 'userId',
-                                            val: val
+                        <Select
+                            value={detailCreation.userId}
+                            onChange={val => {
+                                changeProperty({
+                                    key: 'userId',
+                                    val: val
+                                })
+                            }}
+                            placeholder="请选择用户">
+                            {
+                                (users || []).map(user => {
+                                    return <Select.Option key={user.id} label={user.username} value={user.id} />
+                                })
+                            }
+                        </Select>
+                        <Select
+                            value={detailCreation.sourceAccountId}
+                            onChange={val => {
+                                changeProperty({
+                                    key: 'sourceAccountId',
+                                    val: val
+                                })
+                            }}
+                            placeholder="请选择来源账户">
+                            {
+                                (accounts || []).map(account => {
+                                    return <Select.Option key={account.id} label={account.name} value={account.id} />
+                                })
+                            }
+                        </Select>
+                        <Select
+                            value={detailCreation.destAccountId}
+                            onChange={val => {
+                                changeProperty({
+                                    key: 'destAccountId',
+                                    val: val
+                                })
+                            }}
+                            placeholder="请选择目标账户">
+                            {
+                                (accounts || []).map(account => {
+                                    return <Select.Option key={account.id} label={account.name} value={account.id} />
+                                })
+                            }
+                        </Select>
+                        <Select
+                            value={detailCreation.subjectId}
+                            onChange={val => {
+                                changeProperty({
+                                    key: 'subjectId',
+                                    val: val
+                                })
+                            }}
+                            placeholder="请选择科目">
+                            {
+                                (() => {
+                                    if (subjects !== null && subjects.length !== 0) {
+                                        return subjects.map(subject => {
+                                            return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
                                         })
-                                    }}
-                                    placeholder="请选择用户">
-                                    {
-                                        (users || []).map(user => {
-                                            return <Select.Option key={user.id} label={user.username} value={user.id} />
-                                        })
+                                    } else {
+                                        return <div></div>
                                     }
-                                </Select>
-                            </Form.Item>
-                            <Form.Item label="来源账户">
-                                <Select
-                                    value={detailCreation.sourceAccountId}
-                                    onChange={val => {
-                                        changeProperty({
-                                            key: 'sourceAccountId',
-                                            val: val
-                                        })
-                                    }}
-                                    placeholder="请选择来源账户">
-                                    {
-                                        (accounts || []).map(account => {
-                                            return <Select.Option key={account.id} label={account.name} value={account.id} />
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
-                            <Form.Item label="目标账户">
-                                <Select
-                                    value={detailCreation.destAccountId}
-                                    onChange={val => {
-                                        changeProperty({
-                                            key: 'destAccountId',
-                                            val: val
-                                        })
-                                    }}
-                                    placeholder="请选择目标账户">
-                                    {
-                                        (accounts || []).map(account => {
-                                            return <Select.Option key={account.id} label={account.name} value={account.id} />
-                                        })
-                                    }
-                                </Select>
-                            </Form.Item>
-                            <Form.Item label="科目">
-                                <Select
-                                    filterable={true}
-                                    value={detailCreation.subjectId}
-                                    onChange={val => {
-                                        changeProperty({
-                                            key: 'subjectId',
-                                            val: val
-                                        })
-                                    }}
-                                    placeholder="请选择科目">
-                                    {
-                                        (() => {
-                                            if (subjects !== null && subjects.length !== 0) {
-                                                return subjects.map(subject => {
-                                                    return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
-                                                })
-                                            } else {
-                                                return <div></div>
-                                            }
-                                        })()
-                                    }
-                                </Select>
-                            </Form.Item>
-                            <Form.Item>
-                                <Input
-                                    value={detailCreation.amount}
-                                    placeholder="请输入金额（单位：元）"
-                                    onChange={val => {
-                                        changeProperty({
-                                            key: 'amount',
-                                            val: val
-                                        })
-                                    }}
-                                ></Input>
-                            </Form.Item>
-                            <Form.Item>
-                                <Input
-                                    value={detailCreation.remark}
-                                    placeholder="输入备注"
-                                    onChange={val => {
-                                        changeProperty({
-                                            key: 'remark',
-                                            val: val
-                                        })
-                                    }}
-                                ></Input>
-                            </Form.Item>
-                            <Form.Item label="消费日期">
-                                <DatePicker
-                                    value={detailCreation.createdAt}
-                                    placeholder="请选择消费日期"
-                                    onChange={date => {
-                                        changeProperty({
-                                            key: 'createdAt',
-                                            val: date
-                                        })
-                                    }}
-                                />
-                            </Form.Item>
-                            <Form.Item>
-                                <Button
-                                    onClick={() => {
-                                        const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailCreation)
-                                        pack.amount = pack.amount * 100
-                                        createDetail(pack).then(() => {
-                                            clear()
-                                            load()
-                                        })
-                                    }}
-                                >确定</Button>
-                            </Form.Item>
-                        </Form>
+                                })()
+                            }
+                        </Select>
+                        <Input
+                            value={detailCreation.amount}
+                            placeholder="请输入金额（单位：元）"
+                            onChange={val => {
+                                changeProperty({
+                                    key: 'amount',
+                                    val: val
+                                })
+                            }}
+                        ></Input>
+                        <Input
+                            value={detailCreation.remark}
+                            placeholder="输入备注"
+                            onChange={val => {
+                                changeProperty({
+                                    key: 'remark',
+                                    val: val
+                                })
+                            }}
+                        ></Input>
+                        <DatePicker
+                            value={detailCreation.createdAt}
+                            placeholder="请选择消费日期"
+                            onChange={date => {
+                                changeProperty({
+                                    key: 'createdAt',
+                                    val: date
+                                })
+                            }}
+                        />
+                        <Button
+                            onClick={() => {
+                                const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailCreation)
+                                pack.amount = pack.amount * 100
+                                createDetail(pack).then(() => {
+                                    clear()
+                                    load()
+                                })
+                            }}
+                        >确定</Button>
                     </Dialog.Body>
                 </Dialog>
                 <Loading loading={deleteLoading}></Loading>
@@ -396,7 +422,7 @@ function Details({
             <Fab aria-label="Add" className={classes.fab} color={"primary"} onClick={showDialog}>
                 <AddIcon />
             </Fab>
-        </div>
+        </div >
     )
 
 }
