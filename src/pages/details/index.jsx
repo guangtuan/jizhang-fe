@@ -147,8 +147,8 @@ function Details({
         )
     }
 
-    const propsOfDetail = ['username', 'sourceAccountName', 'subjectName', 'destAccountName', 'remark', 'amount', 'createdAt', 'updatedAt', 'opt'];
-    const tableHeaders = ['用户', '来源账户', '科目', '目标账户', '备注', '金额', '创建时间', '更新时间', '操作'];
+    const propsOfDetail = ['createdAt', 'username', 'amount', 'sourceAccountName', 'subjectName', 'destAccountName', 'remark', 'updatedAt', 'opt'];
+    const tableHeaders = ['创建时间', '用户', '金额', '来源账户', '科目', '目标账户', '备注', '更新时间', '操作'];
 
     useEffect(() => {
         async function fetchdata() {
