@@ -22,6 +22,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import AddIcon from '@material-ui/icons/Add';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -81,6 +86,12 @@ function Details({
     const [end, setEnd] = useState(undefined)
     const [page, setPage] = useState(0)
     const size = 15
+    const emptyItem = () => {
+        return {
+            id: undefined,
+            name: "清空"
+        }
+    }
 
     const load = async () => {
         console.log('load with', page)
@@ -203,14 +214,13 @@ function Details({
                         onChange={(event) => setSourceAccountId(event.target.value)}
                         placeholder="请选择来源账户">
                         {
-                            (accounts || []).map(account => {
+                            (R.concat([emptyItem()], accounts)).map(account => {
                                 return <MenuItem key={account.id} value={account.id} >{account.name}</MenuItem>
                             })
                         }
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-
                     <InputLabel id="label_desc_account">目标账户</InputLabel>
                     <Select
                         labelId="label_desc_account"
@@ -218,9 +228,11 @@ function Details({
                         MenuProps={MenuProps}
                         onChange={(event) => setDestAccountId(event.target.value)}
                         placeholder="请选择目标账户">
-                        {(accounts || []).map(account => {
-                            return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                        })}
+                        {
+                            (R.concat([emptyItem()], accounts)).map(account => {
+                                return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
+                            })
+                        }
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
@@ -232,22 +244,30 @@ function Details({
                         value={subjectIds}
                         onChange={(event) => setSubjectIds(event.target.value)}
                         placeholder="请选择科目">
-                        {(subjects || []).map(subject => {
-                            return <MenuItem key={subject.id} value={subject.id}>{subject.name}</MenuItem>
-                        })}
+                        {
+                            (R.defaultTo([])(subjects)).map(subject => {
+                                return <MenuItem key={subject.id} value={subject.id}>{subject.name}</MenuItem>
+                            })
+                        }
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                    <DatePicker
-                        onChange={setStart}
-                        value={start}
-                    ></DatePicker>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            label="从"
+                            onChange={setStart}
+                            value={start}
+                        ></KeyboardDatePicker>
+                    </MuiPickersUtilsProvider>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                    <DatePicker
-                        onChange={setEnd}
-                        value={end}
-                    ></DatePicker>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            label="到"
+                            onChange={setEnd}
+                            value={end}
+                        ></KeyboardDatePicker>
+                    </MuiPickersUtilsProvider>
                 </FormControl>
                 <FormControl className={classes.formControl}>
                     <Button
@@ -264,7 +284,7 @@ function Details({
                         <TableHead>
                             <TableRow>
                                 {tableHeaders.map((item) => {
-                                    return (<TableCell>{item}</TableCell>)
+                                    return (<TableCell key={item}>{item}</TableCell>)
                                 })}
                             </TableRow>
                         </TableHead>
@@ -333,7 +353,7 @@ function Details({
                             placeholder="请选择来源账户">
                             {
                                 (accounts || []).map(account => {
-                                    return <Select.Option key={account.id} label={account.name} value={account.id} />
+                                    return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
                                 })
                             }
                         </Select>
@@ -348,7 +368,7 @@ function Details({
                             placeholder="请选择目标账户">
                             {
                                 (accounts || []).map(account => {
-                                    return <Select.Option key={account.id} label={account.name} value={account.id} />
+                                    return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
                                 })
                             }
                         </Select>
