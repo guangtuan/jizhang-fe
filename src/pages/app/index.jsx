@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from 'clsx';
 import {
     BrowserRouter as Router,
     Switch,
@@ -7,10 +8,11 @@ import {
 } from "react-router-dom";
 import { connect } from 'react-redux';
 
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+
 import 'element-theme-default';
 
 import * as R from 'ramda';
-import styles from './app.module.css';
 
 import Details from '../details';
 import Subjects from '../subjects';
@@ -19,85 +21,166 @@ import Accounts from '../accounts';
 import AccountStates from '../accountStates';
 import Statistics from '../statistics';
 import Login from '../login';
+import Drawer from '@material-ui/core/Drawer';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
-import { Layout, Menu } from 'element-react';
+const drawerWidth = 240;
 
-const pages = [
-    {
-        title: "明细",
-        component: Details,
-        path: '/'
+const useStyles = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
     },
-    {
-        title: "用户",
-        component: Users,
-        path: '/users'
+    appBar: {
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
     },
-    {
-        title: "账户",
-        component: Accounts,
-        path: '/accounts'
+    appBarShift: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
-    {
-        title: "科目",
-        component: Subjects,
-        path: '/subjects'
+    menuButton: {
+        marginRight: theme.spacing(2),
     },
-    {
-        title: "统计",
-        component: Statistics,
-        path: '/statistics'
+    hide: {
+        display: 'none',
     },
-    {
-        title: "结算记录",
-        component: AccountStates,
-        path: '/accountStates'
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+    },
+    drawerHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(0, 1),
+        // necessary for content to be below app bar
+        ...theme.mixins.toolbar,
+        justifyContent: 'flex-end',
+    },
+    content: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -drawerWidth,
+    },
+    contentShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    },
+}));
+
+export function App({ session, logout }) {
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const [open, setOpen] = React.useState(false);
+
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
+
+    function ifLogin() {
+        return session && session.token && session.nickname;
     }
-];
 
-function CreateMenu(props) {
-    let history = useHistory();
-
-    function createHandleFunction(indexPath) {
-        console.log("call me", indexPath);
-        history.push(indexPath);
-    }
-
-    return (
-        <Menu defaultActive="details" onSelect={createHandleFunction}>
-            {
-                props.pages.map((page, index) => (
-                    <Menu.Item
-                        key={page.title}
-                        index={page.path}
-                        path={page.path}
-                    >{page.title}</Menu.Item>
-                ))
-            }
-        </Menu>
-    );
-}
-
-function getContent(login, nickname) {
-    if (!login) {
+    if (!ifLogin()) {
         return (
-            <Login />
+            <Router>
+                <Login />
+            </Router>
         );
     }
     return (
-        <div>
-            <Layout.Row>
-                <Layout.Col span="22" >
-                    <div className={styles.topBar}>
-                        <div className={styles.currentUser}>{nickname}</div>
+        <Router>
+            <div className={classes.root}>
+                <CssBaseline />
+                <AppBar position="fixed"
+                    className={clsx(classes.appBar, {
+                        [classes.appBarShift]: open,
+                    })}>
+                    <Toolbar>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            className={clsx(classes.menuButton, open && classes.hide)}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <Drawer
+                    className={classes.drawer}
+                    variant="persistent"
+                    anchor="left"
+                    open={open}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div className={classes.drawerHeader}>
+                        <IconButton onClick={handleDrawerClose}>
+                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                        </IconButton>
                     </div>
-                </Layout.Col>
-            </Layout.Row>
-            <Layout.Row>
-                <Layout.Col span="2" >
-                    <CreateMenu pages={pages}></CreateMenu>
-                </Layout.Col>
-                <Layout.Col span="20" className={styles.content}>
+                    <Divider />
+                    <List>
+                        {['账户', '科目', '明细', '用户'].map((text, index) => (
+                            <ListItem button key={text}>
+                                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        ))}
+                    </List>
+                    <Divider />
+                    <List>
+                        {['统计'].map((text, index) => (
+                            <ListItem button key={text}>
+                                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Drawer>
+                <main
+                    className={clsx(classes.content, {
+                        [classes.contentShift]: open,
+                    })}
+                >
+                    <div className={classes.drawerHeader} />
                     <Switch>
                         <Route exact path="/">
                             <Details />
@@ -118,21 +201,8 @@ function getContent(login, nickname) {
                             <AccountStates />
                         </Route>
                     </Switch>
-                </Layout.Col>
-            </Layout.Row>
-        </div>
-    )
-}
-
-export function App({ session, logout }) {
-
-    function ifLogin() {
-        return session && session.token && session.nickname;
-    }
-
-    return (
-        <Router>
-            {getContent(ifLogin(), R.prop('nickname')(session))}
+                </main>
+            </div>
         </Router>
     );
 }
