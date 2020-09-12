@@ -20,6 +20,8 @@ import DetailEdit from './detailEdit'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import DateFnsUtils from '@date-io/date-fns';
@@ -31,6 +33,12 @@ import {
 const useStyles = makeStyles((theme) => ({
     table: {
         minWidth: 650,
+    },
+    container: {
+        maxHeight: 600,
+    },
+    opt: {
+        margin: theme.spacing(1),
     },
     fab: {
         position: 'absolute',
@@ -85,13 +93,11 @@ function Details({
     const [start, setStart] = useState(undefined)
     const [end, setEnd] = useState(undefined)
     const [page, setPage] = useState(0)
-    const size = 15
-    const emptyItem = () => {
-        return {
-            id: undefined,
-            name: "清空"
-        }
-    }
+    const size = 10
+    const emptyItem = () => ({
+        id: undefined,
+        name: "清空"
+    })
 
     const load = async () => {
         console.log('load with', page)
@@ -110,78 +116,39 @@ function Details({
 
     const renderOperationButtons = function (data) {
         return (
-            <div className={styles.opts}>
-                <Button
-                    variant="contained" color="primary"
-                    onClick={() => {
-                        setEdittingDetail(data)
-                        showEditDialog()
-                    }}
-                >编辑</Button>
-                <Button
-                    variant="contained" color="secondary"
-                    onClick={async () => {
-                        setDeleteLoading(true)
-                        await delDetail(data.id)
-                        await load()
-                        setDeleteLoading(false)
-                    }}
-                >删除</Button>
-            </div>
+            <TableCell>
+                <div>
+                    <Button
+                        className={classes.opt}
+                        size="small"
+                        startIcon={<EditIcon />}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                            setEdittingDetail(data)
+                            showEditDialog()
+                        }}
+                    >编辑</Button>
+                    <Button
+                        className={classes.opt}
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                        variant="contained"
+                        color="secondary"
+                        onClick={async () => {
+                            setDeleteLoading(true)
+                            await delDetail(data.id)
+                            await load()
+                            setDeleteLoading(false)
+                        }}
+                    >删除</Button>
+                </div>
+            </TableCell >
         )
     }
 
     const propsOfDetail = ['username', 'sourceAccountName', 'subjectName', 'destAccountName', 'remark', 'amount', 'createdAt', 'updatedAt', 'opt'];
     const tableHeaders = ['用户', '来源账户', '科目', '目标账户', '备注', '金额', '创建时间', '更新时间', '操作'];
-
-    const columns = [
-        {
-            label: '用户',
-            prop: 'username'
-        },
-        {
-            label: '来源账户',
-            prop: 'sourceAccountName'
-        },
-        {
-            label: '科目',
-            prop: 'subjectName'
-        },
-        {
-            label: '目标账户',
-            prop: 'destAccountName'
-        },
-        {
-            label: '备注',
-            prop: 'remark'
-        },
-        {
-            label: '金额',
-            render: ({ amount }) => (<span>{amount / 100}元</span>)
-        },
-        {
-            label: '创建时间',
-            render: (data) => (<span>{Dayjs(data.createdAt).format("YYYY-MM-DD")}</span>)
-        },
-        {
-            label: '更新时间',
-            render: function (data) {
-                if (data.updatedAt === null || data.updatedAt === undefined) {
-                    return <span></span>
-                } else {
-                    return (
-                        <span>
-                            <span>{Dayjs(data.updatedAt).format("YYYY-MM-DD")}</span>
-                        </span>
-                    )
-                }
-            }
-        },
-        {
-            label: '操作',
-            render: renderOperationButtons
-        }
-    ]
 
     useEffect(() => {
         async function fetchdata() {
@@ -279,47 +246,52 @@ function Details({
                     </Button>
                 </FormControl>
                 <FormControl className={classes.formControl}></FormControl>
-                <TableContainer component={Paper}>
-                    <Table className={classes.table} aria-label="simple table" >
-                        <TableHead>
-                            <TableRow>
-                                {tableHeaders.map((item) => {
-                                    return (<TableCell key={item}>{item}</TableCell>)
-                                })}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>{
-                            details.content.map(detail => (<TableRow>{
-                                propsOfDetail.map((item) => {
-                                    if (item === 'amount') {
-                                        return (<TableCell>{detail[item] / 100}元</TableCell>)
-                                    }
-                                    if (item === "createdAt") {
-                                        return (<TableCell>{Dayjs(detail[item]).format("YYYY-MM-DD")}</TableCell>)
-                                    }
-                                    if (item === "updatedAt") {
-                                        if (detail[item]) {
+                <Paper>
+                    <TableContainer className={classes.container} component={Paper}>
+                        <Table stickyHeader className={classes.table} aria-label="simple table" >
+                            <TableHead>
+                                <TableRow>
+                                    {tableHeaders.map((item) => {
+                                        return (<TableCell key={item}>{item}</TableCell>)
+                                    })}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>{
+                                details.content.map(detail => (<TableRow>{
+                                    propsOfDetail.map((item) => {
+                                        if (item === 'amount') {
+                                            return (<TableCell>{detail[item] / 100}元</TableCell>)
+                                        }
+                                        if (item === "createdAt") {
                                             return (<TableCell>{Dayjs(detail[item]).format("YYYY-MM-DD")}</TableCell>)
                                         }
-                                    }
-                                    return (<TableCell>{detail[item]}</TableCell>)
-                                })
-                            }</TableRow>))
-                        }</TableBody>
-                    </Table>
-                </TableContainer>
+                                        if (item === "updatedAt") {
+                                            if (detail[item]) {
+                                                return (<TableCell>{Dayjs(detail[item]).format("YYYY-MM-DD")}</TableCell>)
+                                            } else {
+                                                return <TableCell></TableCell>
+                                            }
+                                        }
+                                        if (item === "opt") {
+                                            return renderOperationButtons(detail)
+                                        }
+                                        return (<TableCell>{detail[item]}</TableCell>)
+                                    })
+                                }</TableRow>))
+                            }</TableBody>
+                        </Table>
+                    </TableContainer>
 
-                <TablePagination
-                    rowsPerPageOptions={[15]}
-                    component="div"
-                    onChangePage={(event, newPage) => {
-                        console.log('event', event)
-                        setPage(newPage)
-                    }}
-                    rowsPerPage={size}
-                    page={page}
-                    className={styles.page}
-                    count={details.total} />
+                    <TablePagination
+                        component="div"
+                        onChangePage={(event, newPage) => {
+                            console.log('event', event)
+                            setPage(newPage)
+                        }}
+                        rowsPerPage={size}
+                        page={page}
+                        count={details.total} />
+                </Paper>
                 <Dialog
                     title="添加明细"
                     size="tiny"
