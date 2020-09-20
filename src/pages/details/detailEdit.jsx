@@ -15,6 +15,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import SubjectSelector from '../../comp/subjectSelector';
+import AccountSelector from '../../comp/accountSelector';
 
 import {
     MuiPickersUtilsProvider,
@@ -61,7 +62,6 @@ function DetailEdit({
     hideDialog,
     changeProperty,
     users,
-    accounts,
     updateDetail,
     createDetail,
     clearForm,
@@ -92,42 +92,24 @@ function DetailEdit({
                         }
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="label_source_account">来源账户</InputLabel>
-                    <Select
-                        MenuProps={MenuProps}
-                        value={detailEdit.form.sourceAccountId}
-                        onChange={event => {
-                            changeProperty({
-                                key: 'sourceAccountId',
-                                val: event.target.value
-                            });
-                        }}>
-                        {
-                            (R.concat([emptyItem()], accounts)).map(account => {
-                                return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                            })
-                        }
-                    </Select>
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="label_desc_account">目标账户</InputLabel>
-                    <Select
-                        MenuProps={MenuProps}
-                        value={detailEdit.form.destAccountId}
-                        onChange={event => {
-                            changeProperty({
-                                key: 'destAccountId',
-                                val: event.target.value
-                            });
-                        }}>
-                        {
-                            (R.concat([emptyItem()], accounts)).map(account => {
-                                return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                            })
-                        }
-                    </Select>
-                </FormControl>
+                <AccountSelector
+                    title="来源账户"
+                    value={detailEdit.form.sourceAccountId}
+                    onChange={val => {
+                        changeProperty({
+                            key: 'sourceAccountId',
+                            val: val
+                        });
+                    }} />
+                <AccountSelector
+                    title="目标账户"
+                    value={detailEdit.form.destAccountId}
+                    onChange={val => {
+                        changeProperty({
+                            key: 'destAccountId',
+                            val: val
+                        });
+                    }} />
                 <SubjectSelector
                     title="科目"
                     value={detailEdit.form.subjectId}
@@ -136,8 +118,7 @@ function DetailEdit({
                             key: 'subjectId',
                             val: val
                         });
-                    }}
-                />
+                    }} />
                 <FormControl className={classes.formControl}>
                     <TextField
                         value={detailEdit.form.amount}
@@ -202,7 +183,7 @@ function DetailEdit({
     )
 }
 
-const mapState = R.pick(["accounts", "users", "details", 'detailEdit']);
+const mapState = R.pick(["users", "details", 'detailEdit']);
 
 const mapDispatch = dispatch => ({
     updateDetail: dispatch.detailEdit.update,
