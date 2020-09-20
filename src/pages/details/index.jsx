@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Dialog, Form, Input, DatePicker, Loading } from 'element-react'
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { Dialog, Input, DatePicker, Loading } from 'element-react'
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,7 +13,6 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import * as R from 'ramda'
-import styles from './details.module.css'
 import Dayjs from 'dayjs'
 import { useState } from 'react'
 import DetailEdit from './detailEdit'

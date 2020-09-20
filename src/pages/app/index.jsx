@@ -3,8 +3,7 @@ import clsx from 'clsx';
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    useHistory
+    Route
 } from "react-router-dom";
 import { connect } from 'react-redux';
 

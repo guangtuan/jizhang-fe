@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Button, DateRangePicker, Form, Checkbox } from 'element-react';
 import * as R from 'ramda';
