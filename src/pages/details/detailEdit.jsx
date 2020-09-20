@@ -68,136 +68,138 @@ function DetailEdit({
     updateSingleRow
 }) {
     const classes = useStyles();
-    return (<Dialog
-        open={detailEdit.dialogVisibility}
-        TransitionComponent={Transition}>
-        <DialogTitle id="form-dialog-title">编辑明细</DialogTitle>
-        <DialogContent>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="label_source_account">用户</InputLabel>
-                <Select
-                    MenuProps={MenuProps}
-                    value={detailEdit.form.userId}
-                    onChange={event => {
-                        changeProperty({
-                            key: 'userId',
-                            val: event.target.value
-                        });
-                    }}>
-                    {
-                        (R.concat([emptyItem()], users)).map(user => {
-                            return <MenuItem key={user.id} value={user.id}>{user.nickname}</MenuItem>
-                        })
-                    }
-                </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="label_source_account">来源账户</InputLabel>
-                <Select
-                    MenuProps={MenuProps}
-                    value={detailEdit.form.sourceAccountId}
-                    onChange={event => {
-                        changeProperty({
-                            key: 'sourceAccountId',
-                            val: event.target.value
-                        });
-                    }}>
-                    {
-                        (R.concat([emptyItem()], accounts)).map(account => {
-                            return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                        })
-                    }
-                </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="label_desc_account">目标账户</InputLabel>
-                <Select
-                    MenuProps={MenuProps}
-                    value={detailEdit.form.destAccountId}
-                    onChange={event => {
-                        changeProperty({
-                            key: 'destAccountId',
-                            val: event.target.value
-                        });
-                    }}>
-                    {
-                        (R.concat([emptyItem()], accounts)).map(account => {
-                            return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                        })
-                    }
-                </Select>
-            </FormControl>
-            <SubjectSelector
-                title="科目"
-                value={detailEdit.form.subjectId}
-                onChange={val => {
-                    changeProperty({
-                        key: 'subjectId',
-                        val: val
-                    });
-                }}
-            />
-            <FormControl className={classes.formControl}>
-                <TextField
-                    value={detailEdit.form.amount}
-                    label="金额（单位：元）"
-                    onChange={event => {
-                        changeProperty({
-                            key: 'amount',
-                            val: event.target.value
-                        });
-                    }}
-                ></TextField>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <TextField
-                    value={detailEdit.form.remark}
-                    label="备注"
-                    onChange={event => {
-                        changeProperty({
-                            key: 'remark',
-                            val: event.target.value
-                        });
-                    }}
-                ></TextField>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        label="请选择消费日期"
-                        onChange={date => {
+    return (
+        <Dialog
+            open={detailEdit.dialogVisibility}
+            TransitionComponent={Transition}>
+            <DialogTitle id="form-dialog-title">编辑明细</DialogTitle>
+            <DialogContent>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="label_source_account">用户</InputLabel>
+                    <Select
+                        MenuProps={MenuProps}
+                        value={detailEdit.form.userId}
+                        onChange={event => {
                             changeProperty({
-                                key: 'createdAt',
-                                val: date
+                                key: 'userId',
+                                val: event.target.value
+                            });
+                        }}>
+                        {
+                            (R.concat([emptyItem()], users)).map(user => {
+                                return <MenuItem key={user.id} value={user.id}>{user.nickname}</MenuItem>
+                            })
+                        }
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="label_source_account">来源账户</InputLabel>
+                    <Select
+                        MenuProps={MenuProps}
+                        value={detailEdit.form.sourceAccountId}
+                        onChange={event => {
+                            changeProperty({
+                                key: 'sourceAccountId',
+                                val: event.target.value
+                            });
+                        }}>
+                        {
+                            (R.concat([emptyItem()], accounts)).map(account => {
+                                return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
+                            })
+                        }
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="label_desc_account">目标账户</InputLabel>
+                    <Select
+                        MenuProps={MenuProps}
+                        value={detailEdit.form.destAccountId}
+                        onChange={event => {
+                            changeProperty({
+                                key: 'destAccountId',
+                                val: event.target.value
+                            });
+                        }}>
+                        {
+                            (R.concat([emptyItem()], accounts)).map(account => {
+                                return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
+                            })
+                        }
+                    </Select>
+                </FormControl>
+                <SubjectSelector
+                    title="科目"
+                    value={detailEdit.form.subjectId}
+                    onChange={val => {
+                        changeProperty({
+                            key: 'subjectId',
+                            val: val
+                        });
+                    }}
+                />
+                <FormControl className={classes.formControl}>
+                    <TextField
+                        value={detailEdit.form.amount}
+                        label="金额（单位：元）"
+                        onChange={event => {
+                            changeProperty({
+                                key: 'amount',
+                                val: event.target.value
                             });
                         }}
-                        value={detailEdit.form.createdAt}
-                    ></KeyboardDatePicker>
-                </MuiPickersUtilsProvider>
-            </FormControl>
-        </DialogContent>
-        <DialogActions>
-            <Button color="secondary" onClick={hideDialog}>取消</Button>
-            <Button color="primary" onClick={() => {
-                const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(detailEdit.form)
-                pack.amount = pack.amount * 100
-                if (detailEdit.creating) {
-                    createDetail(pack).then(() => {
-                        clearForm()
-                        hideDialog()
-                    });
-                } else if (detailEdit.editing) {
-                    updateDetail({ payload: pack, id: pack.id }).then(updated => {
-                        clearForm()
-                        hideDialog()
-                        updateSingleRow(updated)
-                    });
-                } else {
-                    // nothing
-                }
-            }}>保存</Button>
-        </DialogActions>
-    </Dialog>)
+                    ></TextField>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <TextField
+                        value={detailEdit.form.remark}
+                        label="备注"
+                        onChange={event => {
+                            changeProperty({
+                                key: 'remark',
+                                val: event.target.value
+                            });
+                        }}
+                    ></TextField>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            label="请选择消费日期"
+                            onChange={date => {
+                                changeProperty({
+                                    key: 'createdAt',
+                                    val: date
+                                });
+                            }}
+                            value={detailEdit.form.createdAt}
+                        ></KeyboardDatePicker>
+                    </MuiPickersUtilsProvider>
+                </FormControl>
+            </DialogContent>
+            <DialogActions>
+                <Button color="secondary" onClick={hideDialog}>取消</Button>
+                <Button color="primary" onClick={() => {
+                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(detailEdit.form)
+                    pack.amount = pack.amount * 100
+                    if (detailEdit.creating) {
+                        createDetail(pack).then(() => {
+                            clearForm()
+                            hideDialog()
+                        });
+                    } else if (detailEdit.editing) {
+                        updateDetail({ payload: pack, id: pack.id }).then(updated => {
+                            clearForm()
+                            hideDialog()
+                            updateSingleRow(updated)
+                        });
+                    } else {
+                        // nothing
+                    }
+                }}>保存</Button>
+            </DialogActions>
+        </Dialog>
+    )
 }
 
 const mapState = R.pick(["accounts", "users", "details", 'detailEdit']);
