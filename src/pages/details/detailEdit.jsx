@@ -5,38 +5,20 @@ import Dialog from '@material-ui/core/Dialog';
 import Slide from '@material-ui/core/Slide';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import DateFnsUtils from '@date-io/date-fns';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import SubjectSelector from '../../comp/subjectSelector';
 import AccountSelector from '../../comp/accountSelector';
+import UserSelector from '../../comp/userSelector';
 
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
-
-const emptyItem = () => ({
-    id: undefined,
-    name: "清空"
-});
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -61,7 +43,6 @@ function DetailEdit({
     detailEdit,
     hideDialog,
     changeProperty,
-    users,
     updateDetail,
     createDetail,
     clearForm,
@@ -71,27 +52,19 @@ function DetailEdit({
     return (
         <Dialog
             open={detailEdit.dialogVisibility}
-            TransitionComponent={Transition}>
+            TransitionComponent={Transition}
+        >
             <DialogTitle id="form-dialog-title">编辑明细</DialogTitle>
             <DialogContent>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="label_source_account">用户</InputLabel>
-                    <Select
-                        MenuProps={MenuProps}
-                        value={detailEdit.form.userId}
-                        onChange={event => {
-                            changeProperty({
-                                key: 'userId',
-                                val: event.target.value
-                            });
-                        }}>
-                        {
-                            (R.concat([emptyItem()], users)).map(user => {
-                                return <MenuItem key={user.id} value={user.id}>{user.nickname}</MenuItem>
-                            })
-                        }
-                    </Select>
-                </FormControl>
+                <UserSelector
+                    title="用户"
+                    value={detailEdit.form.userId}
+                    onChange={val => {
+                        changeProperty({
+                            key: 'sourceAccountId',
+                            val: val
+                        });
+                    }} />
                 <AccountSelector
                     title="来源账户"
                     value={detailEdit.form.sourceAccountId}
@@ -129,7 +102,7 @@ function DetailEdit({
                                 val: event.target.value
                             });
                         }}
-                    ></TextField>
+                    />
                 </FormControl>
                 <FormControl className={classes.formControl}>
                     <TextField
@@ -141,7 +114,7 @@ function DetailEdit({
                                 val: event.target.value
                             });
                         }}
-                    ></TextField>
+                    />
                 </FormControl>
                 <FormControl className={classes.formControl}>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -154,7 +127,7 @@ function DetailEdit({
                                 });
                             }}
                             value={detailEdit.form.createdAt}
-                        ></KeyboardDatePicker>
+                        />
                     </MuiPickersUtilsProvider>
                 </FormControl>
             </DialogContent>
@@ -183,7 +156,7 @@ function DetailEdit({
     )
 }
 
-const mapState = R.pick(["users", "details", 'detailEdit']);
+const mapState = R.pick(['detailEdit']);
 
 const mapDispatch = dispatch => ({
     updateDetail: dispatch.detailEdit.update,

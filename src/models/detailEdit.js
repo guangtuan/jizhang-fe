@@ -65,6 +65,7 @@ export const detailEdit = {
       return resp;
     },
     update: async (payload, rootState) => {
+      console.log(JSON.stringify(payload))
       const resp = await put({
         path: `api/details/${payload.id}`,
         data: payload.payload,
