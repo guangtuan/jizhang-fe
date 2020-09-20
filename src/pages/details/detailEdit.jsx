@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 function DetailEdit({
     detailEdit, hideDialog, changeProperty,
-    users, accounts, subjects,
+    users, accounts,
     updateDetail, clear, updateSingleRow
 }) {
     const classes = useStyles();
@@ -130,7 +130,7 @@ function DetailEdit({
                         val: val
                     });
                 }}
-            ></SubjectSelector>
+            />
             <FormControl className={classes.formControl}>
                 <TextField
                     value={detailEdit.amount}
@@ -186,7 +186,7 @@ function DetailEdit({
     </Dialog>)
 }
 
-const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailEdit']);
+const mapState = R.pick(["accounts", "users", "details", 'detailEdit']);
 
 const mapDispatch = dispatch => ({
     updateDetail: dispatch.detailEdit.update,

@@ -28,7 +28,7 @@ import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
-import SubjectsSelector from '../../comp/subjectSelector';
+import SubjectSelector from '../../comp/subjectSelector';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -202,7 +202,7 @@ function Details({
                         }
                     </Select>
                 </FormControl>
-                <SubjectsSelector
+                <SubjectSelector
                     title="科目"
                     multiple={true}
                     value={subjectIds}
