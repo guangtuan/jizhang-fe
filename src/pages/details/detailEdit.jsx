@@ -14,6 +14,8 @@ import FormControl from '@material-ui/core/FormControl';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import SubjectSelector from '../../comp/subjectSelector';
+
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
@@ -50,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(1),
         minWidth: 120,
-        maxWidth: "100%",
+        maxWidth: 300,
     },
 }));
 
@@ -119,24 +121,16 @@ function DetailEdit({
                     }
                 </Select>
             </FormControl>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="label_subject">科目</InputLabel>
-                <Select
-                    MenuProps={MenuProps}
-                    value={detailEdit.subjectId}
-                    onChange={val => {
-                        changeProperty({
-                            key: 'subjectId',
-                            val: val
-                        });
-                    }}>
-                    {
-                        (R.concat([emptyItem()], subjects)).map(subject => {
-                            return <MenuItem key={subject.id} value={subject.id}>{subject.name}</MenuItem>
-                        })
-                    }
-                </Select>
-            </FormControl>
+            <SubjectSelector
+                title="科目"
+                value={detailEdit.subjectId}
+                onChange={val => {
+                    changeProperty({
+                        key: 'subjectId',
+                        val: val
+                    });
+                }}
+            ></SubjectSelector>
             <FormControl className={classes.formControl}>
                 <TextField
                     value={detailEdit.amount}
