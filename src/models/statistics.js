@@ -7,7 +7,8 @@ export const statistics = {
     content: [],
     dateRange: [
       dayjs().startOf('month').toDate().getTime(),
-      dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime(),
+      dayjs().set('hour', 23).set('minute', 59).set('second', 59)
+          .toDate().getTime(),
     ],
     subjects: [],
   },

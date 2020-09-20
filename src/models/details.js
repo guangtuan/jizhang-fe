@@ -1,5 +1,5 @@
-import {post, get, del} from '../core/request';
-import {__, prop, propEq, assoc, findIndex, update, merge, compose} from 'ramda';
+import {post, del} from '../core/request';
+import {prop, propEq, assoc, findIndex, update, compose} from 'ramda';
 
 export const details = {
   state: {
@@ -8,8 +8,13 @@ export const details = {
   },
   reducers: {
     updateSingleRow: (state, payload) => {
-      const indexToUpdate = findIndex(propEq('id', payload.id))(prop('content')(state));
-      return assoc('content', update(indexToUpdate, payload)(prop('content')(state)))(state);
+      const getContent = prop('content');
+      const indexById = findIndex(propEq('id', payload.id));
+      const indexToUpdate = indexById(getContent(state));
+      return assoc(
+          'content',
+          update(indexToUpdate, payload)(getContent(state)),
+      )(state);
     },
     set: (state, payload) => {
       return payload;
