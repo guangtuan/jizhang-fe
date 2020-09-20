@@ -29,6 +29,8 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import SubjectSelector from '../../comp/subjectSelector';
+import AccountSelector from '../../comp/accountSelector';
+
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -172,36 +174,16 @@ function Details({
     return (
         <div>
             <div>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="label_source_account">来源账户</InputLabel>
-                    <Select
-                        labelId="label_source_account"
-                        value={sourceAccountId}
-                        MenuProps={MenuProps}
-                        onChange={(event) => setSourceAccountId(event.target.value)}
-                        placeholder="请选择来源账户">
-                        {
-                            (R.concat([emptyItem()], accounts)).map(account => {
-                                return <MenuItem key={account.id} value={account.id} >{account.name}</MenuItem>
-                            })
-                        }
-                    </Select>
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="label_desc_account">目标账户</InputLabel>
-                    <Select
-                        labelId="label_desc_account"
-                        value={destAccountId}
-                        MenuProps={MenuProps}
-                        onChange={(event) => setDestAccountId(event.target.value)}
-                        placeholder="请选择目标账户">
-                        {
-                            (R.concat([emptyItem()], accounts)).map(account => {
-                                return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                            })
-                        }
-                    </Select>
-                </FormControl>
+                <AccountSelector
+                    value={sourceAccountId}
+                    onChange={setSourceAccountId}
+                    title="来源账户"
+                />
+                <AccountSelector
+                    value={destAccountId}
+                    onChange={setDestAccountId}
+                    title="目标账户"
+                />
                 <SubjectSelector
                     title="科目"
                     multiple={true}
