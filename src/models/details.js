@@ -1,34 +1,34 @@
-import { post, get, del } from '../core/request';
-import { __, prop, propEq, assoc, findIndex, update, merge, compose } from 'ramda';
+import {post, get, del} from '../core/request';
+import {__, prop, propEq, assoc, findIndex, update, merge, compose} from 'ramda';
 
 export const details = {
   state: {
     content: [],
-    total: 0
+    total: 0,
   },
   reducers: {
     updateSingleRow: (state, payload) => {
-      const indexToUpdate = findIndex(propEq('id', payload.id))(prop('content')(state))
-      return assoc('content', update(indexToUpdate, payload)(prop('content')(state)))(state)
+      const indexToUpdate = findIndex(propEq('id', payload.id))(prop('content')(state));
+      return assoc('content', update(indexToUpdate, payload)(prop('content')(state)))(state);
     },
     set: (state, payload) => {
       return payload;
-    }
+    },
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
       const details = await post({
         path: 'api/details/query',
-        data: payload
+        data: payload,
       });
       const modify = compose(
-        assoc(
-          'content', details.content
-        ),
-        assoc('total', details.total)
-      )
+          assoc(
+              'content', details.content,
+          ),
+          assoc('total', details.total),
+      );
       dispatch.details.set(
-        modify(rootState.details)
+          modify(rootState.details),
       );
     },
     create: async (payload, rootState) => {

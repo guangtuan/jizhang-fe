@@ -1,4 +1,4 @@
-import { post } from '../core/request';
+import {post} from '../core/request';
 import * as R from 'ramda';
 import dayjs from 'dayjs';
 
@@ -7,7 +7,7 @@ export const statistics = {
     content: [],
     dateRange: [
       dayjs().startOf('month').toDate().getTime(),
-      dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime()
+      dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime(),
     ],
     subjects: [],
   },
@@ -20,7 +20,7 @@ export const statistics = {
       return state;
     },
     changeSubjects: (state, payload) => {
-      const { id, action } = payload;
+      const {id, action} = payload;
       if (action === 'remove') {
         state.subjects = state.subjects.filter((sub) => sub !== id);
       } else {
@@ -31,7 +31,7 @@ export const statistics = {
   },
   effects: (dispatch) => ({
     query: async (payload, rootState) => {
-      const result = await post({ path: 'api/stats', data: payload });
+      const result = await post({path: 'api/stats', data: payload});
       dispatch.statistics.setContent(result);
       return true;
     },

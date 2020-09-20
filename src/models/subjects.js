@@ -1,4 +1,4 @@
-import { post, get } from '../core/request';
+import {post, get} from '../core/request';
 
 export const subjects = {
   name: 'subjects',
@@ -6,7 +6,7 @@ export const subjects = {
   reducers: {
     set: (state, payload) => {
       return payload;
-    }
+    },
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
@@ -26,6 +26,6 @@ export const subjects = {
         data: payload,
       });
       return true;
-    }
-  })
+    },
+  }),
 };
