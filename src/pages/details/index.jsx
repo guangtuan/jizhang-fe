@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Dialog, Input, DatePicker, Loading } from 'element-react'
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,12 +15,9 @@ import * as R from 'ramda'
 import Dayjs from 'dayjs'
 import { useState } from 'react'
 import DetailEdit from './detailEdit'
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import DateFnsUtils from '@date-io/date-fns';
 import {
@@ -30,6 +26,8 @@ import {
 } from '@material-ui/pickers';
 import SubjectSelector from '../../comp/subjectSelector';
 import AccountSelector from '../../comp/accountSelector';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -62,26 +60,22 @@ const useStyles = makeStyles((theme) => ({
     noLabel: {
         marginTop: theme.spacing(3),
     },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
-
 function Details({
-    accounts, users, subjects,
-    details, detailCreation,
-    loadDetails, loadUsers, loadSubjects, loadAccounts, createDetail,
-    showDialog, hideDialog, changeProperty,
-    clear, delDetail,
-    setEdittingDetail, showEditDialog
+    details,
+    loadDetails,
+    loadUsers,
+    loadSubjects,
+    loadAccounts,
+    delDetail,
+    setEdittingDetail, 
+    showCreateDialog,
+    showEditDialog
 }) {
 
     const classes = useStyles();
@@ -96,10 +90,6 @@ function Details({
     const [end, setEnd] = useState(undefined)
     const [page, setPage] = useState(0)
     const size = 10
-    const emptyItem = () => ({
-        id: undefined,
-        name: "清空"
-    })
 
     const load = async () => {
         console.log('load with', page)
@@ -258,126 +248,15 @@ function Details({
                         page={page}
                         count={details.total} />
                 </Paper>
-                <Dialog
-                    title="添加明细"
-                    size="tiny"
-                    visible={detailCreation.dialogVisibility}
-                    onCancel={hideDialog}
-                    lockScroll={false}>
-                    <Dialog.Body>
-                        <Select
-                            value={detailCreation.userId}
-                            onChange={val => {
-                                changeProperty({
-                                    key: 'userId',
-                                    val: val
-                                })
-                            }}
-                            placeholder="请选择用户">
-                            {
-                                (users || []).map(user => {
-                                    return <Select.Option key={user.id} label={user.username} value={user.id} />
-                                })
-                            }
-                        </Select>
-                        <Select
-                            value={detailCreation.sourceAccountId}
-                            onChange={val => {
-                                changeProperty({
-                                    key: 'sourceAccountId',
-                                    val: val
-                                })
-                            }}
-                            placeholder="请选择来源账户">
-                            {
-                                (accounts || []).map(account => {
-                                    return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                                })
-                            }
-                        </Select>
-                        <Select
-                            value={detailCreation.destAccountId}
-                            onChange={val => {
-                                changeProperty({
-                                    key: 'destAccountId',
-                                    val: val
-                                })
-                            }}
-                            placeholder="请选择目标账户">
-                            {
-                                (accounts || []).map(account => {
-                                    return <MenuItem key={account.id} value={account.id}>{account.name}</MenuItem>
-                                })
-                            }
-                        </Select>
-                        <Select
-                            value={detailCreation.subjectId}
-                            onChange={val => {
-                                changeProperty({
-                                    key: 'subjectId',
-                                    val: val
-                                })
-                            }}
-                            placeholder="请选择科目">
-                            {
-                                (() => {
-                                    if (subjects !== null && subjects.length !== 0) {
-                                        return subjects.map(subject => {
-                                            return <Select.Option key={subject.id} label={subject.name} value={subject.id} />
-                                        })
-                                    } else {
-                                        return <div></div>
-                                    }
-                                })()
-                            }
-                        </Select>
-                        <Input
-                            value={detailCreation.amount}
-                            placeholder="请输入金额（单位：元）"
-                            onChange={val => {
-                                changeProperty({
-                                    key: 'amount',
-                                    val: val
-                                })
-                            }}
-                        ></Input>
-                        <Input
-                            value={detailCreation.remark}
-                            placeholder="输入备注"
-                            onChange={val => {
-                                changeProperty({
-                                    key: 'remark',
-                                    val: val
-                                })
-                            }}
-                        ></Input>
-                        <DatePicker
-                            value={detailCreation.createdAt}
-                            placeholder="请选择消费日期"
-                            onChange={date => {
-                                changeProperty({
-                                    key: 'createdAt',
-                                    val: date
-                                })
-                            }}
-                        />
-                        <Button
-                            onClick={() => {
-                                const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt'])(detailCreation)
-                                pack.amount = pack.amount * 100
-                                createDetail(pack).then(() => {
-                                    clear()
-                                    load()
-                                })
-                            }}
-                        >确定</Button>
-                    </Dialog.Body>
-                </Dialog>
-                <Loading loading={deleteLoading}></Loading>
-                <Loading loading={initLoaidng}></Loading>
                 <DetailEdit></DetailEdit>
+                <Backdrop className={classes.backdrop} open={initLoaidng}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
+                <Backdrop className={classes.backdrop} open={deleteLoading}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
             </div >
-            <Fab aria-label="Add" className={classes.fab} color={"primary"} onClick={showDialog}>
+            <Fab aria-label="Add" className={classes.fab} color={"primary"} onClick={showCreateDialog}>
                 <AddIcon />
             </Fab>
         </div >
@@ -385,21 +264,17 @@ function Details({
 
 }
 
-const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailCreation'])
+const mapState = R.pick(["accounts", "users", "details", 'subjects', 'detailEdit'])
 
 const mapDispatch = dispatch => ({
     loadDetails: dispatch.details.load,
     loadUsers: dispatch.users.load,
     loadSubjects: dispatch.subjects.load,
     loadAccounts: dispatch.accounts.load,
-    createDetail: dispatch.details.create,
     delDetail: dispatch.details.del,
-    showDialog: dispatch.detailCreation.showDialog,
-    hideDialog: dispatch.detailCreation.hideDialog,
-    showEditDialog: dispatch.detailEdit.showDialog,
-    changeProperty: dispatch.detailCreation.changeProperty,
-    clear: dispatch.detailCreation.clear,
-    setEdittingDetail: dispatch.detailEdit.set
+    showCreateDialog: dispatch.detailEdit.showCreateDialog,
+    showEditDialog: dispatch.detailEdit.showEditDialog,
+    setEdittingDetail: dispatch.detailEdit.setForm
 })
 
 export default connect(mapState, mapDispatch)(Details)
