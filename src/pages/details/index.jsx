@@ -227,13 +227,7 @@ function Details({
                     </MuiPickersUtilsProvider>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={load}
-                    >
-                        查询
-                    </Button>
+                    <Button variant="contained" color="primary" onClick={load}>查询</Button>
                 </FormControl>
                 <FormControl className={classes.formControl}></FormControl>
                 <Paper>
