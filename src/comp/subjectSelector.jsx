@@ -34,7 +34,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SubjectSelector({
-    subjects, title, onChange, value
+    subjects,
+    title,
+    onChange,
+    value,
+    multiple
 }) {
     const classes = useStyles();
     const toSelect = R.concat([emptyItem()], subjects);
@@ -43,9 +47,21 @@ function SubjectSelector({
         <FormControl className={classes.formControl}>
             <InputLabel id="label_desc_account">{title}</InputLabel>
             <Select
+                multiple={!!multiple}
                 MenuProps={MenuProps}
                 value={value}
-                onChange={event => onChange(event.target.value)}>
+                onChange={event => {
+                    const val = event.target.value
+                    if (!multiple) {
+                        onChange(val)
+                        return
+                    }
+                    if (val.some(id => id === undefined)) {
+                        onChange([])
+                        return
+                    }
+                    onChange(val)
+                }}>
                 {toSelect.map(toSelectItem)}
             </Select>
         </FormControl>

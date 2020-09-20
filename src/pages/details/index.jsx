@@ -28,6 +28,7 @@ import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
+import SubjectsSelector from '../../comp/subjectSelector';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -201,22 +202,12 @@ function Details({
                         }
                     </Select>
                 </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="label_subject">科目</InputLabel>
-                    <Select
-                        labelId="label_subject"
-                        multiple={true}
-                        MenuProps={MenuProps}
-                        value={subjectIds}
-                        onChange={(event) => setSubjectIds(event.target.value)}
-                        placeholder="请选择科目">
-                        {
-                            (R.defaultTo([])(subjects)).map(subject => {
-                                return <MenuItem key={subject.id} value={subject.id}>{subject.name}</MenuItem>
-                            })
-                        }
-                    </Select>
-                </FormControl>
+                <SubjectsSelector
+                    title="科目"
+                    multiple={true}
+                    value={subjectIds}
+                    onChange={setSubjectIds}
+                />
                 <FormControl className={classes.formControl}>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
