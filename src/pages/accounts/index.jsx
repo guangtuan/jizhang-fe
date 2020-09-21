@@ -8,10 +8,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
+import AccountEdit from './accountEdit';
 
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -50,11 +54,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Accounts({
+    setForm,
     users,
     accountTypeDefine,
-    accounts, accountCreation,
+    accounts, accountEdit,
     loadAccounts, createAccount,
-    showDialog, hideDialog, changeProperty, clearForm
+    showEditDialog, showCreateDialog, hideDialog, changeProperty, clearForm
 }) {
 
     const classes = useStyles();
@@ -81,6 +86,38 @@ function Accounts({
         {
             label: '描述',
             prop: 'description'
+        },
+        {
+            label: '操作',
+            render: function (data) {
+                return (
+                    <TableCell>
+                <div>
+                    <Button
+                        className={classes.opt}
+                        size="small"
+                        startIcon={<EditIcon />}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                            setForm(data)
+                            showEditDialog()
+                        }}
+                    >编辑</Button>
+                    <Button
+                        className={classes.opt}
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                        variant="contained"
+                        color="secondary"
+                        onClick={async () => {
+
+                        }}
+                    >删除</Button>
+                </div>
+            </TableCell >
+                )
+            }
         }
     ];
 
@@ -120,98 +157,28 @@ function Accounts({
                 </TableContainer>
             </Paper>
             
-            <Fab aria-label="Add" className={classes.fab} color={"primary"} onClick={showDialog}>
+            <Fab aria-label="Add" className={classes.fab} color={"primary"} onClick={showCreateDialog}>
                 <AddIcon />
             </Fab>
-            {/* <Dialog
-                title="添加账户"
-                size="tiny"
-                visible={accountCreation.dialogVisibility}
-                onCancel={hideDialog}
-                lockScroll={false}>
-                <Dialog.Body>
-                    <Form>
-                        <Form.Item label="所属用户">
-                            <Select
-                                onChange={val => {
-                                    changeProperty({
-                                        key: 'userId',
-                                        val: val
-                                    });
-                                }}
-                                placeholder="请选择所属用户">
-                                {
-                                    (users || []).map(user => {
-                                        return <Select.Option key={user.id} label={user.username} value={user.id} />
-                                    })
-                                }
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="账户类型">
-                            <Select
-                                onChange={val => {
-                                    changeProperty({
-                                        key: 'type',
-                                        val: val
-                                    });
-                                }}
-                                placeholder="请选择账户类型">
-                                {
-                                    accountTypeDefine.map(({ name, value }) => {
-                                        return <Select.Option key={value} label={name} value={value} />
-                                    })
-                                }
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="描述">
-                            <Input
-                                placeholder="请输入描述"
-                                onChange={val => {
-                                    changeProperty({
-                                        key: 'description',
-                                        val: val
-                                    });
-                                }}
-                            ></Input>
-                        </Form.Item>
-                        <Form.Item label="账户名称">
-                            <Input
-                                placeholder="请输入账户名称"
-                                onChange={val => {
-                                    changeProperty({
-                                        key: 'name',
-                                        val: val
-                                    });
-                                }}
-                            ></Input>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button
-                                onClick={() => {
-                                    const pack = R.pick(['userId', 'type', 'name', 'description'])(accountCreation);
-                                    createAccount(pack).then(clearForm)
-                                }}
-                            >确定</Button>
-                        </Form.Item>
-                    </Form>
-                </Dialog.Body>
-            </Dialog> */}
+            <AccountEdit/>
         </div>
     )
 
 };
 
 const mapState = R.pick([
-    "users", "accounts", "accountCreation", "accountTypeDefine"
+    "users", "accounts", "accountEdit", "accountTypeDefine"
 ]);
 
 const mapDispatch = dispatch => ({
     loadAccounts: dispatch.accounts.load,
     createAccount: dispatch.accounts.create,
-    showDialog: dispatch.accountCreation.showDialog,
-    hideDialog: dispatch.accountCreation.hideDialog,
-    changeProperty: dispatch.accountCreation.changeProperty,
-    clearForm: dispatch.accountCreation.clear
+    showCreateDialog: dispatch.accountEdit.showCreateDialog,
+    showEditDialog: dispatch.accountEdit.showEditDialog,
+    hideDialog: dispatch.accountEdit.hideDialog,
+    changeProperty: dispatch.accountEdit.changeProperty,
+    clearForm: dispatch.accountEdit.clearForm,
+    setForm: dispatch.accountEdit.setForm
 });
 
 export default connect(mapState, mapDispatch)(Accounts);

@@ -4,7 +4,7 @@ export * from './details';
 export * from './subjects';
 export * from './subjectCreation';
 export * from './accounts';
-export * from './accountCreation';
+export * from './accountEdit';
 export * from './accountStates';
 export * from './accountStateCreation';
 export * from './accountTypeDefine';
