@@ -28,6 +28,7 @@ import SubjectSelector from '../../comp/subjectSelector';
 import AccountSelector from '../../comp/accountSelector';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import JizhangSelector from '../../comp/jizhangSelector';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -73,9 +74,10 @@ function Details({
     loadSubjects,
     loadAccounts,
     delDetail,
-    setEdittingDetail, 
+    setEdittingDetail,
     showCreateDialog,
-    showEditDialog
+    showEditDialog,
+    subjects
 }) {
 
     const classes = useStyles();
@@ -174,7 +176,8 @@ function Details({
                     onChange={setDestAccountId}
                     title="目标账户"
                 />
-                <SubjectSelector
+                <JizhangSelector
+                    state={subjects}
                     title="科目"
                     multiple={true}
                     value={subjectIds}
