@@ -58,7 +58,9 @@ const pages = [
 function JiZhangMenu(props) {
     let history = useHistory();
 
-    const [selected, setSelected] = React.useState(0);
+    const currentPageIndex = R.findIndex(page => window.location.href.endsWith(page.path))(pages);
+
+    const [selected, setSelected] = React.useState(R.defaultTo(0, currentPageIndex));
 
     return <List>
         {pages.map(({ text, icon, path }, index) => (
