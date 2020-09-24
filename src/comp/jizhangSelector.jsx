@@ -7,6 +7,7 @@ import {
     prop,
     compose,
     defaultTo,
+    isNil,
     any
 } from 'ramda';
 
@@ -68,7 +69,7 @@ export default function JizhangSelector({
                     onChange(
                         ifElse(
                             () => multiple,
-                            ifElse(any(v => v === undefined), () => [], identity),
+                            ifElse(any(isNil), () => [], identity),
                             identity
                         )(val)
                     )
