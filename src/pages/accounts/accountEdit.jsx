@@ -36,8 +36,8 @@ function AccountEdit({
     accountEdit,
     hideDialog,
     changeProperty,
-    updateDetail,
-    createDetail,
+    update,
+    create,
     clearForm,
     updateSingleRow
 }) {
@@ -95,15 +95,14 @@ function AccountEdit({
             <DialogActions>
                 <Button color="secondary" onClick={hideDialog}>取消</Button>
                 <Button color="primary" onClick={() => {
-                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(accountEdit.form)
-                    pack.amount = pack.amount * 100
+                    const pack = R.pick(['userId', 'type', 'name', 'description'])(accountEdit.form)
                     if (accountEdit.creating) {
-                        createDetail(pack).then(() => {
+                        create(pack).then(() => {
                             clearForm()
                             hideDialog()
                         });
                     } else if (accountEdit.editing) {
-                        updateDetail({ payload: pack, id: pack.id }).then(updated => {
+                        update({ payload: pack, id: pack.id }).then(updated => {
                             clearForm()
                             hideDialog()
                             updateSingleRow(updated)
@@ -120,8 +119,8 @@ function AccountEdit({
 const mapState = R.pick(['accountEdit']);
 
 const mapDispatch = dispatch => ({
-    updateDetail: dispatch.accounts.update,
-    createDetail: dispatch.accounts.create,
+    update: dispatch.accounts.update,
+    create: dispatch.accounts.create,
     hideDialog: dispatch.accountEdit.hideDialog,
     showEditDialog: dispatch.accountEdit.showEditDialog,
     showCreateDialog: dispatch.accountEdit.showCreateDialog,
