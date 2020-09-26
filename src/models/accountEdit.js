@@ -1,6 +1,7 @@
 import {assoc, assocPath, pipe} from 'ramda';
 
 const defaultForm = () => ({
+  id: -1,
   type: '',
   userId: -1,
   name: '',

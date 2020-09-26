@@ -1,5 +1,5 @@
-import {post, get} from '../core/request';
-import * as R from 'ramda';
+import {append, compose, filter, findIndex, not, prop, propEq, update} from 'ramda';
+import {del, get, post, put} from '../core/request';
 
 export const accounts = {
   state: [],
@@ -8,7 +8,15 @@ export const accounts = {
       return payload;
     },
     append: (state, payload) => {
-      return R.append(payload)(state);
+      return append(payload)(state);
+    },
+    remove: (state, payload) => {
+      return filter(compose(not, propEq('id', prop('id')(payload))))(state);
+    },
+    updateSingleRow: (state, payload) => {
+      const indexById = findIndex(propEq('id', payload.id));
+      const indexToUpdate = indexById(state);
+      return update(indexToUpdate, payload)(state);
     },
   },
   effects: (dispatch) => ({
@@ -24,6 +32,21 @@ export const accounts = {
         data: payload,
       });
       dispatch.accounts.append(account);
+      return true;
+    },
+    update: async (payload, rootState) => {
+      const account = await put({
+        path: 'api/accounts/' + payload.id,
+        data: payload.payload,
+      });
+      dispatch.accounts.updateSingleRow(account);
+      return true;
+    },
+    del: async (payload, rootState) => {
+      await del({
+        path: 'api/accounts/' + payload.id,
+      });
+      dispatch.accounts.remove(payload);
       return true;
     },
   }),

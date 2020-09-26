@@ -1,21 +1,22 @@
-import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
-import * as R from 'ramda';
+import Button from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
+import Paper from '@material-ui/core/Paper';
+import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import {makeStyles} from '@material-ui/core/styles';
-import AccountEdit from './accountEdit';
 
 import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import dayjs from 'dayjs';
+import * as R from 'ramda';
+import React, {useEffect} from 'react';
+import {connect} from 'react-redux';
+import AccountEdit from './accountEdit';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -54,13 +55,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Accounts({
-  setForm,
-  users,
-  accountTypeDefine,
-  accounts, accountEdit,
-  loadAccounts, createAccount,
-  showEditDialog, showCreateDialog, hideDialog, changeProperty, clearForm,
-}) {
+                    setForm,
+                    users,
+                    accountTypeDefine,
+                    accounts, accountEdit,
+                    loadAccounts, createAccount, deleteAccount,
+                    showEditDialog, showCreateDialog, hideDialog, changeProperty, clearForm,
+                  }) {
   const classes = useStyles();
 
   const columns = [
@@ -80,22 +81,40 @@ function Accounts({
     },
     {
       label: '所属用户',
-      prop: 'username',
+      prop: 'nickname',
     },
     {
       label: '描述',
       prop: 'description',
     },
     {
+      label: '创建时间',
+      render: ({createdAt}) => {
+        if (!createdAt) {
+          return <TableCell/>;
+        }
+        return (<TableCell>{dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>);
+      },
+    },
+    {
+      label: '更新时间',
+      render: ({updatedAt}) => {
+        if (!updatedAt) {
+          return <TableCell/>;
+        }
+        return (<TableCell>{dayjs(updatedAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>);
+      },
+    },
+    {
       label: '操作',
-      render: function(data) {
+      render: function (data) {
         return (
           <TableCell>
             <div>
               <Button
                 className={classes.opt}
                 size="small"
-                startIcon={<EditIcon />}
+                startIcon={<EditIcon/>}
                 variant="contained"
                 color="primary"
                 onClick={() => {
@@ -110,7 +129,7 @@ function Accounts({
                 variant="contained"
                 color="secondary"
                 onClick={async () => {
-
+                  deleteAccount(data);
                 }}
               >删除</Button>
             </div>
@@ -171,6 +190,7 @@ const mapState = R.pick([
 const mapDispatch = (dispatch) => ({
   loadAccounts: dispatch.accounts.load,
   createAccount: dispatch.accounts.create,
+  deleteAccount: dispatch.accounts.del,
   showCreateDialog: dispatch.accountEdit.showCreateDialog,
   showEditDialog: dispatch.accountEdit.showEditDialog,
   hideDialog: dispatch.accountEdit.hideDialog,
