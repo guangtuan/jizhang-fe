@@ -1,4 +1,4 @@
-import { assoc, assocPath, pipe } from 'ramda';
+import {assoc, assocPath, pipe} from 'ramda';
 
 const defaultForm = () => ({
   type: '',
@@ -12,7 +12,7 @@ export const accountEdit = {
     dialogVisibility: false,
     creating: false,
     editing: false,
-    form: defaultForm()
+    form: defaultForm(),
   },
   reducers: {
     changeProperty: (state, payload) => {
@@ -21,24 +21,24 @@ export const accountEdit = {
     },
     hideDialog: (state, payload) => {
       const apply = pipe(
-        assoc('dialogVisibility', false),
-        assoc('creating', false),
-        assoc('editing', false)
-      )
+          assoc('dialogVisibility', false),
+          assoc('creating', false),
+          assoc('editing', false),
+      );
       return apply(state);
     },
     showEditDialog: (state, payload) => {
       const apply = pipe(
-        assoc('dialogVisibility', true),
-        assoc('editing', true)
-      )
+          assoc('dialogVisibility', true),
+          assoc('editing', true),
+      );
       return apply(state);
     },
     showCreateDialog: (state, payload) => {
       const apply = pipe(
-        assoc('dialogVisibility', true),
-        assoc('creating', true)
-      )
+          assoc('dialogVisibility', true),
+          assoc('creating', true),
+      );
       return apply(state);
     },
     clearForm: (state, payload) => {

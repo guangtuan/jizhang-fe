@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import { put, post } from '../core/request';
+import {put, post} from '../core/request';
 
 const defaultForm = () => ({
   userId: -1,
@@ -9,14 +9,14 @@ const defaultForm = () => ({
   remark: '',
   amount: undefined,
   createdAt: new Date(),
-})
+});
 
 export const detailEdit = {
   state: {
     dialogVisibility: false,
     creating: false,
     editing: false,
-    form: defaultForm()
+    form: defaultForm(),
   },
   reducers: {
     changeProperty: (state, payload) => {
@@ -25,24 +25,24 @@ export const detailEdit = {
     },
     hideDialog: (state, payload) => {
       const apply = R.pipe(
-        R.assoc('dialogVisibility', false),
-        R.assoc('creating', false),
-        R.assoc('editing', false)
-      )
+          R.assoc('dialogVisibility', false),
+          R.assoc('creating', false),
+          R.assoc('editing', false),
+      );
       return apply(state);
     },
     showEditDialog: (state, payload) => {
       const apply = R.pipe(
-        R.assoc('dialogVisibility', true),
-        R.assoc('editing', true)
-      )
+          R.assoc('dialogVisibility', true),
+          R.assoc('editing', true),
+      );
       return apply(state);
     },
     showCreateDialog: (state, payload) => {
       const apply = R.pipe(
-        R.assoc('dialogVisibility', true),
-        R.assoc('creating', true)
-      )
+          R.assoc('dialogVisibility', true),
+          R.assoc('creating', true),
+      );
       return apply(state);
     },
     clearForm: (state, payload) => {
@@ -50,8 +50,8 @@ export const detailEdit = {
     },
     setForm: (state, payload) => {
       const process = R.pipe(
-        R.assoc('amount', payload.amount / 100),
-        R.assoc('createdAt', new Date(payload.createdAt))
+          R.assoc('amount', payload.amount / 100),
+          R.assoc('createdAt', new Date(payload.createdAt)),
       );
       return R.assoc('form', process(payload))(state);
     },
@@ -65,7 +65,7 @@ export const detailEdit = {
       return resp;
     },
     update: async (payload, rootState) => {
-      console.log(JSON.stringify(payload))
+      console.log(JSON.stringify(payload));
       const resp = await put({
         path: `api/details/${payload.id}`,
         data: payload.payload,
