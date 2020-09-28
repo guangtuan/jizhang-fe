@@ -1,22 +1,40 @@
-import {Button, Dialog, Form, Input, Table} from 'element-react';
+import {Fab, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,} from '@material-ui/core';
+import {makeStyles,} from '@material-ui/core/styles';
+import {Add as AddIcon,} from '@material-ui/icons';
 import * as R from 'ramda';
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
-import styles from './users.module.css';
+import UserEdit from './UserEdit';
+
+const useStyles = makeStyles((theme) => ({
+  table: {
+    minWidth: 650,
+  },
+  container: {
+    maxHeight: 600,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  }
+}));
 
 function Users({
-                 users, userCreation,
-                 loadUser, createUser,
-                 showDialog, hideDialog, changeProperty,
+                 users,
+                 loadUser,
+                 showCreateUserDialog
                }) {
+  const classes = useStyles();
+
   const columns = [
     {
       label: '账号',
-      prop: 'account',
+      prop: 'email',
     },
     {
       label: '用户名',
-      prop: 'username',
+      prop: 'nickname',
     },
   ];
 
@@ -26,72 +44,41 @@ function Users({
 
   return (
     <div>
-      <Table
-        defaultExpandAll={true}
-        columns={columns}
-        data={users}
-        border={true}
-        rowKey={R.prop('id')}
-      />
-      <Button
-        className={styles.add}
-        type="primary"
-        onClick={showDialog}>
-        添加用户
-      </Button>
-      <Dialog
-        title="添加用户"
-        size="tiny"
-        visible={userCreation.dialogVisibility}
-        onCancel={hideDialog}
-        lockScroll={false}>
-        <Dialog.Body>
-          <Form>
-            <Form.Item>
-              <Input
-                placeholder="请输入账号"
-                onChange={(val) => {
-                  changeProperty({
-                    key: 'account',
-                    val: val,
-                  });
-                }}
-              ></Input>
-            </Form.Item>
-            <Form.Item>
-              <Input
-                placeholder="请输入用户名"
-                onChange={(val) => {
-                  changeProperty({
-                    key: 'username',
-                    val: val,
-                  });
-                }}
-              ></Input>
-            </Form.Item>
-            <Form.Item>
-              <Button
-                onClick={() => {
-                  const pack = R.pick(['account', 'username'])(userCreation);
-                  createUser(pack).then(hideDialog);
-                }}
-              >确定</Button>
-            </Form.Item>
-          </Form>
-        </Dialog.Body>
-      </Dialog>
+      <Paper>
+        <TableContainer className={classes.container} component={Paper}>
+          <Table stickyHeader className={classes.table}>
+            <TableHead>
+              <TableRow>
+                {columns.map(R.prop('label')).map((label) => {
+                  return <TableCell key={label}>{label}</TableCell>;
+                })}
+              </TableRow>
+            </TableHead>
+            <TableBody>{
+              users.content.map((user, index) => (
+                <TableRow key={index}>{
+                  columns.map((col, index) => (
+                    <TableCell key={index}>{R.prop(col.prop)(user)}</TableCell>
+                  ))
+                }</TableRow>
+              ))
+            }</TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateUserDialog}>
+        <AddIcon/>
+      </Fab>
+      <UserEdit/>
     </div>
   );
-};
+}
 
-const mapState = R.pick(['users', 'userCreation']);
+const mapState = R.pick(['users']);
 
 const mapDispatch = (dispatch) => ({
   loadUser: dispatch.users.load,
-  createUser: dispatch.users.create,
-  showDialog: dispatch.userCreation.showDialog,
-  hideDialog: dispatch.userCreation.hideDialog,
-  changeProperty: dispatch.userCreation.changeProperty,
+  showCreateUserDialog: dispatch.users.showCreateUserDialog
 });
 
 export default connect(mapState, mapDispatch)(Users);

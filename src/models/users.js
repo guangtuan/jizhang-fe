@@ -1,14 +1,47 @@
-import {post, get} from '../core/request';
-import * as R from 'ramda';
+import {append, assoc, prop} from 'ramda';
+import {get, post} from '../core/request';
+
+const defaultForm = () => ({
+  email: '',
+  account: '',
+  password: '',
+});
 
 export const users = {
-  state: [],
+  state: {
+    content: [],
+    creating: false,
+    form: defaultForm(),
+  },
   reducers: {
     set: (state, payload) => {
-      return payload;
+      return assoc(
+        'content',
+        payload,
+        state,
+      );
     },
     append: (state, payload) => {
-      return R.append(payload)(state);
+      return assoc(
+        'content',
+        append(payload)(prop('content')(state)),
+        state,
+      );
+    },
+    clearUserForm: (state, payload) => {
+      return assoc('form', defaultForm())(state);
+    },
+    changeProperty: (state, payload) => {
+      return assoc(
+        'form',
+        assoc(payload.key, payload.val)(prop('form')(state))
+      )(state);
+    },
+    showCreateUserDialog: (state, payload) => {
+      return assoc('creating', true)(state);
+    },
+    hideUserDialog: (state, payload) => {
+      return assoc('creating', false)(state);
     },
   },
   effects: (dispatch) => ({
@@ -18,7 +51,7 @@ export const users = {
       });
       dispatch.users.set(users);
     },
-    create: async (payload, rootState) => {
+    createUser: async (payload, rootState) => {
       const user = await post({
         path: 'api/user',
         data: payload,
