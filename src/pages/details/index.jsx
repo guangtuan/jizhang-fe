@@ -171,7 +171,7 @@ function Details({
           title="目标账户"
         />
         <JizhangSelector
-          state={subjects}
+          state={subjects.list}
           title="科目"
           multiple={true}
           value={subjectIds}

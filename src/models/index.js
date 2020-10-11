@@ -1,7 +1,6 @@
 export * from './users';
 export * from './details';
 export * from './subjects';
-export * from './subjectCreation';
 export * from './accounts';
 export * from './accountEdit';
 export * from './accountStates';
