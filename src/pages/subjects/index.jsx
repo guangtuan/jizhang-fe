@@ -15,6 +15,9 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import * as R from 'ramda';
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
+import Button from '@material-ui/core/Button';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     bottom: theme.spacing(2),
     right: theme.spacing(2),
-  }
+  },
 }));
 
 function Subjects({
@@ -53,16 +56,29 @@ function Subjects({
     {
       label: '描述',
       prop: 'description',
-    }
+    },
+    {
+      label: '操作',
+      render: () => {
+        return <TableCell>
+          <Button>
+            添加子类
+          </Button>
+        </TableCell>;
+      },
+    },
   ];
 
-  const useRowStyles = makeStyles({
+  const useRowStyles = makeStyles((theme) => ({
     root: {
       '& > *': {
         borderBottom: 'unset',
       },
     },
-  });
+    opt: {
+      margin: theme.spacing(1),
+    },
+  }));
 
   const Row = ({subject}) => {
     const innerColumns = [
@@ -73,7 +89,34 @@ function Subjects({
       {
         label: '描述',
         prop: 'description',
-      }
+      },
+      {
+        label: '操作',
+        render: () => {
+          return <TableCell>
+            <div>
+              <Button
+                className={classes.opt}
+                size="small"
+                startIcon={<EditIcon/>}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                }}
+              >编辑</Button>
+              <Button
+                className={classes.opt}
+                size="small"
+                startIcon={<DeleteIcon/>}
+                variant="contained"
+                color="secondary"
+                onClick={async () => {
+                }}
+              >删除</Button>
+            </div>
+          </TableCell>;
+        },
+      },
     ];
     const classes = useRowStyles();
     const [open, setOpen] = React.useState(false);
@@ -110,7 +153,9 @@ function Subjects({
                   <TableRow>
                     {
                       innerColumns.map((innerColumn, index) => {
-                        return <TableCell key={innerColumn.label}>{innerColumn.label}</TableCell>
+                        return <TableCell
+                          key={innerColumn.label}>{innerColumn.label}
+                        </TableCell>;
                       })
                     }
                   </TableRow>
@@ -120,8 +165,14 @@ function Subjects({
                     <TableRow key={child.id}>
                       {
                         innerColumns.map((innerColumn, index) => {
-                          let display = R.prop(innerColumn.prop)(child);
-                          return <TableCell key={child.id + display}>{display}</TableCell>
+                          if (innerColumn.render) {
+                            return innerColumn.render(child);
+                          } else {
+                            const display = R.prop(innerColumn.prop)(child);
+                            return <TableCell key={child.id + display}>
+                              {display}
+                            </TableCell>;
+                          }
                         })
                       }
                     </TableRow>

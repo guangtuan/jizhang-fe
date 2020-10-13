@@ -10,7 +10,7 @@ describe('test account', () => {
 
   it('store contains key: account', () => {
     const store = getStore();
-    expect(Object.keys(store.getState()).includes('account')).toBe(true);
+    expect(Object.keys(store.getState()).includes('accounts')).toBe(true);
   });
 
   it('account append', () => {
