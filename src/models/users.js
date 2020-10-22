@@ -16,16 +16,16 @@ export const users = {
   reducers: {
     set: (state, payload) => {
       return assoc(
-        'content',
-        payload,
-        state,
+          'content',
+          payload,
+          state,
       );
     },
     append: (state, payload) => {
       return assoc(
-        'content',
-        append(payload)(prop('content')(state)),
-        state,
+          'content',
+          append(payload)(prop('content')(state)),
+          state,
       );
     },
     clearUserForm: (state, payload) => {
@@ -33,8 +33,8 @@ export const users = {
     },
     changeProperty: (state, payload) => {
       return assoc(
-        'form',
-        assoc(payload.key, payload.val)(prop('form')(state))
+          'form',
+          assoc(payload.key, payload.val)(prop('form')(state)),
       )(state);
     },
     showCreateUserDialog: (state, payload) => {

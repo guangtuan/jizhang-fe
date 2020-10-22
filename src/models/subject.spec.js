@@ -18,16 +18,16 @@ describe('test subjects', () => {
     const subjectEat = {
       name: 'eat',
       id: 1,
-      children: []
+      children: [],
     };
     store.dispatch.subjects.add(subjectEat);
     expect(store.getState().subjects.list).toStrictEqual([
-      subjectEat
+      subjectEat,
     ]);
     const subjectBreakfest = {
       name: 'breakfest',
       id: 2,
-      parentId: 1
+      parentId: 1,
     };
     store.dispatch.subjects.add(subjectBreakfest);
     expect(store.getState().subjects.list).toStrictEqual([{
@@ -36,8 +36,8 @@ describe('test subjects', () => {
       children: [{
         name: 'breakfest',
         id: 2,
-        parentId: 1
-      }]
+        parentId: 1,
+      }],
     }]);
   });
 });

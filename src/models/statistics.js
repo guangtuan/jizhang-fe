@@ -3,12 +3,12 @@ import * as R from 'ramda';
 
 export const statistics = {
   state: {
-    content: []
+    content: [],
   },
   reducers: {
     setContent: (state, payload) => {
       return R.assoc('content', payload)(state);
-    }
+    },
   },
   effects: (dispatch) => ({
     query: async (payload, rootState) => {

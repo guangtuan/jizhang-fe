@@ -24,15 +24,15 @@ export const subjects = {
     },
     add: (state, payload) => {
       return ifElse(
-        () => payload.parentId,
-        over(
-          lensProp('list'),
+          () => payload.parentId,
           over(
-            lensIndex(findIndex(propEq('id', payload.parentId))(state.list)),
-            over(lensProp('children'), append(payload)),
+              lensProp('list'),
+              over(
+                  lensIndex(findIndex(propEq('id', payload.parentId))(state.list)),
+                  over(lensProp('children'), append(payload)),
+              ),
           ),
-        ),
-        over(lensProp('list'), append(payload)),
+          over(lensProp('list'), append(payload)),
       )(state);
     },
   },
