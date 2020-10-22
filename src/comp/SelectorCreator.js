@@ -57,7 +57,7 @@ export default function createSelector({
     } = props;
     const state = prop(stateKey)(props);
     const classes = useStyles();
-    const toSelectItem = (datam) => <MenuItem key={id(datam)} value={id(datam)}>{display(datam)}</MenuItem>;
+    const toSelectItem = (datam) => <MenuItem key={title + id(datam)} value={id(datam)}>{display(datam)}</MenuItem>;
     return (
       <FormControl className={classes.formControl}>
         <InputLabel>{title}</InputLabel>

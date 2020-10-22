@@ -16,14 +16,17 @@ import TableRow from '@material-ui/core/TableRow';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
-import Dayjs from 'dayjs';
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import dayJs from 'dayjs';
 import * as R from 'ramda';
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import AccountSelector from '../../comp/accountSelector';
-import JizhangSelector from '../../comp/jizhangSelector';
 import DetailEdit from './detailEdit';
+import SubjectSelector from '../../comp/subjectSelector';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -101,35 +104,34 @@ function Details({
     });
   };
 
-  const renderOperationButtons = function (data) {
+  const renderOperationButtons = function (data, rowIndex, colIndex) {
+    const key = `${rowIndex}-${colIndex}`;
     return (
-      <TableCell>
-        <div>
-          <Button
-            className={classes.opt}
-            size="small"
-            startIcon={<EditIcon/>}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              setEdittingDetail(data);
-              showEditDialog();
-            }}
-          >编辑</Button>
-          <Button
-            className={classes.opt}
-            size="small"
-            startIcon={<DeleteIcon/>}
-            variant="contained"
-            color="secondary"
-            onClick={async () => {
-              setDeleteLoading(true);
-              await delDetail(data.id);
-              await load();
-              setDeleteLoading(false);
-            }}
-          >删除</Button>
-        </div>
+      <TableCell key={key}>
+        <Button
+          className={classes.opt}
+          size="small"
+          startIcon={<EditIcon/>}
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            setEdittingDetail(data);
+            showEditDialog();
+          }}
+        >编辑</Button>
+        <Button
+          className={classes.opt}
+          size="small"
+          startIcon={<DeleteIcon/>}
+          variant="contained"
+          color="secondary"
+          onClick={async () => {
+            setDeleteLoading(true);
+            await delDetail(data.id);
+            await load();
+            setDeleteLoading(false);
+          }}
+        >删除</Button>
       </TableCell>
     );
   };
@@ -170,7 +172,7 @@ function Details({
           onChange={setDestAccountId}
           title="目标账户"
         />
-        <JizhangSelector
+        <SubjectSelector
           state={subjects.list}
           title="科目"
           multiple={true}
@@ -210,25 +212,26 @@ function Details({
                 </TableRow>
               </TableHead>
               <TableBody>{
-                details.content.map((detail) => (<TableRow>{
-                  propsOfDetail.map((item) => {
+                details.content.map((detail, rowIndex) => (<TableRow key={detail.id + detail.createdAt.toString()}>{
+                  propsOfDetail.map((item, colIndex) => {
+                    const key = `${rowIndex}-${colIndex}`;
                     if (item === 'amount') {
-                      return (<TableCell>{detail[item] / 100}元</TableCell>);
+                      return (<TableCell key={key}>{detail[item] / 100}元</TableCell>);
                     }
                     if (item === 'createdAt') {
-                      return (<TableCell>{Dayjs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
+                      return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
                     }
                     if (item === 'updatedAt') {
                       if (detail[item]) {
-                        return (<TableCell>{Dayjs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
+                        return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
                       } else {
-                        return <TableCell></TableCell>;
+                        return <TableCell key={key}/>;
                       }
                     }
                     if (item === 'opt') {
-                      return renderOperationButtons(detail);
+                      return renderOperationButtons(detail, rowIndex, colIndex);
                     }
-                    return (<TableCell>{detail[item]}</TableCell>);
+                    return (<TableCell key={key}>{detail[item]}</TableCell>);
                   })
                 }</TableRow>))
               }</TableBody>
