@@ -34,8 +34,8 @@ function Login({login, session}) {
     alignItems="center"
     className={classes.root}
   >
-    <Input value={email} onChange={setEmail} placeholder="输入账户"/>
-    <Input value={password} onChange={setPassword} type="password" placeholder="输入密码"/>
+    <Input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="输入账户"/>
+    <Input value={password} onChange={(event) => setPassword(event.target.value)} type="password" placeholder="输入密码"/>
     <Button onClick={async () => {
       await login({password, email});
       history.replace('/');

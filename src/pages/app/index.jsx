@@ -9,8 +9,6 @@ import { connect } from 'react-redux';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import 'element-theme-default';
-
 import * as R from 'ramda';
 
 import Details from '../details';
