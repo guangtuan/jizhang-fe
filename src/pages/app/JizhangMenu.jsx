@@ -1,12 +1,11 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
-import { connect } from 'react-redux';
+import {useHistory} from "react-router-dom";
+import {connect} from 'react-redux';
 
 import * as R from 'ramda';
 
 import SubjectIcon from '@material-ui/icons/Subject';
 import PersonIcon from '@material-ui/icons/Person';
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import HomeIcon from '@material-ui/icons/Home';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import PaymentIcon from '@material-ui/icons/Payment';
@@ -46,12 +45,6 @@ const pages = [
         'text': '统计',
         'icon': <EqualizerIcon></EqualizerIcon>,
         'path': '/statistics'
-    },
-    {
-        'type': 'ext',
-        'text': '账户状态',
-        'icon': <AccountBalanceWalletIcon></AccountBalanceWalletIcon>,
-        'path': '/accountStates'
     }
 ]
 

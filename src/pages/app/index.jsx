@@ -17,7 +17,6 @@ import Details from '../details';
 import Subjects from '../subjects';
 import Users from '../users';
 import Accounts from '../accounts';
-import AccountStates from '../accountStates';
 import Statistics from '../statistics';
 import JiZhangMenu from './JizhangMenu';
 import Login from '../login';
@@ -175,9 +174,6 @@ export function App({ session }) {
                         </Route>
                         <Route path="/statistics">
                             <Statistics />
-                        </Route>
-                        <Route path="/accountStates">
-                            <AccountStates />
                         </Route>
                     </Switch>
                 </main>
