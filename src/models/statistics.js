@@ -1,34 +1,14 @@
 import {post} from '../core/request';
 import * as R from 'ramda';
-import dayjs from 'dayjs';
 
 export const statistics = {
   state: {
-    content: [],
-    dateRange: [
-      dayjs().startOf('month').toDate().getTime(),
-      dayjs().set('hour', 23).set('minute', 59).set('second', 59)
-          .toDate().getTime(),
-    ],
-    subjects: [],
+    content: []
   },
   reducers: {
     setContent: (state, payload) => {
       return R.assoc('content', payload)(state);
-    },
-    setDateRange: (state, payload) => {
-      state.dateRange = payload;
-      return state;
-    },
-    changeSubjects: (state, payload) => {
-      const {id, action} = payload;
-      if (action === 'remove') {
-        state.subjects = state.subjects.filter((sub) => sub !== id);
-      } else {
-        state.subjects.push(id);
-      }
-      return state;
-    },
+    }
   },
   effects: (dispatch) => ({
     query: async (payload, rootState) => {

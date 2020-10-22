@@ -1,33 +1,35 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Button, DateRangePicker, Form, Checkbox } from 'element-react';
+import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
 import * as R from 'ramda';
-import styles from './statistics.module.css';
-import { Chart, Geom, Axis, Tooltip, Legend, Label } from 'bizcharts';
+import {Axis, Chart, Geom, Label, Legend, Tooltip} from 'bizcharts';
+import SubjectSelector from '../../comp/subjectSelector';
+import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
+import {FormControl} from '@material-ui/core';
+import DateFnsUtils from '@date-io/date-fns';
+import {makeStyles} from '@material-ui/core/styles';
+import dayjs from 'dayjs';
+
+const useStyles = makeStyles((theme) => ({
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+        maxWidth: 300,
+    },
+}));
 
 function Statistics({
-    statistics, accounts, users, subjects,
-    loadStatistics, setDateRange, changeSubjects
+    accounts, users, loadStatistics, statistics,
 }) {
 
-    const load = () => {
-        let toPass = statistics.subjects;
-        if (toPass.length === 0) {
-            toPass = subjects;
-        }
-        if (toPass.length === 0) {
-            return;
-        }
-        const [start, end] = statistics.dateRange;
-        loadStatistics({ start, end, subjects: toPass });
-    };
+    const classes = useStyles();
+
+    const [start, setStart] = useState(dayjs().startOf('month').toDate().getTime());
+    const [end, setEnd] = useState(dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime());
+    const [subjects, setSubjects] = useState([]);
 
     useEffect(() => {
-        subjects.map(sub => sub.id).forEach(id => {
-            changeSubjects({ id, action: "add" });
-        });
-        load();
-    }, subjects);
+        loadStatistics({ start, end, subjects });
+    }, [start, end, subjects]);
 
     // 定义度量
     const cols = {
@@ -37,48 +39,30 @@ function Statistics({
 
     return (
         <div>
-            <Form>
-                <Form.Item label="科目">
-                    <div className={styles.subjects}>
-                        {subjects.map(subject => (
-                            <Checkbox
-                                onChange={checked => {
-                                    if (checked) {
-                                        changeSubjects({ id: subject.id, action: "add" });
-                                    } else {
-                                        changeSubjects({ id: subject.id, action: "remove" });
-                                    }
-                                    load();
-                                }}
-                                key={subject.id}
-                                checked={statistics.subjects.indexOf(subject.id) !== -1}
-                            >{subject.name}</Checkbox>)
-                        )}
-                    </div>
-                </Form.Item>
-                <Form.Item label="日期范围">
-                    <DateRangePicker
-                        value={statistics.dateRange.map(l => new Date(l))}
-                        placeholder="选择日期范围"
-                        onChange={date => {
-                            setDateRange(date)
-                        }}
-                    ></DateRangePicker>
-                </Form.Item>
-                <Form.Item label="本月支出">
-                    <span>{statistics.content.map(R.prop('total')).reduce((acc, cur) => acc + cur, 0)}元</span>
-                </Form.Item>
-                <Form.Item>
-                    <Button
-                        onClick={() => {
-                            load()
-                        }}
-                        className={styles.query}
-                        type="primary">
-                        查询
-                    </Button>
-                </Form.Item>
-            </Form>
+            <SubjectSelector
+              title={"筛选科目"}
+              value={subjects}
+              multiple={true}
+              onChaneg={setSubjects}
+            ></SubjectSelector>
+            <FormControl className={classes.formControl}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      label="从"
+                      onChange={setStart}
+                      value={start}
+                    ></KeyboardDatePicker>
+                </MuiPickersUtilsProvider>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      label="到"
+                      onChange={setEnd}
+                      value={end}
+                    ></KeyboardDatePicker>
+                </MuiPickersUtilsProvider>
+            </FormControl>
             {(() => {
                 if (statistics.content.length === 0) {
                     return <div></div>
@@ -105,12 +89,10 @@ function Statistics({
 
 };
 
-const mapState = R.pick(["accounts", "users", "statistics", 'subjects']);
+const mapState = R.pick(["accounts", "users", "statistics"]);
 
 const mapDispatch = dispatch => ({
-    loadStatistics: dispatch.statistics.query,
-    setDateRange: dispatch.statistics.setDateRange,
-    changeSubjects: dispatch.statistics.changeSubjects
+    loadStatistics: dispatch.statistics.query
 });
 
 export default connect(mapState, mapDispatch)(Statistics);
