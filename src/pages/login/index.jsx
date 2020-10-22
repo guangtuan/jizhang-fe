@@ -1,47 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Input, Form } from 'element-react';
-import { connect } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
 import * as R from 'ramda';
-import styles from './login.module.css';
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
+import {Input, Button, Grid} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 
-function Login({ login, session }) {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+      width: '25ch',
+    },
+  },
+}));
 
-    const [password, setPassword] = useState("");
-    const [email, setEmail] = useState("");
+function Login({login, session}) {
 
-    let history = useHistory();
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
 
-    useEffect(() => {
-        history.push("/login");
-    }, []);
+  let history = useHistory();
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.body}>
-                <Form>
-                    <Form.Item>
-                        <Input value={email} onChange={setEmail} placeholder="输入账户"></Input>
-                    </Form.Item>
-                    <Form.Item>
-                        <Input value={password} onChange={setPassword} type="password" placeholder="输入密码"></Input>
-                    </Form.Item>
-                    <Form.Item>
-                        <Button onClick={async () => {
-                            await login({ password, email });
-                            history.replace('/')
-                        }}>登录</Button>
-                    </Form.Item>
-                </Form>
-            </div>
-        </div>
-    )
+  const classes = useStyles();
+
+  useEffect(() => {
+    history.push("/login");
+  }, []);
+
+  return <Grid
+    container
+    direction="column"
+    justify="center"
+    alignItems="center"
+    className={classes.root}
+  >
+    <Input value={email} onChange={setEmail} placeholder="输入账户"/>
+    <Input value={password} onChange={setPassword} type="password" placeholder="输入密码"/>
+    <Button onClick={async () => {
+      await login({password, email});
+      history.replace('/');
+    }}>登录</Button>
+  </Grid>;
 }
 
 const mapState = R.pick(['session']);
 
 const mapDispatch = dispatch => ({
-    login: dispatch.session.login
+  login: dispatch.session.login,
 });
 
 export default connect(mapState, mapDispatch)(Login);
