@@ -1,12 +1,11 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import * as R from 'ramda';
-import {prop} from 'ramda';
+import { connect } from 'react-redux';
+import { concat, map, defaultTo, prop, pick, compose, nthArg } from 'ramda';
 
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
-import {Autocomplete} from '@material-ui/lab';
-import {TextField} from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,14 +17,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SubjectSelector = ({
-                           subjects,
-                           title,
-                           onChange,
-                           value,
-                           multiple = false,
-                         }) => {
+  subjects,
+  title,
+  onChange,
+  value,
+  multiple = false,
+}) => {
   const classes = useStyles();
-  const convert = (subjects) => subjects.reduce((acc, curr) => R.concat(acc, curr.children.map(child => {
+  const convert = (subjects) => subjects.reduce((acc, curr) => concat(acc, curr.children.map(child => {
     child.parent = curr.name;
     return child;
   })), []);
@@ -38,9 +37,7 @@ const SubjectSelector = ({
         groupBy={(option) => option.parent}
         options={convert(subjects.list)}
         getOptionLabel={prop('name')}
-        onChange={(event, newValue) => {
-          onChange(R.map(R.prop('id'))(newValue));
-        }}
+        onChange={compose(onChange, map(prop('id')), defaultTo([]), nthArg(1))}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -54,6 +51,6 @@ const SubjectSelector = ({
   );
 };
 
-const mapState = R.pick(['subjects']);
+const mapState = pick(['subjects']);
 
 export default connect(mapState)(SubjectSelector);
