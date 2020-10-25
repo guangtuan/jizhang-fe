@@ -5,7 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Fab from '@material-ui/core/Fab';
 import FormControl from '@material-ui/core/FormControl';
 import Paper from '@material-ui/core/Paper';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -16,17 +16,20 @@ import TableRow from '@material-ui/core/TableRow';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import Box from '@material-ui/core/Box';
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import dayJs from 'dayjs';
 import * as R from 'ramda';
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import AccountSelector from '../../comp/accountSelector';
 import DetailEdit from './detailEdit';
 import SubjectSelector from '../../comp/subjectSelector';
+import DisplayInCalendar from './displayInCalendar';
+import DetailCard from './detailCard';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -65,17 +68,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Details({
-                   details,
-                   loadDetails,
-                   loadUsers,
-                   loadSubjects,
-                   loadAccounts,
-                   delDetail,
-                   setEdittingDetail,
-                   showCreateDialog,
-                   showEditDialog,
-                   subjects,
-                 }) {
+  details,
+  loadDetails,
+  loadUsers,
+  loadSubjects,
+  loadAccounts,
+  delDetail,
+  setEdittingDetail,
+  showCreateDialog,
+  showEditDialog,
+  subjects,
+}) {
   const classes = useStyles();
 
   const [initLoaidng, setInitLoading] = useState(false);
@@ -111,7 +114,7 @@ function Details({
         <Button
           className={classes.opt}
           size="small"
-          startIcon={<EditIcon/>}
+          startIcon={<EditIcon />}
           variant="contained"
           color="primary"
           onClick={() => {
@@ -122,7 +125,7 @@ function Details({
         <Button
           className={classes.opt}
           size="small"
-          startIcon={<DeleteIcon/>}
+          startIcon={<DeleteIcon />}
           variant="contained"
           color="secondary"
           onClick={async () => {
@@ -160,47 +163,52 @@ function Details({
   }, [page]);
 
   return (
-    <div>
-      <div>
-        <AccountSelector
-          value={sourceAccountId}
-          onChange={setSourceAccountId}
-          title="来源账户"
-        />
-        <AccountSelector
-          value={destAccountId}
-          onChange={setDestAccountId}
-          title="目标账户"
-        />
-        <SubjectSelector
-          state={subjects.list}
-          title="科目"
-          multiple={true}
-          value={subjectIds}
-          onChange={setSubjectIds}
-        />
-        <FormControl className={classes.formControl}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              label="从"
-              onChange={setStart}
-              value={start}
-            ></KeyboardDatePicker>
-          </MuiPickersUtilsProvider>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              label="到"
-              onChange={setEnd}
-              value={end}
-            ></KeyboardDatePicker>
-          </MuiPickersUtilsProvider>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <Button variant="contained" color="primary" onClick={load}>查询</Button>
-        </FormControl>
-        <FormControl className={classes.formControl}></FormControl>
+    <React.Fragment>
+        <Box>
+          <AccountSelector
+            value={sourceAccountId}
+            onChange={setSourceAccountId}
+            title="来源账户"
+          />
+          <AccountSelector
+            value={destAccountId}
+            onChange={setDestAccountId}
+            title="目标账户"
+          />
+          <SubjectSelector
+            state={subjects.list}
+            title="科目"
+            multiple={true}
+            value={subjectIds}
+            onChange={setSubjectIds}
+          />
+          <FormControl className={classes.formControl}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                label="从"
+                onChange={setStart}
+                value={start}
+              ></KeyboardDatePicker>
+            </MuiPickersUtilsProvider>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                label="到"
+                onChange={setEnd}
+                value={end}
+              ></KeyboardDatePicker>
+            </MuiPickersUtilsProvider>
+          </FormControl>
+          <FormControl className={classes.formControl}>
+            <Button variant="contained" color="primary" onClick={load}>查询</Button>
+          </FormControl>
+        </Box>
+        <DisplayInCalendar
+          content={details.content}
+          render={details => <DetailCard details={details}></DetailCard>}
+          groupProp={R.prop('createdAt')}
+        ></DisplayInCalendar>
         <Paper>
           <TableContainer className={classes.container} component={Paper}>
             <Table stickyHeader className={classes.table} aria-label="simple table">
@@ -225,7 +233,7 @@ function Details({
                       if (detail[item]) {
                         return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
                       } else {
-                        return <TableCell key={key}/>;
+                        return <TableCell key={key} />;
                       }
                     }
                     if (item === 'opt') {
@@ -246,20 +254,19 @@ function Details({
             }}
             rowsPerPage={size}
             page={page}
-            count={details.total}/>
+            count={details.total} />
         </Paper>
         <DetailEdit></DetailEdit>
         <Backdrop className={classes.backdrop} open={initLoaidng}>
-          <CircularProgress color="inherit"/>
+          <CircularProgress color="inherit" />
         </Backdrop>
         <Backdrop className={classes.backdrop} open={deleteLoading}>
-          <CircularProgress color="inherit"/>
+          <CircularProgress color="inherit" />
         </Backdrop>
-      </div>
       <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
-        <AddIcon/>
+        <AddIcon />
       </Fab>
-    </div>
+    </React.Fragment>
   );
 }
 
