@@ -1,35 +1,44 @@
-import DateFnsUtils from '@date-io/date-fns';
-import Backdrop from '@material-ui/core/Backdrop';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Fab from '@material-ui/core/Fab';
-import FormControl from '@material-ui/core/FormControl';
-import Paper from '@material-ui/core/Paper';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+
+import * as R from 'ramda';
+
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
+import {
+  Switch,
+  CircularProgress,
+  Button,
+  Backdrop,
+  Paper,
+  FormControl,
+  FormControlLabel,
+  Fab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Box
+} from '@material-ui/core';
+
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import Box from '@material-ui/core/Box';
+
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import dayJs from 'dayjs';
-import * as R from 'ramda';
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+
 import AccountSelector from '../../comp/accountSelector';
-import DetailEdit from './detailEdit';
 import SubjectSelector from '../../comp/subjectSelector';
 import DisplayInCalendar from './displayInCalendar';
 import DetailCard from './detailCard';
+import DetailEdit from './detailEdit';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -83,6 +92,7 @@ function Details({
 
   const [initLoaidng, setInitLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [displayInCalendar, setDisplayInCalendar] = useState(false);
 
   const [sourceAccountId, setSourceAccountId] = useState(undefined);
   const [destAccountId, setDestAccountId] = useState(undefined);
@@ -164,105 +174,124 @@ function Details({
 
   return (
     <React.Fragment>
-        <Box>
-          <AccountSelector
-            value={sourceAccountId}
-            onChange={setSourceAccountId}
-            title="来源账户"
+      <Box>
+        <AccountSelector
+          value={sourceAccountId}
+          onChange={setSourceAccountId}
+          title="来源账户"
+        />
+        <AccountSelector
+          value={destAccountId}
+          onChange={setDestAccountId}
+          title="目标账户"
+        />
+        <SubjectSelector
+          state={subjects.list}
+          title="科目"
+          multiple={true}
+          value={subjectIds}
+          onChange={setSubjectIds}
+        />
+        <FormControl className={classes.formControl}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              label="从"
+              onChange={setStart}
+              value={start}
+            ></KeyboardDatePicker>
+          </MuiPickersUtilsProvider>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              label="到"
+              onChange={setEnd}
+              value={end}
+            ></KeyboardDatePicker>
+          </MuiPickersUtilsProvider>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <Button variant="contained" color="primary" onClick={load}>查询</Button>
+        </FormControl>
+      </Box>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={displayInCalendar}
+            onChange={() => setDisplayInCalendar(!displayInCalendar)}
+            name="displayInCalendar"
+            color="primary"
           />
-          <AccountSelector
-            value={destAccountId}
-            onChange={setDestAccountId}
-            title="目标账户"
-          />
-          <SubjectSelector
-            state={subjects.list}
-            title="科目"
-            multiple={true}
-            value={subjectIds}
-            onChange={setSubjectIds}
-          />
-          <FormControl className={classes.formControl}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                label="从"
-                onChange={setStart}
-                value={start}
-              ></KeyboardDatePicker>
-            </MuiPickersUtilsProvider>
-          </FormControl>
-          <FormControl className={classes.formControl}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-                label="到"
-                onChange={setEnd}
-                value={end}
-              ></KeyboardDatePicker>
-            </MuiPickersUtilsProvider>
-          </FormControl>
-          <FormControl className={classes.formControl}>
-            <Button variant="contained" color="primary" onClick={load}>查询</Button>
-          </FormControl>
-        </Box>
-        <DisplayInCalendar
-          content={details.content}
-          render={details => <DetailCard details={details}></DetailCard>}
-          groupProp={R.prop('createdAt')}
-        ></DisplayInCalendar>
-        <Paper>
-          <TableContainer className={classes.container} component={Paper}>
-            <Table stickyHeader className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  {tableHeaders.map((item) => {
-                    return (<TableCell key={item}>{item}</TableCell>);
-                  })}
-                </TableRow>
-              </TableHead>
-              <TableBody>{
-                details.content.map((detail, rowIndex) => (<TableRow key={detail.id + detail.createdAt.toString()}>{
-                  propsOfDetail.map((item, colIndex) => {
-                    const key = `${rowIndex}-${colIndex}`;
-                    if (item === 'amount') {
-                      return (<TableCell key={key}>{detail[item] / 100}元</TableCell>);
-                    }
-                    if (item === 'createdAt') {
-                      return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
-                    }
-                    if (item === 'updatedAt') {
-                      if (detail[item]) {
-                        return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
-                      } else {
-                        return <TableCell key={key} />;
+        }
+        label="以📅形式展示"
+      />
+      {(() => {
+        if (displayInCalendar) {
+          return <DisplayInCalendar
+            content={details.content}
+            render={details => <DetailCard details={details}></DetailCard>}
+            groupProp={R.prop('createdAt')}
+          ></DisplayInCalendar>
+        }
+      })()}
+      {(() => {
+        if (!displayInCalendar) {
+          return <Paper>
+            <TableContainer className={classes.container} component={Paper}>
+              <Table stickyHeader className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    {tableHeaders.map((item) => {
+                      return (<TableCell key={item}>{item}</TableCell>);
+                    })}
+                  </TableRow>
+                </TableHead>
+                <TableBody>{
+                  details.content.map((detail, rowIndex) => (<TableRow key={detail.id + detail.createdAt.toString()}>{
+                    propsOfDetail.map((item, colIndex) => {
+                      const key = `${rowIndex}-${colIndex}`;
+                      if (item === 'amount') {
+                        return (<TableCell key={key}>{detail[item] / 100}元</TableCell>);
                       }
-                    }
-                    if (item === 'opt') {
-                      return renderOperationButtons(detail, rowIndex, colIndex);
-                    }
-                    return (<TableCell key={key}>{detail[item]}</TableCell>);
-                  })
-                }</TableRow>))
-              }</TableBody>
-            </Table>
-          </TableContainer>
+                      if (item === 'createdAt') {
+                        return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
+                      }
+                      if (item === 'updatedAt') {
+                        if (detail[item]) {
+                          return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
+                        } else {
+                          return <TableCell key={key} />;
+                        }
+                      }
+                      if (item === 'opt') {
+                        return renderOperationButtons(detail, rowIndex, colIndex);
+                      }
+                      return (<TableCell key={key}>{detail[item]}</TableCell>);
+                    })
+                  }</TableRow>))
+                }</TableBody>
+              </Table>
+            </TableContainer>
 
-          <TablePagination
-            component="div"
-            onChangePage={(event, newPage) => {
-              console.log('event', event);
-              setPage(newPage);
-            }}
-            rowsPerPage={size}
-            page={page}
-            count={details.total} />
-        </Paper>
-        <DetailEdit></DetailEdit>
-        <Backdrop className={classes.backdrop} open={initLoaidng}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        <Backdrop className={classes.backdrop} open={deleteLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+            <TablePagination
+              component="div"
+              onChangePage={(event, newPage) => {
+                console.log('event', event);
+                setPage(newPage);
+              }}
+              rowsPerPage={size}
+              page={page}
+              count={details.total} />
+          </Paper>
+        }
+      })()}
+      <DetailEdit></DetailEdit>
+      <Backdrop className={classes.backdrop} open={initLoaidng}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Backdrop className={classes.backdrop} open={deleteLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
         <AddIcon />
       </Fab>
