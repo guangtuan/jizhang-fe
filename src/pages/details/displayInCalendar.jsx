@@ -18,20 +18,32 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   paper: {
+    width: '100%',
     padding: theme.spacing(1),
     margin: theme.spacing(1),
   },
   monthSetting: {
+    width: '100%',
     padding: theme.spacing(1),
-    margin: theme.spacing(1),
+  },
+  table: {
+    width: '100%',
+    flexGrow: 1,
   },
   card: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    whiteSpace: 'nowrap',
+    maxWidth: 150,
     marginBottom: theme.spacing(1),
-  }
+    textAlign: 'center',
+    color: theme.palette.text.primary,
+    whiteSpace: 'nowrap',
+  },
+  cardDisable: {
+    maxWidth: 150,
+    marginBottom: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.disabled,
+    whiteSpace: 'nowrap',
+  },
 }));
 
 const generateTable = (currentDate) => {
@@ -45,7 +57,7 @@ const generateTable = (currentDate) => {
   for (let i = startOfMonth.day(); i > 1; i--) {
     table[0].push({
       d: startOfMonth.subtract(i, 'day'),
-      current: false,
+      enable: false,
     });
   }
   for (let week = 0; week < table.length; week++) {
@@ -57,13 +69,13 @@ const generateTable = (currentDate) => {
         } else {
           currentWeekRow.push({
             d: last(currentWeekRow).d.add(1, 'day'),
-            current: false,
+            enable: false,
           });
         }
       } else {
         currentWeekRow.push({
           d: cellsToAdd.shift(),
-          current: true,
+          enable: true,
         });
       }
     }
@@ -94,7 +106,7 @@ const DisplayInCalendar = ({
   }, [currentDate]);
 
   return <Paper className={classes.paper}>
-    <Grid container spacing={3} className={classes.monthSetting}>
+    <Grid container spacing={1} className={classes.monthSetting}>
       <Grid item xs>
         <Typography>{currentDate.format("YYYY-MM")}</Typography>
       </Grid>
@@ -116,12 +128,18 @@ const DisplayInCalendar = ({
       </Grid>
     </Grid>
     {table.map((row, rowIndex) => {
-      return <Grid key={'row' + rowIndex} container className={classes.root} spceing={7}>
+      return <Grid key={'row' + rowIndex} container className={classes.table} xs={10} spacing={1}>
         {row.map((cell, cellIndex) => {
-          return <Grid key={'cell' + rowIndex + cellIndex} item xs={1}>
-            <Card className={classes.card}>
+          return <Grid key={'cell' + rowIndex + cellIndex} item xs>
+            <Card className={cell.enable ? classes.card : classes.cardDisable}>
               <Typography>{cell.d.date()}</Typography>
-              {render(defaultTo([], groupContent[cell.d.format(fmt)]))}
+              {(() => {
+                if (cell.enable) {
+                  return render(defaultTo([], groupContent[cell.d.format(fmt)]));
+                } else {
+                  return render([]);
+                }
+              })()}
             </Card>
           </Grid>;
         })}

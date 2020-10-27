@@ -92,7 +92,7 @@ function Details({
 
   const [initLoaidng, setInitLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [displayInCalendar, setDisplayInCalendar] = useState(false);
+  const [displayInCalendar, setDisplayInCalendar] = useState(true);
 
   const [sourceAccountId, setSourceAccountId] = useState(undefined);
   const [destAccountId, setDestAccountId] = useState(undefined);
@@ -100,7 +100,7 @@ function Details({
   const [start, setStart] = useState(undefined);
   const [end, setEnd] = useState(undefined);
   const [page, setPage] = useState(0);
-  const size = 10;
+  const size = 50;
 
   const load = async () => {
     console.log('load with', page);

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
     root: {
-        minWidth: 275,
+        minWidth: 150,
     },
     title: {
         fontSize: 14,
@@ -17,12 +17,12 @@ const DetailCard = ({
 }) => {
     const classes = useStyles();
 
-    return <Card>
+    return <Card className={classes.root}>
         <CardContent>
             {details.map((detail, index) => {
-                return <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    {detail.amount}
-                </Typography>
+                return <div className={classes.title} color="textSecondary" gutterBottom>
+                    {`${detail.subjectName}: ¥${detail.amount / 100}`}
+                </div>
             })}
         </CardContent>
     </Card>
