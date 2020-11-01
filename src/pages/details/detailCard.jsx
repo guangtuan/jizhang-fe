@@ -32,7 +32,8 @@ const displayAll = (details) => {
 };
 
 const DetailCard = ({
-    details
+    details,
+    date
 }) => {
     const classes = useStyles();
 

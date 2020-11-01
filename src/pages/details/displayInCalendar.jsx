@@ -143,9 +143,15 @@ const DisplayInCalendar = ({
               <Typography className={cell.enable ? classes.dayOfMonth: classes.dayOfMonthDisable}>{cell.d.date()}</Typography>
               {(() => {
                 if (cell.enable) {
-                  return render(defaultTo([], groupContent[cell.d.format(fmt)]));
+                  return render({
+                    list: defaultTo([], groupContent[cell.d.format(fmt)]),
+                    date: cell.d
+                  });
                 } else {
-                  return render([]);
+                  return render({
+                    list: [],
+                    date: cell.d
+                  });
                 }
               })()}
             </Card>

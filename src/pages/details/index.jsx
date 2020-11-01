@@ -229,7 +229,7 @@ function Details({
         if (displayInCalendar) {
           return <DisplayInCalendar
             content={details.content}
-            render={details => <DetailCard details={details}></DetailCard>}
+            render={({list, date}) => <DetailCard details={list} date={date}></DetailCard>}
             groupProp={R.prop('createdAt')}
           ></DisplayInCalendar>
         }
