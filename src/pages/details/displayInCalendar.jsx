@@ -33,17 +33,24 @@ const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 150,
     marginBottom: theme.spacing(1),
-    textAlign: 'center',
     color: theme.palette.text.primary,
     whiteSpace: 'nowrap',
   },
   cardDisable: {
     maxWidth: 150,
     marginBottom: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.disabled,
     whiteSpace: 'nowrap',
   },
+  dayOfMonth: {
+    textAlign: 'center',
+    color: 'white',
+    background: theme.palette.text.primary,
+  },
+  dayOfMonthDisable: {
+    textAlign: 'center',
+    color: 'white',
+    background: theme.palette.text.disabled,
+  }
 }));
 
 const generateTable = (currentDate) => {
@@ -132,7 +139,7 @@ const DisplayInCalendar = ({
         {row.map((cell, cellIndex) => {
           return <Grid key={'cell' + rowIndex + cellIndex} item xs>
             <Card className={cell.enable ? classes.card : classes.cardDisable}>
-              <Typography>{cell.d.date()}</Typography>
+              <Typography className={cell.enable ? classes.dayOfMonth: classes.dayOfMonthDisable}>{cell.d.date()}</Typography>
               {(() => {
                 if (cell.enable) {
                   return render(defaultTo([], groupContent[cell.d.format(fmt)]));
