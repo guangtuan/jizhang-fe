@@ -4,7 +4,7 @@ import { Card, CardContent, CardActions, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { gt, length, compose, ifElse, slice } from 'ramda';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     root: {
         width: 176,
         height: 88,
@@ -16,12 +16,20 @@ const useStyles = makeStyles({
     title: {
         textAlign: 'left',
         fontSize: 14,
+    },
+    clickShowMore: {
+        margin: 0,
+        padding: 0,
+        justifyContent: 'start'
     }
-});
+}));
 
 const moreThanThree = compose(gt(3), length);
 const headTwo = slice(0, 2);
-const remain = slice(2, Infinity);
+
+const displayAll = (details) => {
+
+};
 
 const DetailCard = ({
     details
@@ -49,9 +57,13 @@ const DetailCard = ({
                                     </div>
                                 })
                             }
-                                <Button size="small" color="primary">
-                                    更多
-                                </Button>
+                            <Button
+                                onClick={displayAll(details)}
+                                size="small"
+                                color="primary"
+                                className={classes.clickShowMore}>
+                                查看更多
+                            </Button>
                         </React.Fragment>
                     }
                 )(details)

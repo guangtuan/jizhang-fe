@@ -24,7 +24,8 @@ const useStyles = makeStyles((theme) => ({
   },
   monthSetting: {
     width: '100%',
-    padding: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   table: {
     width: '100%',
