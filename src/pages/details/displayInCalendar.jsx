@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { last, groupBy, defaultTo, compose } from 'ramda';
 
-import { Box, Grid, Card, Paper, Typography, Button } from '@material-ui/core';
+import { Grid, Card, Paper, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import dayjs from 'dayjs';
 import * as weekOfYear from 'dayjs/plugin/weekOfYear';
@@ -120,6 +120,7 @@ const DisplayInCalendar = ({
       </Grid>
       <Grid item xs>
         <Button
+          size="small"
           className={classes.button}
           onClick={() => setCurrentDate(currentDate.subtract(1, 'month'))}
           variant="contained"
@@ -127,6 +128,7 @@ const DisplayInCalendar = ({
           startIcon={<SkipPreviousIcon />}
         >上个月</Button>
         <Button
+          size="small"
           className={classes.button}
           onClick={() => setCurrentDate(currentDate.add(1, 'month'))}
           variant="contained"
@@ -140,7 +142,7 @@ const DisplayInCalendar = ({
         {row.map((cell, cellIndex) => {
           return <Grid key={'cell' + rowIndex + cellIndex} item xs>
             <Card className={cell.enable ? classes.card : classes.cardDisable}>
-              <Typography className={cell.enable ? classes.dayOfMonth: classes.dayOfMonthDisable}>{cell.d.date()}</Typography>
+              <Typography className={cell.enable ? classes.dayOfMonth : classes.dayOfMonthDisable}>{cell.d.date()}</Typography>
               {(() => {
                 if (cell.enable) {
                   return render({

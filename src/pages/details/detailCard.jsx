@@ -1,31 +1,33 @@
 import React from 'react';
 
-import { Card, CardContent, CardActions, Button } from '@material-ui/core';
+import { Card, CardContent, Box, CardActions, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { gt, length, compose, ifElse, slice } from 'ramda';
+import { compose, slice } from 'ramda';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         width: 176,
-        height: 88,
+        height: 100,
         padding: 0,
     },
     content: {
-        padding: 8,
+        paddingTop: 4,
+        paddingBottom: 0,
+        paddingLeft: 16,
+        paddingRight: 16,
+        height: 70,
     },
     title: {
         textAlign: 'left',
         fontSize: 14,
     },
-    clickShowMore: {
-        margin: 0,
-        padding: 0,
-        justifyContent: 'start'
+    actions: {
+        paddingBottom: 0,
+        paddingTop: 0,
     }
 }));
 
-const moreThanThree = compose(gt(3), length);
-const headTwo = slice(0, 2);
+const headThree = slice(0, 3);
 
 const displayAll = (details) => {
 
@@ -40,36 +42,26 @@ const DetailCard = ({
     return <Card className={classes.root}>
         <CardContent className={classes.content}>
             {
-                ifElse(
-                    moreThanThree,
-                    () => {
-                        return details.map((detail, index) => {
-                            return <div className={classes.title} color="textSecondary">
-                                {`${detail.subjectName}: ¥${detail.amount / 100}`}
-                            </div>
-                        })
-                    },
-                    () => {
-                        return <React.Fragment>
-                            {
-                                headTwo(details).map((detail, index) => {
-                                    return <div className={classes.title} color="textSecondary">
-                                        {`${detail.subjectName}: ¥${detail.amount / 100}`}
-                                    </div>
-                                })
-                            }
-                            <Button
-                                onClick={displayAll(details)}
-                                size="small"
-                                color="primary"
-                                className={classes.clickShowMore}>
-                                查看更多
-                            </Button>
-                        </React.Fragment>
-                    }
-                )(details)
+                headThree(details).map((detail, index) => {
+                    return <Box className={classes.title} color="textSecondary">
+                        {`${detail.subjectName}: ¥${detail.amount / 100}`}
+                    </Box>
+                })
             }
         </CardContent>
+        <CardActions className={classes.actions}>
+            <Button
+                onClick={displayAll(details)}
+                size="small">
+                查看全部
+                </Button>
+            <Button
+                onClick={() => { }}
+                size="small"
+                color="primary">
+                添加一笔
+                </Button>
+        </CardActions>
     </Card>
 };
 
