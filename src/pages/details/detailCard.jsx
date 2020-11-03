@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Card, CardContent, Box, CardActions, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { compose, slice } from 'ramda';
+import { sortBy, compose, slice, prop } from 'ramda';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const headThree = slice(0, 3);
+const headThree = compose(slice(0, 3), sortBy(prop('amount')));
 
 const displayAll = (details) => {
 
