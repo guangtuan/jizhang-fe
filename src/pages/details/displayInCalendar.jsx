@@ -110,8 +110,10 @@ const DisplayInCalendar = ({
   }, [currentDate]);
 
   useEffect(() => {
+    console.log(content);
+    console.log(groupBy(compose(d => dayjs(d).format(fmt), groupProp))(content));
     setGroupContent(groupBy(compose(d => dayjs(d).format(fmt), groupProp))(content));
-  }, [currentDate]);
+  }, [content]);
 
   return <Paper className={classes.paper}>
     <Grid container spacing={1} className={classes.monthSetting}>
@@ -147,11 +149,6 @@ const DisplayInCalendar = ({
                 if (cell.enable) {
                   return render({
                     list: defaultTo([], groupContent[cell.d.format(fmt)]),
-                    date: cell.d
-                  });
-                } else {
-                  return render({
-                    list: [],
                     date: cell.d
                   });
                 }

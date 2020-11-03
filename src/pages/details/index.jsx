@@ -229,7 +229,18 @@ function Details({
         if (displayInCalendar) {
           return <DisplayInCalendar
             content={details.content}
-            render={({list, date}) => <DetailCard details={list} date={date}></DetailCard>}
+            render={({ list, date }) => {
+              return <DetailCard
+                key={JSON.stringify(date)}
+                details={list}
+                date={date}
+                onClickCreate={(date) => () => {
+                  alert(date);
+                  setEdittingDetail({ createdAt: date });
+                  showCreateDialog();
+                }}
+              />
+            }}
             groupProp={R.prop('createdAt')}
           ></DisplayInCalendar>
         }
