@@ -87,6 +87,7 @@ function DetailEdit({
                     title="科目"
                     value={detailEdit.form.subjectId}
                     onChange={val => {
+                        console.log('select subject: ', val);
                         changeProperty({
                             key: 'subjectId',
                             val: val

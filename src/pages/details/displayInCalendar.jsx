@@ -138,7 +138,7 @@ const DisplayInCalendar = ({
       </Grid>
     </Grid>
     {table.map((row, rowIndex) => {
-      return <Grid key={'row' + rowIndex} container className={classes.table} xs={10} spacing={1}>
+      return <Grid key={'row' + rowIndex} container className={classes.table} spacing={1}>
         {row.map((cell, cellIndex) => {
           return <Grid key={'cell' + rowIndex + cellIndex} item xs>
             <Card className={cell.enable ? classes.card : classes.cardDisable}>

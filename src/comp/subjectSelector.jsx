@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { concat, map, defaultTo, prop, pick, compose, nthArg } from 'ramda';
+import { propSatisfies, concat, map, defaultTo, prop, pick, compose, nthArg, find, propEq } from 'ramda';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -33,11 +33,19 @@ const SubjectSelector = ({
       <Autocomplete
         disableCloseOnSelect
         multiple={multiple}
-        id="tags-standard"
         groupBy={(option) => option.parent}
         options={convert(subjects.list)}
         getOptionLabel={prop('name')}
-        onChange={compose(onChange, map(prop('id')), defaultTo([]), nthArg(1))}
+        onChange={
+          multiple ?
+            compose(onChange, map(prop('id')), defaultTo([]), nthArg(1)) :
+            compose(onChange, prop('id'), defaultTo({ id: -1 }), nthArg(1))
+        }
+        defaultValue={
+          multiple ? 
+          find(propEq('id', value))(subjects) :
+          find(propSatisfies('id', id => value.contains(id)))(subjects)
+        }
         renderInput={(params) => (
           <TextField
             {...params}

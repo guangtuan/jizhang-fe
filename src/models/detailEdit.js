@@ -7,7 +7,7 @@ const defaultForm = () => ({
   destAccountId: -1,
   subjectId: '',
   remark: '',
-  amount: undefined,
+  amount: 0,
   createdAt: new Date(),
 });
 
@@ -50,7 +50,7 @@ export const detailEdit = {
     },
     setForm: (state, payload) => {
       const process = R.pipe(
-          R.assoc('amount', payload.amount / 100),
+          R.assoc('amount', R.defaultTo(0, payload.amount) / 100),
           R.assoc('createdAt', new Date(payload.createdAt)),
       );
       return R.assoc('form', process(payload))(state);

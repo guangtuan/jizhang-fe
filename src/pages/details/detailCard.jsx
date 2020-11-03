@@ -1,8 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { Card, CardContent, Box, CardActions, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { sortBy, compose, slice, prop, reverse } from 'ramda';
+import { sortBy, compose, slice, prop, reverse, pick } from 'ramda';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,7 +36,9 @@ const displayAll = (details) => {
 
 const DetailCard = ({
     details,
-    date
+    date,
+    showCreateDialog,
+    setEdittingDetail
 }) => {
     const classes = useStyles();
 
@@ -56,7 +59,13 @@ const DetailCard = ({
                 查看全部
                 </Button>
             <Button
-                onClick={() => { }}
+                onClick={() => {
+                    const form = {
+                        createdAt: date
+                    };
+                    setEdittingDetail(form);
+                    showCreateDialog();
+                }}
                 size="small"
                 color="primary">
                 添加一笔
@@ -65,4 +74,12 @@ const DetailCard = ({
     </Card>
 };
 
-export default DetailCard;
+const mapState = pick(['accounts', 'users', 'details', 'subjects', 'detailEdit']);
+
+const mapDispatch = (dispatch) => ({
+    delDetail: dispatch.details.del,
+    showCreateDialog: dispatch.detailEdit.showCreateDialog,
+    setEdittingDetail: dispatch.detailEdit.setForm,
+});
+
+export default connect(mapState, mapDispatch)(DetailCard);

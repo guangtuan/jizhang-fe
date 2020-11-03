@@ -42,10 +42,10 @@ function UserSelector({
 }) {
   const classes = useStyles();
   const toSelect = R.concat([emptyItem()], users.content);
-  const toSelectItem = (user) => <MenuItem key={user.id} value={user.id}>{user.nickname}</MenuItem>;
+  const toSelectItem = (user) => <MenuItem key={title + user.id} value={user.id}>{user.nickname}</MenuItem>;
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel id="label_desc_account">{title}</InputLabel>
+      <InputLabel>{title}</InputLabel>
       <Select
         multiple={!!multiple}
         MenuProps={MenuProps}
