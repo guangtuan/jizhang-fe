@@ -79,9 +79,6 @@ const useStyles = makeStyles((theme) => ({
 function Details({
   details,
   loadDetails,
-  loadUsers,
-  loadSubjects,
-  loadAccounts,
   delDetail,
   setEdittingDetail,
   showCreateDialog,
@@ -90,7 +87,6 @@ function Details({
 }) {
   const classes = useStyles();
 
-  const [initLoaidng, setInitLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [displayInCalendar, setDisplayInCalendar] = useState(true);
 
@@ -153,23 +149,7 @@ function Details({
   const tableHeaders = ['创建时间', '用户', '金额', '来源账户', '科目', '目标账户', '备注', '更新时间', '操作'];
 
   useEffect(() => {
-    async function fetchdata() {
-      setInitLoading(true);
-      try {
-        await Promise.all([
-          load(),
-          loadUsers(),
-          loadSubjects(),
-          loadAccounts(),
-        ]);
-      } catch (error) {
-        console.log(error);
-        setInitLoading(false);
-      }
-      setInitLoading(false);
-    }
-
-    fetchdata();
+    load();
   }, [page]);
 
   return (
@@ -296,9 +276,6 @@ function Details({
         }
       })()}
       <DetailEdit></DetailEdit>
-      <Backdrop className={classes.backdrop} open={initLoaidng}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
       <Backdrop className={classes.backdrop} open={deleteLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -313,9 +290,6 @@ const mapState = R.pick(['accounts', 'users', 'details', 'subjects', 'detailEdit
 
 const mapDispatch = (dispatch) => ({
   loadDetails: dispatch.details.load,
-  loadUsers: dispatch.users.load,
-  loadSubjects: dispatch.subjects.load,
-  loadAccounts: dispatch.accounts.load,
   delDetail: dispatch.details.del,
   showCreateDialog: dispatch.detailEdit.showCreateDialog,
   showEditDialog: dispatch.detailEdit.showEditDialog,
