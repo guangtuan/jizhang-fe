@@ -110,8 +110,6 @@ const DisplayInCalendar = ({
   }, [currentDate]);
 
   useEffect(() => {
-    console.log(content);
-    console.log(groupBy(compose(d => dayjs(d).format(fmt), groupProp))(content));
     setGroupContent(groupBy(compose(d => dayjs(d).format(fmt), groupProp))(content));
   }, [content]);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Card, CardContent, Box, CardActions, Button } from '@material-ui/core';
+import { List, ListItem, Typography, Box, Card, CardContent, CardActions, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { sortBy, compose, slice, prop, reverse, pick } from 'ramda';
 
@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
     content: {
         paddingTop: 4,
         paddingBottom: 0,
-        paddingLeft: 16,
-        paddingRight: 16,
+        paddingLeft: 8,
+        paddingRight: 8,
         height: 70,
     },
     title: {
@@ -22,6 +22,10 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 14,
     },
     actions: {
+        paddingBottom: 0,
+        paddingTop: 0,
+    },
+    listitem: {
         paddingBottom: 0,
         paddingTop: 0,
     }
@@ -32,20 +36,24 @@ const headThree = compose(slice(0, 3), reverse, sortBy(prop('amount')));
 const DetailCard = ({
     details,
     date,
-    onClickShowAll = () => {},
-    onClickCreate = () => {}
+    onClickShowAll = () => { },
+    onClickCreate = () => { }
 }) => {
     const classes = useStyles();
 
     return <Card className={classes.root}>
         <CardContent className={classes.content}>
-            {
-                headThree(details).map((detail, index) => {
-                    return <Box className={classes.title} color="textSecondary">
-                        {`${detail.subjectName}: ¥${detail.amount / 100}`}
-                    </Box>
-                })
-            }
+            <List>
+                {
+                    headThree(details).map((detail, index) => {
+                        return <ListItem className={classes.listitem}>
+                            <Box component="div" className={classes.listitem}>
+                                {`${detail.subjectName}: ¥${detail.amount / 100}`}
+                            </Box>
+                        </ListItem>
+                    })
+                }
+            </List>
         </CardContent>
         <CardActions className={classes.actions}>
             <Button

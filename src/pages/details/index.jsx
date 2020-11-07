@@ -235,7 +235,6 @@ function Details({
                 details={list}
                 date={date}
                 onClickCreate={(date) => () => {
-                  alert(date);
                   setEdittingDetail({ createdAt: date });
                   showCreateDialog();
                 }}
