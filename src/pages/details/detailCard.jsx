@@ -46,7 +46,7 @@ const DetailCard = ({
             <List>
                 {
                     headThree(details).map((detail, index) => {
-                        return <ListItem className={classes.listitem}>
+                        return <ListItem key={`listitem-${index}`} className={classes.listitem}>
                             <Box component="div" className={classes.listitem}>
                                 {`${detail.subjectName}: ¥${detail.amount / 100}`}
                             </Box>

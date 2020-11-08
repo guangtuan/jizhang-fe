@@ -108,7 +108,7 @@ export function Body({
         setOpen(false);
     };
 
-    useEffect(async () => {
+    useEffect(() => {
         setInitLoading(true);
         async function load() {
             await Promise.all([

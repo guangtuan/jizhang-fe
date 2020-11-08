@@ -72,7 +72,7 @@ function JiZhangMenu(props) {
     </List>
 }
 
-const mapState = R.pick(['']);
+const mapState = R.pick([]);
 
 const mapDispatch = dispatch => ({});
 
