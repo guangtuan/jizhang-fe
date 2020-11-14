@@ -93,16 +93,15 @@ function Details({
   const [sourceAccountId, setSourceAccountId] = useState(undefined);
   const [destAccountId, setDestAccountId] = useState(undefined);
   const [subjectIds, setSubjectIds] = useState([]);
-  const [start, setStart] = useState(undefined);
-  const [end, setEnd] = useState(undefined);
+  const [start, setStart] = useState(dayJs(new Date()).date(1).hour(0).minute(0).second(0));
+  const [end, setEnd] = useState(dayJs(new Date()).date(dayJs(new Date()).daysInMonth()).hour(23).minute(59).second(59));
   const [page, setPage] = useState(0);
-  const size = 50;
+  const size = 10;
 
   const load = async () => {
-    console.log('load with', page);
     await loadDetails({
-      page: page,
-      size,
+      page: displayInCalendar ? -1 : page,
+      size: displayInCalendar ? -1 : 10,
       queryParam: {
         sourceAccountId,
         destAccountId,
@@ -112,6 +111,10 @@ function Details({
       },
     });
   };
+
+  useEffect(() => {
+    load();
+  }, [page, displayInCalendar]);
 
   const renderOperationButtons = function (data, rowIndex, colIndex) {
     const key = `${rowIndex}-${colIndex}`;
@@ -147,10 +150,6 @@ function Details({
 
   const propsOfDetail = ['createdAt', 'username', 'amount', 'sourceAccountName', 'subjectName', 'destAccountName', 'remark', 'updatedAt', 'opt'];
   const tableHeaders = ['创建时间', '用户', '金额', '来源账户', '科目', '目标账户', '备注', '更新时间', '操作'];
-
-  useEffect(() => {
-    load();
-  }, [page]);
 
   return (
     <React.Fragment>
@@ -198,7 +197,11 @@ function Details({
         control={
           <Switch
             checked={displayInCalendar}
-            onChange={() => setDisplayInCalendar(!displayInCalendar)}
+            onChange={() => {
+              setStart(null);
+              setEnd(null);
+              setDisplayInCalendar(!displayInCalendar)
+            }}
             name="displayInCalendar"
             color="primary"
           />
@@ -209,6 +212,10 @@ function Details({
         if (displayInCalendar) {
           return <DisplayInCalendar
             content={details.content}
+            onDateChange={({ start, end }) => {
+              setStart(start);
+              setEnd(end);
+            }}
             render={({ list, date }) => {
               return <DetailCard
                 key={JSON.stringify(date)}

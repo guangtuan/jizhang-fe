@@ -3,7 +3,7 @@ import { last, groupBy, defaultTo, compose } from 'ramda';
 
 import { Grid, Card, Paper, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import * as weekOfYear from 'dayjs/plugin/weekOfYear';
 import * as updateLocale from 'dayjs/plugin/updateLocale';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
@@ -95,6 +95,7 @@ const DisplayInCalendar = ({
   content,
   render,
   groupProp,
+  onDateChange,
   fmt = "YYYY-MM-DD"
 }) => {
 
@@ -102,6 +103,12 @@ const DisplayInCalendar = ({
 
   const [table, setTable] = useState([[]]);
   const [currentDate, setCurrentDate] = useState(dayjs());
+  const setCurrentDateAndNotify = date => {
+    setCurrentDate(date);
+    const start = dayjs(date).date(1).hour(0).minute(0).second(0);
+    const end = dayjs(date).date(-1).hour(23).minute(59).second(59);
+    onDateChange({start, end});
+  };
 
   const [groupContent, setGroupContent] = useState({});
 
@@ -122,7 +129,7 @@ const DisplayInCalendar = ({
         <Button
           size="small"
           className={classes.button}
-          onClick={() => setCurrentDate(currentDate.subtract(1, 'month'))}
+          onClick={() => setCurrentDateAndNotify(currentDate.subtract(1, 'month'))}
           variant="contained"
           color="primary"
           startIcon={<SkipPreviousIcon />}
@@ -130,7 +137,7 @@ const DisplayInCalendar = ({
         <Button
           size="small"
           className={classes.button}
-          onClick={() => setCurrentDate(currentDate.add(1, 'month'))}
+          onClick={() => setCurrentDateAndNotify(currentDate.add(1, 'month'))}
           variant="contained"
           color="primary"
           endIcon={<SkipNextIcon />}
