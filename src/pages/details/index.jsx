@@ -89,7 +89,7 @@ function Details({
 
   useEffect(() => {
     load();
-  }, [displayInCalendar]);
+  }, [page, displayInCalendar]);
 
   return (
     <React.Fragment>
