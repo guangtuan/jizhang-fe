@@ -20,15 +20,15 @@ import dayJs from 'dayjs';
 
 const useStyles = makeStyles((theme) => ({
     table: {
-      minWidth: 650,
+        minWidth: 650,
     },
     container: {
-      maxHeight: 600,
+        maxHeight: 600,
     },
     opt: {
-      margin: theme.spacing(1),
+        margin: theme.spacing(1),
     },
-  }));
+}));
 
 const DisplayInTable = ({
     onClickEdit,
@@ -42,67 +42,116 @@ const DisplayInTable = ({
 
     const classes = useStyles();
 
-    const renderOperationButtons = function (data, rowIndex, colIndex) {
-        const key = `${rowIndex}-${colIndex}`;
-        return (
-            <TableCell key={key}>
-                <Button
-                    className={classes.opt}
-                    size="small"
-                    startIcon={<EditIcon />}
-                    variant="contained"
-                    color="primary"
-                    onClick={onClickEdit(data)}
-                >编辑</Button>
-                <Button
-                    className={classes.opt}
-                    size="small"
-                    startIcon={<DeleteIcon />}
-                    variant="contained"
-                    color="secondary"
-                    onClick={onClickDelete(data)}
-                >删除</Button>
-            </TableCell>
-        );
-    };
-
-    const propsOfDetail = ['createdAt', 'username', 'amount', 'sourceAccountName', 'subjectName', 'destAccountName', 'remark', 'updatedAt', 'opt'];
-    const tableHeaders = ['创建时间', '用户', '金额', '来源账户', '科目', '目标账户', '备注', '更新时间', '操作'];
+    const defines = [
+        {
+            label: '创建时间',
+            render: ({ detail, rowIndex, colIndex }) => {
+                const key = 'createdAt' + rowIndex + colIndex;
+                if (detail.createdAt) {
+                    return <TableCell key={key}>{dayJs(detail.createdAt).format('YYYY-MM-DD')}</TableCell>
+                } else {
+                    return <TableCell key={key}></TableCell>
+                }
+            }
+        },
+        {
+            label: '用户',
+            prop: 'username',
+        },
+        {
+            label: '金额',
+            render: ({ detail, rowIndex, colIndex }) => {
+                const key = 'amount' + rowIndex + colIndex;
+                if (detail.createdAt) {
+                    return <TableCell key={key}>{`¥${detail.amount / 100}`}</TableCell>
+                } else {
+                    return <TableCell key={key}></TableCell>
+                }
+            }
+        },
+        {
+            label: '来源账户',
+            prop: 'sourceAccountName',
+        },
+        {
+            label: '目标账户',
+            prop: 'destAccountName',
+        },
+        {
+            label: '科目',
+            prop: 'subjectName',
+        },
+        {
+            label: '备注',
+            prop: 'remark',
+        },
+        {
+            label: '更新时间',
+            render: ({ detail, rowIndex, colIndex }) => {
+                const key = 'updatedAt' + rowIndex + colIndex;
+                if (detail.updatedAt) {
+                    return <TableCell key={key}>{dayJs(detail.updatedAt).format('YYYY-MM-DD')}</TableCell>
+                } else {
+                    return <TableCell key={key}></TableCell>
+                }
+            }
+        },
+        {
+            label: '操作',
+            render: (detail, rowIndex, colIndex) => {
+                const key = `${rowIndex}-${colIndex}`;
+                return (
+                    <TableCell key={key}>
+                        <Button
+                            className={classes.opt}
+                            size="small"
+                            startIcon={<EditIcon />}
+                            variant="contained"
+                            color="primary"
+                            onClick={onClickEdit(detail)}
+                        >编辑</Button>
+                        <Button
+                            className={classes.opt}
+                            size="small"
+                            startIcon={<DeleteIcon />}
+                            variant="contained"
+                            color="secondary"
+                            onClick={onClickDelete(detail)}
+                        >删除</Button>
+                    </TableCell>
+                );
+            }
+        }
+    ];
 
     return <Paper>
         <TableContainer className={classes.container} component={Paper}>
             <Table size="small" stickyHeader className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        {tableHeaders.map((item) => {
-                            return (<TableCell key={item}>{item}</TableCell>);
+                        {defines.map((item) => {
+                            return (<TableCell key={item}>{item.label}</TableCell>);
                         })}
                     </TableRow>
                 </TableHead>
-                <TableBody>{
-                    details.map((detail, rowIndex) => (<TableRow key={detail.id + detail.createdAt.toString()}>{
-                        propsOfDetail.map((item, colIndex) => {
-                            const key = `${rowIndex}-${colIndex}`;
-                            if (item === 'amount') {
-                                return (<TableCell key={key}>{detail[item] / 100}元</TableCell>);
-                            }
-                            if (item === 'createdAt') {
-                                return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
-                            }
-                            if (item === 'updatedAt') {
-                                if (detail[item]) {
-                                    return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
-                                } else {
-                                    return <TableCell key={key} />;
+                <TableBody>
+                    {
+                        details.map((detail, rowIndex) => (
+                            <TableRow>
+                                {
+                                    defines.map((def, colIndex) => {
+                                        if (def.render) {
+                                            return def.render({ detail, rowIndex, colIndex });
+                                        } else {
+                                            const key = def.prop + rowIndex + colIndex;
+                                            return <TableCell key={key}>{detail[def.prop]}</TableCell>;
+                                        }
+                                    })
                                 }
-                            }
-                            if (item === 'opt') {
-                                return renderOperationButtons(detail, rowIndex, colIndex);
-                            }
-                            return (<TableCell key={key}>{detail[item]}</TableCell>);
-                        })
-                    }</TableRow>))
-                }</TableBody>
+                            </TableRow>
+                        ))
+                    }
+                </TableBody>
             </Table>
         </TableContainer>
 
@@ -113,7 +162,8 @@ const DisplayInTable = ({
             }}
             rowsPerPage={size}
             page={page}
-            count={count} />
+            count={count}
+        />
     </Paper>;
 }
 
