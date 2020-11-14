@@ -3,7 +3,7 @@ import { last, groupBy, defaultTo, compose } from 'ramda';
 
 import { Grid, Card, Paper, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import * as weekOfYear from 'dayjs/plugin/weekOfYear';
 import * as updateLocale from 'dayjs/plugin/updateLocale';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
@@ -106,7 +106,7 @@ const DisplayInCalendar = ({
   const setCurrentDateAndNotify = date => {
     setCurrentDate(date);
     const start = dayjs(date).date(1).hour(0).minute(0).second(0);
-    const end = dayjs(date).date(-1).hour(23).minute(59).second(59);
+    const end = dayjs(date).date(dayjs(date).daysInMonth()).hour(23).minute(59).second(59);
     onDateChange({start, end});
   };
 

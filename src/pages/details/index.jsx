@@ -9,23 +9,13 @@ import {
   CircularProgress,
   Button,
   Backdrop,
-  Paper,
   FormControl,
   FormControlLabel,
   Fab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
   Box
 } from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 
 import {
   KeyboardDatePicker,
@@ -36,20 +26,12 @@ import dayJs from 'dayjs';
 
 import AccountSelector from '../../comp/accountSelector';
 import SubjectSelector from '../../comp/subjectSelector';
-import DisplayInCalendar from './displayInCalendar';
 import DetailCard from './detailCard';
 import DetailEdit from './detailEdit';
+import DisplayInCalendar from './displayInCalendar';
+import DisplayInTable from './displayInTable';
 
 const useStyles = makeStyles((theme) => ({
-  table: {
-    minWidth: 650,
-  },
-  container: {
-    maxHeight: 600,
-  },
-  opt: {
-    margin: theme.spacing(1),
-  },
   fab: {
     position: 'absolute',
     bottom: theme.spacing(2),
@@ -59,16 +41,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
-  },
-  chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  chip: {
-    margin: 2,
-  },
-  noLabel: {
-    marginTop: theme.spacing(3),
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -114,42 +86,7 @@ function Details({
 
   useEffect(() => {
     load();
-  }, [page, displayInCalendar]);
-
-  const renderOperationButtons = function (data, rowIndex, colIndex) {
-    const key = `${rowIndex}-${colIndex}`;
-    return (
-      <TableCell key={key}>
-        <Button
-          className={classes.opt}
-          size="small"
-          startIcon={<EditIcon />}
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            setEdittingDetail(data);
-            showEditDialog();
-          }}
-        >编辑</Button>
-        <Button
-          className={classes.opt}
-          size="small"
-          startIcon={<DeleteIcon />}
-          variant="contained"
-          color="secondary"
-          onClick={async () => {
-            setDeleteLoading(true);
-            await delDetail(data.id);
-            await load();
-            setDeleteLoading(false);
-          }}
-        >删除</Button>
-      </TableCell>
-    );
-  };
-
-  const propsOfDetail = ['createdAt', 'username', 'amount', 'sourceAccountName', 'subjectName', 'destAccountName', 'remark', 'updatedAt', 'opt'];
-  const tableHeaders = ['创建时间', '用户', '金额', '来源账户', '科目', '目标账户', '备注', '更新时间', '操作'];
+  }, [displayInCalendar]);
 
   return (
     <React.Fragment>
@@ -233,53 +170,23 @@ function Details({
       })()}
       {(() => {
         if (!displayInCalendar) {
-          return <Paper>
-            <TableContainer className={classes.container} component={Paper}>
-              <Table stickyHeader className={classes.table} aria-label="simple table">
-                <TableHead>
-                  <TableRow>
-                    {tableHeaders.map((item) => {
-                      return (<TableCell key={item}>{item}</TableCell>);
-                    })}
-                  </TableRow>
-                </TableHead>
-                <TableBody>{
-                  details.content.map((detail, rowIndex) => (<TableRow key={detail.id + detail.createdAt.toString()}>{
-                    propsOfDetail.map((item, colIndex) => {
-                      const key = `${rowIndex}-${colIndex}`;
-                      if (item === 'amount') {
-                        return (<TableCell key={key}>{detail[item] / 100}元</TableCell>);
-                      }
-                      if (item === 'createdAt') {
-                        return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
-                      }
-                      if (item === 'updatedAt') {
-                        if (detail[item]) {
-                          return (<TableCell key={key}>{dayJs(detail[item]).format('YYYY-MM-DD')}</TableCell>);
-                        } else {
-                          return <TableCell key={key} />;
-                        }
-                      }
-                      if (item === 'opt') {
-                        return renderOperationButtons(detail, rowIndex, colIndex);
-                      }
-                      return (<TableCell key={key}>{detail[item]}</TableCell>);
-                    })
-                  }</TableRow>))
-                }</TableBody>
-              </Table>
-            </TableContainer>
-
-            <TablePagination
-              component="div"
-              onChangePage={(event, newPage) => {
-                console.log('event', event);
-                setPage(newPage);
-              }}
-              rowsPerPage={size}
-              page={page}
-              count={details.total} />
-          </Paper>
+          return <DisplayInTable
+            page={page}
+            size={size}
+            count={details.total}
+            details={details.content}
+            onChangePage={setPage}
+            onClickEdit={(data) => () => {
+              setEdittingDetail(data);
+              showEditDialog();
+            }}
+            onClickDelete={(data) => async () => {
+              setDeleteLoading(true);
+              await delDetail(data.id);
+              await load();
+              setDeleteLoading(false);
+            }}
+          ></DisplayInTable>
         }
       })()}
       <DetailEdit></DetailEdit>
