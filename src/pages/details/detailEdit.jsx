@@ -49,6 +49,8 @@ function DetailEdit({
     updateSingleRow
 }) {
     const classes = useStyles();
+    const form = detailEdit.form;
+    console.log('current form ', form);
     return (
         <Dialog
             open={detailEdit.dialogVisibility}
@@ -58,7 +60,7 @@ function DetailEdit({
             <DialogContent>
                 <UserSelector
                     title="用户"
-                    value={detailEdit.form.userId}
+                    value={form.userId}
                     onChange={val => {
                         changeProperty({
                             key: 'userId',
@@ -67,7 +69,7 @@ function DetailEdit({
                     }} />
                 <AccountSelector
                     title="来源账户"
-                    value={detailEdit.form.sourceAccountId}
+                    value={form.sourceAccountId}
                     onChange={val => {
                         changeProperty({
                             key: 'sourceAccountId',
@@ -76,7 +78,7 @@ function DetailEdit({
                     }} />
                 <AccountSelector
                     title="目标账户"
-                    value={detailEdit.form.destAccountId}
+                    value={form.destAccountId}
                     onChange={val => {
                         changeProperty({
                             key: 'destAccountId',
@@ -85,7 +87,8 @@ function DetailEdit({
                     }} />
                 <SubjectSelector
                     title="科目"
-                    value={detailEdit.form.subjectId}
+                    value={form.subjectId}
+                    multiple={false}
                     onChange={val => {
                         changeProperty({
                             key: 'subjectId',
@@ -94,7 +97,7 @@ function DetailEdit({
                     }} />
                 <FormControl className={classes.formControl}>
                     <TextField
-                        value={detailEdit.form.amount}
+                        value={form.amount}
                         label="金额（单位：元）"
                         onChange={event => {
                             changeProperty({
@@ -106,7 +109,7 @@ function DetailEdit({
                 </FormControl>
                 <FormControl className={classes.formControl}>
                     <TextField
-                        value={detailEdit.form.remark}
+                        value={form.remark}
                         label="备注"
                         onChange={event => {
                             changeProperty({
@@ -126,7 +129,7 @@ function DetailEdit({
                                     val: date
                                 });
                             }}
-                            value={detailEdit.form.createdAt}
+                            value={form.createdAt}
                         />
                     </MuiPickersUtilsProvider>
                 </FormControl>
@@ -134,7 +137,7 @@ function DetailEdit({
             <DialogActions>
                 <Button color="secondary" onClick={hideDialog}>取消</Button>
                 <Button color="primary" onClick={() => {
-                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(detailEdit.form)
+                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(form)
                     pack.amount = pack.amount * 100
                     if (detailEdit.creating) {
                         createDetail(pack).then(() => {

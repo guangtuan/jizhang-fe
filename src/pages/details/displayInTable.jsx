@@ -15,15 +15,16 @@ import {
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import dayJs from 'dayjs';
 
 const useStyles = makeStyles((theme) => ({
     table: {
-        minWidth: 650,
+        minWidth: 600,
     },
     container: {
-        maxHeight: 600,
+        maxHeight: 700
     },
     opt: {
         margin: theme.spacing(1),
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 const DisplayInTable = ({
     onClickEdit,
     onClickDelete,
+    onClickCopy,
     onChangePage,
     details,
     count,
@@ -98,10 +100,17 @@ const DisplayInTable = ({
         },
         {
             label: '操作',
-            render: (detail, rowIndex, colIndex) => {
-                const key = `${rowIndex}-${colIndex}`;
+            render: ({ detail, rowIndex, colIndex }) => {
+                const key = `opt-${rowIndex}-${colIndex}`;
                 return (
                     <TableCell key={key}>
+                        <Button
+                            className={classes.opt}
+                            size="small"
+                            startIcon={<FileCopyIcon />}
+                            variant="contained"
+                            onClick={onClickCopy(detail)}
+                        >复制</Button>
                         <Button
                             className={classes.opt}
                             size="small"
@@ -130,14 +139,14 @@ const DisplayInTable = ({
                 <TableHead>
                     <TableRow>
                         {defines.map((item) => {
-                            return (<TableCell key={item}>{item.label}</TableCell>);
+                            return (<TableCell key={`header${item.label}`}>{item.label}</TableCell>);
                         })}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {
                         details.map((detail, rowIndex) => (
-                            <TableRow>
+                            <TableRow key={`detail-row-${rowIndex}`}>
                                 {
                                     defines.map((def, colIndex) => {
                                         if (def.render) {
@@ -153,17 +162,16 @@ const DisplayInTable = ({
                     }
                 </TableBody>
             </Table>
+            <TablePagination
+                component="div"
+                onChangePage={(event, newPage) => {
+                    onChangePage(newPage);
+                }}
+                rowsPerPage={size}
+                page={page}
+                count={count}
+            />
         </TableContainer>
-
-        <TablePagination
-            component="div"
-            onChangePage={(event, newPage) => {
-                onChangePage(newPage);
-            }}
-            rowsPerPage={size}
-            page={page}
-            count={count}
-        />
     </Paper>;
 }
 

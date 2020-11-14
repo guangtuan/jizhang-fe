@@ -60,20 +60,23 @@ function Details({
   const classes = useStyles();
 
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [displayInCalendar, setDisplayInCalendar] = useState(true);
+  const [displayInCalendar, setDisplayInCalendar] = useState(false);
+  const [displayCreateButton, setDisplayCreateButton] = useState(false);
 
   const [sourceAccountId, setSourceAccountId] = useState(undefined);
   const [destAccountId, setDestAccountId] = useState(undefined);
   const [subjectIds, setSubjectIds] = useState([]);
-  const [start, setStart] = useState(dayJs(new Date()).date(1).hour(0).minute(0).second(0));
-  const [end, setEnd] = useState(dayJs(new Date()).date(dayJs(new Date()).daysInMonth()).hour(23).minute(59).second(59));
+  // dayJs(new Date()).date(1).hour(0).minute(0).second(0)
+  const [start, setStart] = useState(null);
+  // dayJs(new Date()).date(dayJs(new Date()).daysInMonth()).hour(23).minute(59).second(59)
+  const [end, setEnd] = useState(null);
   const [page, setPage] = useState(0);
   const size = 10;
 
   const load = async () => {
     await loadDetails({
       page: displayInCalendar ? -1 : page,
-      size: displayInCalendar ? -1 : 10,
+      size: displayInCalendar ? -1 : size,
       queryParam: {
         sourceAccountId,
         destAccountId,
@@ -135,9 +138,8 @@ function Details({
           <Switch
             checked={displayInCalendar}
             onChange={() => {
-              setStart(null);
-              setEnd(null);
               setDisplayInCalendar(!displayInCalendar)
+              setDisplayCreateButton(true)
             }}
             name="displayInCalendar"
             color="primary"
@@ -176,6 +178,10 @@ function Details({
             count={details.total}
             details={details.content}
             onChangePage={setPage}
+            onClickCopy={(data) => () => {
+              setEdittingDetail(data);
+              showCreateDialog();
+            }}
             onClickEdit={(data) => () => {
               setEdittingDetail(data);
               showEditDialog();
@@ -193,9 +199,15 @@ function Details({
       <Backdrop className={classes.backdrop} open={deleteLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
-        <AddIcon />
-      </Fab>
+      {
+        (() => {
+          if (displayCreateButton) {
+            return <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
+              <AddIcon />
+            </Fab>
+          }
+        })()
+      }
     </React.Fragment>
   );
 }

@@ -42,9 +42,9 @@ const SubjectSelector = ({
             compose(onChange, prop('id'), defaultTo({ id: -1 }), nthArg(1))
         }
         defaultValue={
-          multiple ? 
-          find(propEq('id', value))(subjects) :
-          find(propSatisfies('id', id => value.contains(id)))(subjects)
+          multiple ?
+            find(propEq('id', value))(subjects) :
+            find(propSatisfies('id', id => value.contains(id)))(subjects)
         }
         renderInput={(params) => (
           <TextField
