@@ -8,7 +8,6 @@ FROM node:alpine as HTML
 WORKDIR /root/app
 COPY --from=DEP /root/app/node_modules/ /root/app/node_modules
 COPY src /root/app/src
-COPY .env /root/app/.env
 COPY public /root/app/public
 COPY package.json /root/app/package.json
 RUN yarn build
