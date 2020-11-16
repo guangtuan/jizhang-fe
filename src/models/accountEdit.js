@@ -5,6 +5,7 @@ const defaultForm = () => ({
   type: '',
   userId: -1,
   name: '',
+  initAmount: 0,
   description: '',
 });
 

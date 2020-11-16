@@ -53,7 +53,7 @@ export default function JizhangSelector({
     multiple
 }) {
     const classes = useStyles();
-    const toSelectItem = datum => <MenuItem key={id(datum)} value={id(datum)}>{display(datum)}</MenuItem>;
+    const toSelectItem = datum => <MenuItem key={`jizhang-selector-item-${title}-${id(datum)}`} value={id(datum)}>{display(datum)}</MenuItem>;
     return (
         <FormControl className={classes.formControl}>
             <InputLabel>{title}</InputLabel>

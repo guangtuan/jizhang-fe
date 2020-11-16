@@ -1,18 +1,17 @@
-import {Paper} from '@material-ui/core';
-import {makeStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { makeStyles } from '@material-ui/core/styles';
+import {
+  Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Fab, Box
+} from '@material-ui/core';
 import * as R from 'ramda';
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import JizhangSelector from '../../comp/jizhangSelector';
+import SubjectEdit from './subjectEdit';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -37,18 +36,35 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Subjects({
-                    subjects,
-                    loadSubjects
-                  }) {
+  subjects,
+  loadSubjects,
+  showCreateDialog,
+  changeProperty,
+  setForm
+}) {
 
   const LEVEL_1 = 1;
   const LEVEL_2 = 2;
   const classes = useStyles();
-  const [level, setLevel] = useState(LEVEL_2);
+  const [level, setLevel] = useState(LEVEL_1);
   const [parentId, setParentId] = useState(undefined);
+  const [firstLevel, setFirstLevel] = useState([]);
+
+  const load = async () => {
+    loadSubjects({ level, parentId });
+  }
+
+  const initFirstLevel = async () => {
+    const firstLevel = await loadSubjects({ level: 1 });
+    setFirstLevel(firstLevel);
+  }
 
   useEffect(() => {
-    loadSubjects({level, parentId});
+    initFirstLevel();
+  }, []);
+
+  useEffect(() => {
+    load();
   }, [level, parentId]);
 
   const level1Columns = [
@@ -66,11 +82,34 @@ function Subjects({
     },
     {
       label: '操作',
-      render: () => {
-        return <TableCell>
-          <Button>
-            添加子类
-          </Button>
+      render: ({ subject, colIndex, rowIndex }) => {
+        const key = `subject-opt-${rowIndex}-${colIndex}`;
+        return <TableCell key={key}>
+          <Box>
+            <Button
+              className={classes.opt}
+              size="small"
+              startIcon={<AddIcon />}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                changeProperty({ key: 'parentId', val: subject.id });
+                changeProperty({ key: 'level', val: 2 });
+                showCreateDialog();
+              }}
+            >添加子类</Button>
+            <Button
+              className={classes.opt}
+              size="small"
+              startIcon={<VisibilityIcon />}
+              variant="contained"
+              onClick={() => {
+                setLevel(LEVEL_2);
+                setParentId(subject.id);
+                load();
+              }}
+            >查看子类</Button>
+          </Box>
         </TableCell>;
       },
     },
@@ -80,7 +119,8 @@ function Subjects({
     {
       label: '序号',
       render: (subject, rowNumber, colNumber) => {
-        return <TableCell key={`${rowNumber}-${colNumber}`}>{rowNumber}</TableCell>;
+        console.log(rowNumber);
+        return <TableCell key={`${subject.id}-${rowNumber}-${colNumber}`}>{rowNumber}</TableCell>;
       },
     },
     {
@@ -93,13 +133,13 @@ function Subjects({
     },
     {
       label: '操作',
-      render: (subject, rowNumber, colNumber) => {
-        return <TableCell key={`${rowNumber}-${colNumber}`}>
-          <div>
+      render: ({ subject, rowNumber, colNumber }) => {
+        return <TableCell key={`${subject.id}-${rowNumber}-${colNumber}`}>
+          <Box>
             <Button
               className={classes.opt}
               size="small"
-              startIcon={<EditIcon/>}
+              startIcon={<EditIcon />}
               variant="contained"
               color="primary"
               onClick={() => {
@@ -108,13 +148,13 @@ function Subjects({
             <Button
               className={classes.opt}
               size="small"
-              startIcon={<DeleteIcon/>}
+              startIcon={<DeleteIcon />}
               variant="contained"
               color="secondary"
               onClick={async () => {
               }}
             >删除</Button>
-          </div>
+          </Box>
         </TableCell>;
       },
     },
@@ -132,24 +172,35 @@ function Subjects({
     <React.Fragment>
       <JizhangSelector
         clearable={false}
-        state={[{
-          name: LEVEL_1,
-          id: LEVEL_1,
-        }, {
-          name: LEVEL_2,
-          id: LEVEL_2,
-        }]}
+        state={[
+          { name: LEVEL_1, id: LEVEL_1, },
+          { name: LEVEL_2, id: LEVEL_2, }
+        ]}
         title={'请选择等级'}
         onChange={setLevel}
         value={level}
         multiple={false}
       />
+      {
+        (() => {
+          if (level == LEVEL_2) {
+            return <JizhangSelector
+              clearable={true}
+              state={firstLevel}
+              title={'请选择大类'}
+              onChange={setParentId}
+              value={parentId}
+              multiple={false}
+            />
+          }
+        })(level)
+      }
       <TableContainer className={classes.container} component={Paper}>
         <Table stickyHeader className={classes.table}>
           <TableHead>
             <TableRow>
               {columns(level).map(R.prop('label')).map((label) => {
-                return <TableCell key={label}>{label}</TableCell>;
+                return <TableCell key={`table-header-${label}`}>{label}</TableCell>;
               })}
             </TableRow>
           </TableHead>
@@ -159,9 +210,9 @@ function Subjects({
                 {
                   columns(level).map((col, colNumber) => {
                     if (col.render) {
-                      return col.render(subject, rowNumber + 1, colNumber);
+                      return col.render({ subject, rowNumber, colNumber });
                     }
-                    return <TableCell key={col.prop + colNumber}>
+                    return <TableCell key={`${col.prop}-${rowNumber}-${colNumber}`}>
                       {R.prop(col.prop)(subject)}
                     </TableCell>;
                   })
@@ -171,6 +222,10 @@ function Subjects({
           </TableBody>
         </Table>
       </TableContainer>
+      <SubjectEdit onSubjcetCreate={load} />
+      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
+        <AddIcon />
+      </Fab>
     </React.Fragment>
   );
 }
@@ -179,6 +234,9 @@ const mapState = R.pick(["subjects"]);
 
 const mapDispatch = dispatch => ({
   loadSubjects: dispatch.subjects.loadByLevel,
+  showCreateDialog: dispatch.subjects.showDialog,
+  changeProperty: dispatch.subjects.changeProperty,
+  setForm: dispatch.subjects.setForm
 });
 
 export default connect(mapState, mapDispatch)(Subjects);

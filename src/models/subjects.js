@@ -1,10 +1,11 @@
-import {append, assoc, findIndex, ifElse, lensIndex, lensProp, over, propEq, mergeLeft} from 'ramda';
-import {get, post} from '../core/request';
+import { append, assoc, assocPath, findIndex, ifElse, lensIndex, lensProp, over, propEq, mergeLeft } from 'ramda';
+import { get, post } from '../core/request';
 
 const defaultForm = () => ({
   name: '',
   description: '',
-  parentId: undefined,
+  parentId: null,
+  level: 1
 });
 
 export const subjects = {
@@ -16,6 +17,22 @@ export const subjects = {
     creating: false,
   },
   reducers: {
+    hideDialog: (state, payload) => {
+      return assoc('creating', false)(state);
+    },
+    showDialog: (state, payload) => {
+      return assoc('creating', true)(state);
+    },
+    setForm: (state, payload) => {
+      return assoc('form', payload)(state);
+    },
+    clearForm: (state, payload) => {
+      return assoc('form', defaultForm())(state);
+    },
+    changeProperty: (state, payload) => {
+      const apply = assocPath(['form', payload.key], payload.val);
+      return apply(state);
+    },
     setDisplay: (state, payload) => {
       return assoc('display', payload)(state);
     },
@@ -24,15 +41,15 @@ export const subjects = {
     },
     add: (state, payload) => {
       return ifElse(
-          () => payload.parentId,
+        () => payload.parentId,
+        over(
+          lensProp('list'),
           over(
-              lensProp('list'),
-              over(
-                  lensIndex(findIndex(propEq('id', payload.parentId))(state.list)),
-                  over(lensProp('children'), append(payload)),
-              ),
+            lensIndex(findIndex(propEq('id', payload.parentId))(state.list)),
+            over(lensProp('children'), append(payload)),
           ),
-          over(lensProp('list'), append(payload)),
+        ),
+        over(lensProp('list'), append(payload)),
       )(state);
     },
   },
@@ -40,10 +57,10 @@ export const subjects = {
     loadByLevel: async (payload, rootState) => {
       const subjects = await get({
         path: 'api/subjects',
-        data: mergeLeft({by: 'level'})(payload),
+        data: mergeLeft({ by: 'level' })(payload),
       });
-      console.log(subjects);
       dispatch.subjects.setDisplay(subjects);
+      return subjects;
     },
     load: async (payload, rootState) => {
       const subjects = await get({
