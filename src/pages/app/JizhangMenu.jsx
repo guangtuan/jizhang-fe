@@ -9,6 +9,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import HomeIcon from '@material-ui/icons/Home';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import PaymentIcon from '@material-ui/icons/Payment';
+import CreditCardIcon from '@material-ui/icons/CreditCard';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -39,6 +40,12 @@ const pages = [
         'text': '用户',
         'icon': <PersonIcon></PersonIcon>,
         'path': '/users'
+    },
+    {
+        'type': 'base',
+        'text': '信用卡',
+        'icon': <CreditCardIcon></CreditCardIcon>,
+        'path': '/credit_cards'
     },
     {
         'type': 'ext',

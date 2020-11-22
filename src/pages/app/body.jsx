@@ -15,6 +15,7 @@ import Details from '../details';
 import Subjects from '../subjects';
 import Users from '../users';
 import Accounts from '../accounts';
+import CreditCards from '../creditCards';
 import Statistics from '../statistics';
 import JiZhangMenu from './JizhangMenu';
 import { Menu as MenuIcon } from '@material-ui/icons/';
@@ -176,6 +177,9 @@ export function Body({
                         </Route>
                         <Route path="/accounts">
                             <Accounts />
+                        </Route>
+                        <Route path="/credit_cards">
+                            <CreditCards />
                         </Route>
                         <Route path="/subjects">
                             <Subjects />
