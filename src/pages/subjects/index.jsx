@@ -25,11 +25,6 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     right: theme.spacing(2),
   },
-  root: {
-    '& > *': {
-      borderBottom: 'unset',
-    },
-  },
   opt: {
     margin: theme.spacing(1),
   },
@@ -40,7 +35,7 @@ function Subjects({
   loadSubjects,
   showCreateDialog,
   changeProperty,
-  setForm
+  clearForm
 }) {
 
   const LEVEL_1 = 1;
@@ -58,6 +53,12 @@ function Subjects({
     const firstLevel = await loadSubjects({ level: 1 });
     setFirstLevel(firstLevel);
   }
+
+  useEffect(() => {
+    if (level === LEVEL_1) {
+      setParentId(undefined);
+    }
+  }, [level]);
 
   useEffect(() => {
     initFirstLevel();
@@ -119,7 +120,6 @@ function Subjects({
     {
       label: '序号',
       render: (subject, rowNumber, colNumber) => {
-        console.log(rowNumber);
         return <TableCell key={`${subject.id}-${rowNumber}-${colNumber}`}>{rowNumber}</TableCell>;
       },
     },
@@ -173,10 +173,10 @@ function Subjects({
       <JizhangSelector
         clearable={false}
         state={[
-          { name: LEVEL_1, id: LEVEL_1, },
-          { name: LEVEL_2, id: LEVEL_2, }
+          { name: '大类', id: LEVEL_1, },
+          { name: '子类', id: LEVEL_2, }
         ]}
-        title={'请选择等级'}
+        title={'请选择类别等级'}
         onChange={setLevel}
         value={level}
         multiple={false}
@@ -196,7 +196,7 @@ function Subjects({
         })(level)
       }
       <TableContainer className={classes.container} component={Paper}>
-        <Table stickyHeader className={classes.table}>
+        <Table size="small" stickyHeader className={classes.table}>
           <TableHead>
             <TableRow>
               {columns(level).map(R.prop('label')).map((label) => {
@@ -206,7 +206,7 @@ function Subjects({
           </TableHead>
           <TableBody>
             {subjects.display.map((subject, rowNumber) => {
-              return <TableRow className={classes.root} key={subject.id}>
+              return <TableRow key={subject.id}>
                 {
                   columns(level).map((col, colNumber) => {
                     if (col.render) {
@@ -222,8 +222,13 @@ function Subjects({
           </TableBody>
         </Table>
       </TableContainer>
-      <SubjectEdit onSubjcetCreate={load} />
-      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
+      <SubjectEdit
+        firstLevel={firstLevel}
+        onSubjcetCreate={load} />
+      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={() => {
+        changeProperty({ key: "parentId", val: parentId });
+        showCreateDialog();
+      }}>
         <AddIcon />
       </Fab>
     </React.Fragment>
@@ -236,7 +241,8 @@ const mapDispatch = dispatch => ({
   loadSubjects: dispatch.subjects.loadByLevel,
   showCreateDialog: dispatch.subjects.showDialog,
   changeProperty: dispatch.subjects.changeProperty,
-  setForm: dispatch.subjects.setForm
+  setForm: dispatch.subjects.setForm,
+  clearForm: dispatch.subjects.clearForm,
 });
 
 export default connect(mapState, mapDispatch)(Subjects);

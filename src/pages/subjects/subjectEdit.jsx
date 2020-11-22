@@ -7,7 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Slide from '@material-ui/core/Slide';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import * as R from 'ramda';
+import { prop, propEq, find, pick, compose } from 'ramda';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -36,9 +36,11 @@ function SubjectEdit({
   subjects,
   clearForm,
   createSubject,
-  onSubjcetCreate
+  onSubjcetCreate,
+  firstLevel
 }) {
   const classes = useStyles();
+  const form = subjects.form;
   return (
     <Dialog
       open={subjects.creating}
@@ -46,9 +48,23 @@ function SubjectEdit({
     >
       <DialogTitle id="form-dialog-title">新建科目</DialogTitle>
       <DialogContent>
+        {
+          (parentId => {
+            if (parentId) {
+              const displaySelectedParentId = compose(prop('name'), find(propEq('id', form.parentId)));
+              return <FormControl className={classes.formControl}>
+                <TextField
+                  label="大类"
+                  disabled
+                  value={displaySelectedParentId(firstLevel)}
+                />
+              </FormControl>
+            }
+          })(form.parentId)
+        }
         <FormControl className={classes.formControl}>
           <TextField
-            value={subjects.form.name}
+            value={form.name}
             label="名称"
             onChange={event => {
               changeProperty({
@@ -60,7 +76,7 @@ function SubjectEdit({
         </FormControl>
         <FormControl className={classes.formControl}>
           <TextField
-            value={subjects.form.description}
+            value={form.description}
             label="描述"
             onChange={event => {
               changeProperty({
@@ -74,7 +90,7 @@ function SubjectEdit({
       <DialogActions>
         <Button onClick={hideDialog}>取消</Button>
         <Button onClick={() => {
-          const pack = R.pick(['name', 'description', 'level', 'parentId'])(subjects.form);
+          const pack = pick(['name', 'description', 'level', 'parentId'])(form);
           createSubject(pack).then(resp => {
             clearForm();
             hideDialog();
@@ -86,7 +102,7 @@ function SubjectEdit({
   )
 }
 
-const mapState = R.pick(['subjects']);
+const mapState = pick(['subjects']);
 
 const mapDispatch = dispatch => ({
   createSubject: dispatch.subjects.create,
