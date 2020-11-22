@@ -5,5 +5,5 @@ export default createSelector({
     display: R.prop('name'),
     id: R.prop('id'),
     clearable: true,
-    stateKey: "accounts"
+    stateKey: "accounts",
 });

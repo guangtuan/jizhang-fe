@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   __,
   concat,
@@ -11,11 +11,8 @@ import {
   any,
 } from 'ramda';
 
-import {makeStyles} from '@material-ui/core/styles';
-
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 
 const emptyItem = () => [{
@@ -34,19 +31,11 @@ const MenuProps = {
   },
 };
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-}));
-
 export default function createSelector({
   display,
   id,
   stateKey,
-  clearable,
+  clearable
 }) {
   function Selector(props) {
     const {
@@ -56,10 +45,9 @@ export default function createSelector({
       multiple,
     } = props;
     const state = prop(stateKey)(props);
-    const classes = useStyles();
     const toSelectItem = (datam) => <MenuItem key={title + id(datam)} value={id(datam)}>{display(datam)}</MenuItem>;
     return (
-      <FormControl className={classes.formControl}>
+      <>
         <InputLabel>{title}</InputLabel>
         <Select
           multiple={!!multiple}
@@ -67,20 +55,20 @@ export default function createSelector({
           value={value}
           onChange={(event) => {
             const val = compose(
-                prop('value'),
-                prop('target'),
+              prop('value'),
+              prop('target'),
             )(event);
             onChange(
-                ifElse(
-                    () => multiple,
-                    ifElse(any((v) => id(v) === undefined), () => [], identity),
-                    identity,
-                )(val),
+              ifElse(
+                () => multiple,
+                ifElse(any((v) => id(v) === undefined), () => [], identity),
+                identity,
+              )(val),
             );
           }}>
           {ifElse(() => clearable, concat(__, emptyItem()), identity)(state).map(toSelectItem)}
         </Select>
-      </FormControl>
+      </>
     );
   }
 

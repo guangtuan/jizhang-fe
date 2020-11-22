@@ -92,23 +92,29 @@ function Details({
   return (
     <React.Fragment>
       <Box>
-        <AccountSelector
-          value={sourceAccountId}
-          onChange={setSourceAccountId}
-          title="来源账户"
-        />
-        <AccountSelector
-          value={destAccountId}
-          onChange={setDestAccountId}
-          title="目标账户"
-        />
-        <SubjectSelector
-          state={subjects.list}
-          title="科目"
-          multiple={true}
-          value={subjectIds}
-          onChange={setSubjectIds}
-        />
+        <FormControl className={classes.formControl}>
+          <AccountSelector
+            value={sourceAccountId}
+            onChange={setSourceAccountId}
+            title="来源账户"
+          />
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <AccountSelector
+            value={destAccountId}
+            onChange={setDestAccountId}
+            title="目标账户"
+          />
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <SubjectSelector
+            state={subjects.list}
+            title="科目"
+            multiple={true}
+            value={subjectIds}
+            onChange={setSubjectIds}
+          />
+        </FormControl>
         <FormControl className={classes.formControl}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
@@ -144,54 +150,58 @@ function Details({
         }
         label="以📅形式展示"
       />
-      {(() => {
-        if (displayInCalendar) {
-          return <DisplayInCalendar
-            content={details.content}
-            onDateChange={({ start, end }) => {
-              setStart(start);
-              setEnd(end);
-            }}
-            render={({ list, date }) => {
-              return <DetailCard
-                key={JSON.stringify(date)}
-                details={list}
-                date={date}
-                onClickCreate={(date) => () => {
-                  setEdittingDetail({ createdAt: date });
-                  showCreateDialog();
-                }}
-              />
-            }}
-            groupProp={R.prop('createdAt')}
-          ></DisplayInCalendar>
-        }
-      })()}
-      {(() => {
-        if (!displayInCalendar) {
-          return <DisplayInTable
-            page={page}
-            size={size}
-            count={details.total}
-            details={details.content}
-            onChangePage={setPage}
-            onClickCopy={(data) => () => {
-              setEdittingDetail(data);
-              showCreateDialog();
-            }}
-            onClickEdit={(data) => () => {
-              setEdittingDetail(data);
-              showEditDialog();
-            }}
-            onClickDelete={(data) => async () => {
-              setDeleteLoading(true);
-              await delDetail(data.id);
-              await load();
-              setDeleteLoading(false);
-            }}
-          ></DisplayInTable>
-        }
-      })()}
+      {
+        (() => {
+          if (displayInCalendar) {
+            return <DisplayInCalendar
+              content={details.content}
+              onDateChange={({ start, end }) => {
+                setStart(start);
+                setEnd(end);
+              }}
+              render={({ list, date }) => {
+                return <DetailCard
+                  key={JSON.stringify(date)}
+                  details={list}
+                  date={date}
+                  onClickCreate={(date) => () => {
+                    setEdittingDetail({ createdAt: date });
+                    showCreateDialog();
+                  }}
+                />
+              }}
+              groupProp={R.prop('createdAt')}
+            ></DisplayInCalendar>
+          }
+        })()
+      }
+      {
+        (() => {
+          if (!displayInCalendar) {
+            return <DisplayInTable
+              page={page}
+              size={size}
+              count={details.total}
+              details={details.content}
+              onChangePage={setPage}
+              onClickCopy={(data) => () => {
+                setEdittingDetail(data);
+                showCreateDialog();
+              }}
+              onClickEdit={(data) => () => {
+                setEdittingDetail(data);
+                showEditDialog();
+              }}
+              onClickDelete={(data) => async () => {
+                setDeleteLoading(true);
+                await delDetail(data.id);
+                await load();
+                setDeleteLoading(false);
+              }}
+            ></DisplayInTable>
+          }
+        })()
+      }
       <DetailEdit></DetailEdit>
       <Backdrop className={classes.backdrop} open={deleteLoading}>
         <CircularProgress color="inherit" />
@@ -199,7 +209,7 @@ function Details({
       <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
         <AddIcon />
       </Fab>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
 

@@ -1,12 +1,8 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import * as R from 'ramda';
-
-import {makeStyles} from '@material-ui/core/styles';
-
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 
 const emptyItem = () => ({
@@ -25,26 +21,17 @@ const MenuProps = {
   },
 };
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    maxWidth: 300,
-  },
-}));
-
 function UserSelector({
   users,
   title,
   onChange,
   value,
-  multiple,
+  multiple
 }) {
-  const classes = useStyles();
   const toSelect = R.concat([emptyItem()], users.content);
   const toSelectItem = (user) => <MenuItem key={title + user.id} value={user.id}>{user.nickname}</MenuItem>;
   return (
-    <FormControl className={classes.formControl}>
+    <React.Fragment>
       <InputLabel>{title}</InputLabel>
       <Select
         multiple={!!multiple}
@@ -64,7 +51,7 @@ function UserSelector({
         }}>
         {toSelect.map(toSelectItem)}
       </Select>
-    </FormControl>
+    </React.Fragment>
   );
 }
 

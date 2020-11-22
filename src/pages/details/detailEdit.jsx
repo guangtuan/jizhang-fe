@@ -33,9 +33,8 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
     },
     formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-        maxWidth: 300,
+        marginTop: theme.spacing(1),
+        marginBotton: theme.spacing(1)
     },
 }));
 
@@ -58,44 +57,55 @@ function DetailEdit({
         >
             <DialogTitle id="form-dialog-title">编辑明细</DialogTitle>
             <DialogContent>
-                <UserSelector
-                    title="用户"
-                    value={form.userId}
-                    onChange={val => {
-                        changeProperty({
-                            key: 'userId',
-                            val: val
-                        });
-                    }} />
-                <AccountSelector
-                    title="来源账户"
-                    value={form.sourceAccountId}
-                    onChange={val => {
-                        changeProperty({
-                            key: 'sourceAccountId',
-                            val: val
-                        });
-                    }} />
-                <AccountSelector
-                    title="目标账户"
-                    value={form.destAccountId}
-                    onChange={val => {
-                        changeProperty({
-                            key: 'destAccountId',
-                            val: val
-                        });
-                    }} />
-                <SubjectSelector
-                    title="科目"
-                    value={form.subjectId}
-                    multiple={false}
-                    onChange={val => {
-                        changeProperty({
-                            key: 'subjectId',
-                            val: val
-                        });
-                    }} />
-                <FormControl className={classes.formControl}>
+                <FormControl fullWidth className={classes.formControl}>
+                    <UserSelector
+                        title="用户"
+                        value={form.userId}
+                        onChange={val => {
+                            changeProperty({
+                                key: 'userId',
+                                val: val
+                            });
+                        }} />
+                </FormControl>
+                <FormControl fullWidth className={classes.formControl}>
+                    <AccountSelector
+                        fullWidth={true}
+                        title="来源账户"
+                        value={form.sourceAccountId}
+                        onChange={val => {
+                            changeProperty({
+                                key: 'sourceAccountId',
+                                val: val
+                            });
+                        }} />
+                </FormControl>
+                <FormControl fullWidth className={classes.formControl}>
+                    <AccountSelector
+                        fullWidth={true}
+                        title="目标账户"
+                        value={form.destAccountId}
+                        onChange={val => {
+                            changeProperty({
+                                key: 'destAccountId',
+                                val: val
+                            });
+                        }} />
+                </FormControl>
+                <FormControl fullWidth className={classes.formControl}>
+                    <SubjectSelector
+                        fullWidth={true}
+                        title="科目"
+                        value={form.subjectId}
+                        multiple={false}
+                        onChange={val => {
+                            changeProperty({
+                                key: 'subjectId',
+                                val: val
+                            });
+                        }} />
+                </FormControl>
+                <FormControl fullWidth className={classes.formControl}>
                     <TextField
                         value={form.amount}
                         label="金额（单位：元）"
@@ -107,7 +117,7 @@ function DetailEdit({
                         }}
                     />
                 </FormControl>
-                <FormControl className={classes.formControl}>
+                <FormControl fullWidth className={classes.formControl}>
                     <TextField
                         value={form.remark}
                         label="备注"
@@ -119,7 +129,7 @@ function DetailEdit({
                         }}
                     />
                 </FormControl>
-                <FormControl className={classes.formControl}>
+                <FormControl fullWidth className={classes.formControl}>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
                             label="请选择消费日期"
