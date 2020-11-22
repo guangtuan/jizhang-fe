@@ -22,7 +22,6 @@ import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import dayJs from 'dayjs';
 
 import AccountSelector from '../../comp/accountSelector';
 import SubjectSelector from '../../comp/subjectSelector';
@@ -61,7 +60,6 @@ function Details({
 
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [displayInCalendar, setDisplayInCalendar] = useState(false);
-  const [displayCreateButton, setDisplayCreateButton] = useState(false);
 
   const [sourceAccountId, setSourceAccountId] = useState(undefined);
   const [destAccountId, setDestAccountId] = useState(undefined);
@@ -139,7 +137,6 @@ function Details({
             checked={displayInCalendar}
             onChange={() => {
               setDisplayInCalendar(!displayInCalendar)
-              setDisplayCreateButton(true)
             }}
             name="displayInCalendar"
             color="primary"
@@ -199,15 +196,9 @@ function Details({
       <Backdrop className={classes.backdrop} open={deleteLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      {
-        (() => {
-          if (displayCreateButton) {
-            return <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
-              <AddIcon />
-            </Fab>
-          }
-        })()
-      }
+      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
+        <AddIcon />
+      </Fab>
     </React.Fragment>
   );
 }
