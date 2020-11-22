@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { Paper, Fab, Box } from '@material-ui/core';
@@ -15,14 +15,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function CreditCards({
-    // loadCreditCards
-}) {
+const defaultForm = () => ({
+    id: undefined,
+    amountLimit: undefined,
+    dateBill: undefined,
+    dateRepay: undefined
+});
+
+function CreditCards() {
     const classes = useStyles();
 
-    useEffect(() => {
-        // loadCreditCards();
-    }, []);
+    const [form, setForm] = useState(defaultForm());
 
     return (
         <div>
