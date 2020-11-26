@@ -1,8 +1,8 @@
 import { get, post, put } from '../../core/request';
 
-export default model = {
+export const model = {
 
-    load: async () => {
+    list: async () => {
         return get({
             path: '/api/creditCards'
         })

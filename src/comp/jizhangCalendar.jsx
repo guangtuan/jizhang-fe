@@ -142,7 +142,7 @@ export default function JizhangCalendar({
                                 </Typography>
                                 <Divider key={`jizhangCalendar-divider-row${rowIndex}-col-${colIndex}`} />
                                 {
-                                    displayFunction({ rowIndex, colIndex, dateYYYYMMDD: col.dayObject.format(fmt) })
+                                    displayFunction({ rowIndex, colIndex, dayObject: col.dayObject })
                                 }
                             </Card>;
                         })

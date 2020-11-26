@@ -25,9 +25,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const useStyles = makeStyles((theme) => ({
-    appBar: {
-        position: 'relative',
-    },
     title: {
         marginLeft: theme.spacing(2),
         flex: 1,
