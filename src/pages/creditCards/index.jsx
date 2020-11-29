@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
     display: {
         margin: theme.spacing(1),
-        height: 88,
+        height: 66,
     }
 }));
 
@@ -52,7 +52,10 @@ function CreditCards() {
             <Paper>
                 <JizhangCalendar
                     line={4}
-                    displayFunction={({ rowIndex, colIndex, dayObject }) => {
+                    displayFunction={({ rowIndex, colIndex, dayObject, inThisMonth }) => {
+                        if (!inThisMonth) {
+                            return <></>;
+                        }
                         const date = dayObject.date();
                         return <Box className={classes.display}>
                             {defaultTo([])(displayAsBill[date]).map((card, index) => {

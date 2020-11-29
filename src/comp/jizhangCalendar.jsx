@@ -140,9 +140,8 @@ export default function JizhangCalendar({
                                     className={getClass(col.inThisMonth)}>
                                     {col.dayObject.date()}
                                 </Typography>
-                                <Divider key={`jizhangCalendar-divider-row${rowIndex}-col-${colIndex}`} />
                                 {
-                                    displayFunction({ rowIndex, colIndex, dayObject: col.dayObject })
+                                    displayFunction({ rowIndex, colIndex, inThisMonth: col.inThisMonth, dayObject: col.dayObject })
                                 }
                             </Card>;
                         })
