@@ -5,27 +5,10 @@ import * as R from 'ramda';
 
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Switch,
   CircularProgress,
-  Button,
   Backdrop,
-  FormControl,
-  FormControlLabel,
-  Fab,
-  Box
 } from '@material-ui/core';
 
-import AddIcon from '@material-ui/icons/Add';
-
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-
-import AccountSelector from '../../comp/accountSelector';
-import SubjectSelector from '../../comp/subjectSelector';
-import DetailCard from './detailCard';
 import DetailEdit from './detailEdit';
 import DisplayInCalendar from './displayInCalendar';
 import DisplayInTable from './displayInTable';
@@ -54,136 +37,51 @@ function Details({
   setEdittingDetail,
   showCreateDialog,
   showEditDialog,
-  subjects,
 }) {
   const classes = useStyles();
 
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [displayInCalendar, setDisplayInCalendar] = useState(false);
+  const [displayInCalendar, setDisplayInCalendar] = useState(true);
 
-  const [sourceAccountId, setSourceAccountId] = useState(undefined);
-  const [destAccountId, setDestAccountId] = useState(undefined);
-  const [subjectIds, setSubjectIds] = useState([]);
-  // dayJs(new Date()).date(1).hour(0).minute(0).second(0)
-  const [start, setStart] = useState(null);
-  // dayJs(new Date()).date(dayJs(new Date()).daysInMonth()).hour(23).minute(59).second(59)
-  const [end, setEnd] = useState(null);
-  const [page, setPage] = useState(0);
-  const size = 10;
+  // {
+  //       page: displayInCalendar ? -1 : page,
+  //       size: displayInCalendar ? -1 : size,
+  //       queryParam: {
+  //         sourceAccountId,
+  //         destAccountId,
+  //         start,
+  //         end,
+  //         subjectIds,
+  //       },
+  //     }
 
-  const load = async () => {
-    await loadDetails({
-      page: displayInCalendar ? -1 : page,
-      size: displayInCalendar ? -1 : size,
-      queryParam: {
-        sourceAccountId,
-        destAccountId,
-        start,
-        end,
-        subjectIds,
-      },
-    });
+  const load = async (params) => {
+    await loadDetails(params);
   };
-
-  useEffect(() => {
-    load();
-  }, [page, displayInCalendar]);
 
   return (
     <React.Fragment>
-      <Box>
-        <FormControl className={classes.formControl}>
-          <AccountSelector
-            value={sourceAccountId}
-            onChange={setSourceAccountId}
-            title="来源账户"
-          />
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <AccountSelector
-            value={destAccountId}
-            onChange={setDestAccountId}
-            title="目标账户"
-          />
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <SubjectSelector
-            state={subjects.list}
-            title="科目"
-            multiple={true}
-            value={subjectIds}
-            onChange={setSubjectIds}
-          />
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              label="从"
-              onChange={setStart}
-              value={start}
-            ></KeyboardDatePicker>
-          </MuiPickersUtilsProvider>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              label="到"
-              onChange={setEnd}
-              value={end}
-            ></KeyboardDatePicker>
-          </MuiPickersUtilsProvider>
-        </FormControl>
-        <FormControl className={classes.formControl}>
-          <Button variant="contained" color="primary" onClick={load}>查询</Button>
-        </FormControl>
-      </Box>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={displayInCalendar}
-            onChange={() => {
-              setDisplayInCalendar(!displayInCalendar)
-            }}
-            name="displayInCalendar"
-            color="primary"
-          />
-        }
-        label="以📅形式展示"
-      />
       {
         (() => {
           if (displayInCalendar) {
             return <DisplayInCalendar
+              setDisplayInCalendar={setDisplayInCalendar}
               content={details.content}
-              onDateChange={({ start, end }) => {
-                setStart(start);
-                setEnd(end);
-              }}
-              render={({ list, date }) => {
-                return <DetailCard
-                  key={JSON.stringify(date)}
-                  details={list}
-                  date={date}
-                  onClickCreate={(date) => () => {
-                    setEdittingDetail({ createdAt: date });
-                    showCreateDialog();
-                  }}
-                />
+              onQuery={({ start, end }) => {
+                load({
+                  page: -1,
+                  size: -1,
+                  queryParam: { start, end }
+                });
               }}
               groupProp={R.prop('createdAt')}
             ></DisplayInCalendar>
-          }
-        })()
-      }
-      {
-        (() => {
-          if (!displayInCalendar) {
+          } else {
             return <DisplayInTable
-              page={page}
-              size={size}
+              displayInCalendar={displayInCalendar}
+              setDisplayInCalendar={setDisplayInCalendar}
               count={details.total}
               details={details.content}
-              onChangePage={setPage}
               onClickCopy={(data) => () => {
                 setEdittingDetail(data);
                 showCreateDialog();
@@ -206,9 +104,6 @@ function Details({
       <Backdrop className={classes.backdrop} open={deleteLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={showCreateDialog}>
-        <AddIcon />
-      </Fab>
     </React.Fragment >
   );
 }

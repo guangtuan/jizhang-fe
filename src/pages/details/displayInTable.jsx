@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+
+import {
+    pick,
+    defaultTo
+} from 'ramda';
 
 import {
     Paper,
@@ -10,12 +16,25 @@ import {
     TableHead,
     TablePagination,
     TableRow,
-    Button
+    Box,
+    Button,
+    Switch,
+    FormControl,
+    FormControlLabel,
 } from '@material-ui/core';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+
+import AccountSelector from '../../comp/accountSelector';
+import SubjectSelector from '../../comp/subjectSelector';
 
 import dayJs from 'dayjs';
 
@@ -32,17 +51,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DisplayInTable = ({
+    displayInCalendar = false,
+    setDisplayInCalendar,
     onClickEdit,
     onClickDelete,
     onClickCopy,
     onChangePage,
     details,
     count,
-    page,
-    size
+    subjects,
+    onClickQuery = () => { }
 }) => {
 
     const classes = useStyles();
+
+    const [sourceAccountId, setSourceAccountId] = useState(undefined);
+    const [destAccountId, setDestAccountId] = useState(undefined);
+    const [subjectIds, setSubjectIds] = useState([]);
+    const [start, setStart] = useState(null);
+    const [end, setEnd] = useState(null);
+    const [page, setPage] = useState(0);
+    const size = 10;
 
     const defines = [
         {
@@ -133,7 +162,67 @@ const DisplayInTable = ({
         }
     ];
 
-    return <Paper>
+    return <Box>
+        <Box>
+            <FormControlLabel
+                className={classes.controlSwitch}
+                control={
+                    <Switch
+                        checked={displayInCalendar}
+                        onChange={() => {
+                            setDisplayInCalendar(!displayInCalendar)
+                        }}
+                        name="displayInCalendar"
+                        color="primary"
+                    />
+                }
+                label="以📅形式展示"
+            />
+            <FormControl className={classes.formControl}>
+                <AccountSelector
+                    value={sourceAccountId}
+                    onChange={setSourceAccountId}
+                    title="来源账户"
+                />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <AccountSelector
+                    value={destAccountId}
+                    onChange={setDestAccountId}
+                    title="目标账户"
+                />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <SubjectSelector
+                    state={subjects.list}
+                    title="科目"
+                    multiple={true}
+                    value={subjectIds}
+                    onChange={setSubjectIds}
+                />
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        label="从"
+                        onChange={setStart}
+                        value={start}
+                    ></KeyboardDatePicker>
+                </MuiPickersUtilsProvider>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        label="到"
+                        onChange={setEnd}
+                        value={end}
+                    ></KeyboardDatePicker>
+                </MuiPickersUtilsProvider>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <Button variant="contained" color="primary" onClick={onClickQuery}>查询</Button>
+            </FormControl>
+        </Box>
         <TableContainer className={classes.container} component={Paper}>
             <Table size="small" stickyHeader className={classes.table} aria-label="simple table">
                 <TableHead>
@@ -172,7 +261,17 @@ const DisplayInTable = ({
                 count={count}
             />
         </TableContainer>
-    </Paper>;
+    </Box>;
 }
 
-export default DisplayInTable;
+const mapState = pick(['accounts', 'users', 'details', 'subjects', 'detailEdit']);
+
+const mapDispatch = (dispatch) => ({
+    loadDetails: dispatch.details.load,
+    delDetail: dispatch.details.del,
+    showCreateDialog: dispatch.detailEdit.showCreateDialog,
+    showEditDialog: dispatch.detailEdit.showEditDialog,
+    setEdittingDetail: dispatch.detailEdit.setForm,
+});
+
+export default connect(mapState, mapDispatch)(DisplayInTable);

@@ -6,6 +6,7 @@ import { Paper, Fab, Box } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 import { model } from './model.js';
 
+import dayjs from 'dayjs';
 import JizhangCalendar from '../../comp/jizhangCalendar';
 import DynamicFormDialog from '../../comp/dynamicFormDialog';
 
@@ -51,7 +52,7 @@ function CreditCards() {
         <div>
             <Paper>
                 <JizhangCalendar
-                    line={4}
+                    currentDate={dayjs()}
                     displayFunction={({ rowIndex, colIndex, dayObject, inThisMonth }) => {
                         if (!inThisMonth) {
                             return <></>;

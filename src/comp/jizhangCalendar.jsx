@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     cellHeader: {
         textAlign: 'center',
         color: 'white',
-        padding: theme.spacing(1),
+        padding: '4',
     },
     dayOfMonth: {
         background: theme.palette.text.primary,
@@ -36,8 +36,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const fmt = "YYYY-MM-DD";
-
 /**
  * 当返回 0 的时候表示星期天
  */
@@ -48,11 +46,27 @@ const getDayInAWeek = d => {
     return d.day();
 }
 
-const generateTable = (currentDate) => {
+const getWeekNumber = ({ startOfMonth, endOfMonth }) => {
+    const w1 = startOfMonth.week();
+    const w2 = endOfMonth.week();
+    if (w1 < w2) {
+        return w2 - w1 + 1;
+    } else {
+        let targetWeek = w2;
+        let dd = endOfMonth.subtract(1, 'day');
+        while (w1 > targetWeek) {
+            dd = dd.subtract(1, 'day');
+            targetWeek = dd.week();
+        }
+        return targetWeek - w1 + 1 + 1;
+    }
+}
+
+const generateTable = currentDate => {
     const startOfMonth = currentDate.startOf('month');
     const endOfMonth = currentDate.endOf('month');
     const endDayOfMonth = endOfMonth.date();
-    const weekNumber = endOfMonth.week() - startOfMonth.week() + 1;
+    const weekNumber = getWeekNumber({ startOfMonth, endOfMonth });
     const table = new Array(weekNumber).fill(undefined).map((_, index) => []);
     const cellsToAdd = new Array(endDayOfMonth).fill(undefined).map((_, index) => startOfMonth.add(index, 'day'));
     // 一号如果不是星期一，要把前面的都补上
@@ -88,12 +102,12 @@ const generateTable = (currentDate) => {
 const headers = ["Mon", "Tue", "Thur", "Web", "Fri", "Sat", "Sun",];
 
 export default function JizhangCalendar({
+    currentDate = dayjs(),
     displayFunction = () => { }
 }) {
 
     const classes = useStyles();
     const [table, setTable] = useState([]);
-    const [currentDate, setCurrentDate] = useState(dayjs());
 
     const getClass = thisMonth => {
         if (thisMonth) {
@@ -123,10 +137,9 @@ export default function JizhangCalendar({
                 })
             }
         </Box>
-        <Divider />
         {
             table.map((row, rowIndex) => {
-                return <Card
+                return <Box
                     key={`jizhangCalendar-row${rowIndex}`}
                     className={classes.lineWrapper}>
                     {
@@ -146,7 +159,7 @@ export default function JizhangCalendar({
                             </Card>;
                         })
                     }
-                </Card>
+                </Box>
             })
         }
     </Box>
