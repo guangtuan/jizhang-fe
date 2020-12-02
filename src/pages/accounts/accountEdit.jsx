@@ -85,6 +85,18 @@ function AccountEdit({
         </FormControl>
         <FormControl fullWidth className={classes.formControl}>
           <TextField
+            value={accountEdit.form.initAmount}
+            label="初识金额"
+            onChange={(event) => {
+              changeProperty({
+                key: 'initAmount',
+                val: event.target.value,
+              });
+            }}
+          />
+        </FormControl>
+        <FormControl fullWidth className={classes.formControl}>
+          <TextField
             value={accountEdit.form.description}
             label="描述"
             onChange={(event) => {
@@ -99,7 +111,8 @@ function AccountEdit({
       <DialogActions>
         <Button color="secondary" onClick={hideDialog}>取消</Button>
         <Button color="primary" onClick={() => {
-          const pack = R.pick(['userId', 'type', 'name', 'description', 'id'])(accountEdit.form);
+          const pack = R.pick(['userId', 'type', 'name', 'description', 'id', 'initAmount'])(accountEdit.form);
+          pack.initAmount = pack.initAmount * 100;
           if (accountEdit.creating) {
             create(pack).then(() => {
               clearForm();

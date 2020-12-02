@@ -35,7 +35,8 @@ function Subjects({
   loadSubjects,
   showCreateDialog,
   changeProperty,
-  clearForm
+  clearForm,
+  delSubject
 }) {
 
   const LEVEL_1 = 1;
@@ -110,6 +111,21 @@ function Subjects({
                 load();
               }}
             >查看子类</Button>
+            <Button
+              className={classes.opt}
+              size="small"
+              startIcon={<DeleteIcon />}
+              variant="contained"
+              color="secondary"
+              onClick={async () => {
+                delSubject(subject.id).then(ret => {
+                  console.log(ret);
+                  load();
+                }).catch(err => {
+                  console.log(err);
+                });
+              }}
+            >删除大类</Button>
           </Box>
         </TableCell>;
       },
@@ -239,6 +255,7 @@ const mapState = R.pick(["subjects"]);
 
 const mapDispatch = dispatch => ({
   loadSubjects: dispatch.subjects.loadByLevel,
+  delSubject: dispatch.subjects.del,
   showCreateDialog: dispatch.subjects.showDialog,
   changeProperty: dispatch.subjects.changeProperty,
   setForm: dispatch.subjects.setForm,

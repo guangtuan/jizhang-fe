@@ -1,5 +1,5 @@
 import { append, assoc, assocPath, findIndex, ifElse, lensIndex, lensProp, over, propEq, mergeLeft } from 'ramda';
-import { get, post } from '../core/request';
+import { get, post, del } from '../core/request';
 
 const defaultForm = () => ({
   name: '',
@@ -54,6 +54,11 @@ export const subjects = {
     },
   },
   effects: (dispatch) => ({
+    del: async (payload, rootState) => {
+      return del({
+        path: `api/subjects/${payload}`
+      });
+    },
     loadByLevel: async (payload, rootState) => {
       const subjects = await get({
         path: 'api/subjects',

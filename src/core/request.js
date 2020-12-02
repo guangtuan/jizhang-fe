@@ -15,8 +15,8 @@ axios.interceptors.response.use(
       // clear token
         if (error.response.status === 401) {
           window.location.href = '/';
+          session.reducers.clear();
         }
-        session.reducers.clear();
       }
       throw error;
     },
