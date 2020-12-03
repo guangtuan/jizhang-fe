@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as R from 'ramda';
+import { pick, defaultTo } from 'ramda';
 import Dialog from '@material-ui/core/Dialog';
 import Slide from '@material-ui/core/Slide';
 import { makeStyles } from '@material-ui/core/styles';
@@ -34,6 +34,8 @@ const useStyles = makeStyles((theme) => ({
         marginBotton: theme.spacing(1)
     },
 }));
+
+const notStrangeValue = defaultTo(undefined);
 
 function DetailEdit({
     detailEdit,
@@ -104,7 +106,7 @@ function DetailEdit({
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <TextField
-                        value={form.amount}
+                        value={notStrangeValue(form.amount)}
                         label="金额（单位：元）"
                         onChange={event => {
                             changeProperty({
@@ -116,7 +118,7 @@ function DetailEdit({
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <TextField
-                        value={form.remark}
+                        value={notStrangeValue(form.remark)}
                         label="备注"
                         onChange={event => {
                             changeProperty({
@@ -144,7 +146,7 @@ function DetailEdit({
             <DialogActions>
                 <Button color="secondary" onClick={hideDialog}>取消</Button>
                 <Button color="primary" onClick={() => {
-                    const pack = R.pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(form)
+                    const pack = pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(form)
                     pack.amount = pack.amount * 100
                     if (detailEdit.creating) {
                         createDetail(pack).then(() => {
@@ -166,7 +168,7 @@ function DetailEdit({
     )
 }
 
-const mapState = R.pick(['detailEdit']);
+const mapState = pick(['detailEdit']);
 
 const mapDispatch = dispatch => ({
     updateDetail: dispatch.detailEdit.update,
