@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { pick, groupBy, defaultTo, prop, compose } from 'ramda';
+import { keys, reject, pick, groupBy, equals, defaultTo, prop, compose } from 'ramda';
 import { connect } from 'react-redux';
 import { Card, Box, Typography, Button, FormControlLabel, Switch, FormControl } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -114,6 +114,11 @@ const DisplayInCalendar = ({
           details={list}
           onClickCreate={() => {
             setEdittingDetail({ createdAt: new Date(dayObject.valueOf()) });
+            showCreateDialog();
+          }}
+          onClickCopy={(detail) => () => {
+            const form = pick(reject(equals('id'))(keys(detail)))(detail);
+            setEdittingDetail(form);
             showCreateDialog();
           }}
         />

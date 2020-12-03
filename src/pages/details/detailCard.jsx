@@ -37,7 +37,8 @@ const headThree = compose(slice(0, 3), reverse, sortBy(prop('amount')));
 const DetailCard = ({
     details,
     onClickShowAll = () => { },
-    onClickCreate = () => { }
+    onClickCreate = () => { },
+    onClickCopy = () => { },
 }) => {
     const classes = useStyles();
 
@@ -46,9 +47,9 @@ const DetailCard = ({
             <Box>
                 {
                     headThree(details).map((detail, index) => {
-                        return <Box key={`listitem-${index}`} className={classes.listitem}>
+                        return <Box key={`detail-card-listitem-${index}-${detail.id}`} className={classes.listitem}>
                             {`¥${detail.amount / 100} @${detail.sourceAccountName} #${detail.subjectName}`}
-                            <span className={classes.copy}>复制</span>
+                            <span key={`detail-card-listitem-${index}-${detail.id}-copy`} className={classes.copy} onClick={onClickCopy(detail)}>复制</span>
                         </Box>
                     })
                 }

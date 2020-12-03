@@ -5,6 +5,14 @@ import {session} from '../models/session';
 
 const SESSION_KEY = 'SESSION';
 
+class JizhangAppError extends Error {
+  constructor(status, message) {
+    this.status = status;
+    this.message = message;
+    this.stack = (new Error()).stack;
+  }
+}
+
 axios.interceptors.response.use(
     (response) => {
       return response;
@@ -18,7 +26,7 @@ axios.interceptors.response.use(
           session.reducers.clear();
         }
       }
-      throw error;
+      throw new JizhangAppError(error.response.status, error.message);
     },
 );
 
