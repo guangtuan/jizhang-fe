@@ -3,11 +3,12 @@ import {
   Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Fab, Box, Collapse, Chip
 } from '@material-ui/core';
 import { prop, pick } from 'ramda';
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import SubjectEdit from './subjectEdit';
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
 function Subjects({
   subjects,
   showCreateDialog,
+  showEditingDialog,
   changeProperty,
   loadSubjects,
   delSubject
@@ -74,6 +76,21 @@ function Subjects({
                 showCreateDialog();
               }}
             >添加子类</Button>
+            <Button
+              className={classes.opt}
+              size="small"
+              startIcon={<EditIcon />}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                changeProperty({ key: "parentId", val: undefined });
+                changeProperty({ key: "parentName", val: undefined });
+                changeProperty({ key: "id", val: subject.id });
+                changeProperty({ key: "name", val: subject.name });
+                changeProperty({ key: "description", val: subject.name });
+                showEditingDialog();
+              }}
+            >修改大类</Button>
             <Button
               className={classes.opt}
               size="small"
@@ -122,8 +139,22 @@ function Subjects({
                     className={classes.children}
                     key={`children-chip-${child.id}`}
                     label={child.name}
-                    onDelete={() => { }}
-                    onClick={() => { }}
+                    onDelete={() => {
+                      delSubject(child.id).then(ret => {
+                        console.log(ret);
+                        loadSubjects();
+                      }).catch(err => {
+                        console.log(err);
+                      });
+                    }}
+                    onClick={() => {
+                      changeProperty({ key: "parentId", val: child.parentId });
+                      changeProperty({ key: "parentName", val: child.parent });
+                      changeProperty({ key: "id", val: child.id });
+                      changeProperty({ key: "name", val: child.name });
+                      changeProperty({ key: "description", val: child.description });
+                      showEditingDialog();
+                    }}
                   ></Chip>
                 )
               }
@@ -153,7 +184,7 @@ function Subjects({
           </TableBody>
         </Table>
       </TableContainer>
-      <SubjectEdit />
+      <SubjectEdit onSave={loadSubjects} />
       <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={() => {
         changeProperty({ key: "parentId", val: undefined });
         changeProperty({ key: "parentName", val: undefined });
@@ -170,7 +201,9 @@ const mapState = pick(["subjects"]);
 const mapDispatch = dispatch => ({
   loadSubjects: dispatch.subjects.load,
   delSubject: dispatch.subjects.del,
-  showCreateDialog: dispatch.subjects.showDialog,
+  showCreateDialog: dispatch.subjects.showCreateDialog,
+  showEditingDialog: dispatch.subjects.showEditingDialog,
+  hideDialog: dispatch.subjects.hideDialog,
   changeProperty: dispatch.subjects.changeProperty,
   setForm: dispatch.subjects.setForm,
 });

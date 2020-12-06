@@ -37,9 +37,12 @@ function SubjectEdit({
   subjects,
   clearForm,
   createSubject,
+  updateSubject,
+  onSave = () => { }
 }) {
   const classes = useStyles();
 
+  const [id, setId] = useState(undefined);
   const [name, setName] = useState(undefined);
   const [description, setDescription] = useState(undefined);
   const [parentId, setParentId] = useState(undefined);
@@ -51,17 +54,27 @@ function SubjectEdit({
     setDescription(copyForm.description);
     setParentId(copyForm.parentId);
     setParentName(copyForm.parentName);
+    setId(copyForm.id);
   }, [subjects.form]);
+
+  const title = ({ creating, editing }) => {
+    if (creating) {
+      return '新建科目';
+    }
+    if (editing) {
+      return '编辑科目';
+    }
+  }
 
   return (
     <Dialog
-      open={subjects.creating}
+      open={subjects.creating || subjects.editing}
       TransitionComponent={Transition}
     >
-      <DialogTitle id="form-dialog-title">新建科目</DialogTitle>
+      <DialogTitle id="subject-form-dialog-title">{title({ subjects })}</DialogTitle>
       <DialogContent>
         {
-          (({ parentId, parentName }) => {
+          (() => {
             if (parentId && parentName) {
               return <FormControl fullWidth className={classes.formControl}>
                 <TextField
@@ -71,7 +84,7 @@ function SubjectEdit({
                 />
               </FormControl>
             }
-          })({ parentId, parentName })
+          })()
         }
         <FormControl fullWidth className={classes.formControl}>
           <TextField
@@ -98,10 +111,19 @@ function SubjectEdit({
           } else {
             pack.level = 1;
           }
-          createSubject(pack).then(resp => {
-            clearForm();
-            hideDialog();
-          });
+          if (subjects.creating) {
+            createSubject(pack).then(resp => {
+              clearForm();
+              hideDialog();
+              onSave();
+            });
+          } else {
+            updateSubject({ pack, id }).then(resp => {
+              clearForm();
+              hideDialog();
+              onSave();
+            });
+          }
         }}>确认</Button>
       </DialogActions>
     </Dialog>
@@ -112,6 +134,7 @@ const mapState = pick(['subjects']);
 
 const mapDispatch = dispatch => ({
   createSubject: dispatch.subjects.create,
+  updateSubject: dispatch.subjects.edit,
   clearForm: dispatch.subjects.clearForm,
   hideDialog: dispatch.subjects.hideDialog,
   changeProperty: dispatch.subjects.changeProperty
