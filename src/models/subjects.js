@@ -1,4 +1,20 @@
-import { append, assoc, assocPath, findIndex, ifElse, lensIndex, lensProp, over, propEq, mergeLeft } from 'ramda';
+import {
+  append,
+  assoc,
+  assocPath,
+  findIndex,
+  ifElse,
+  lensIndex,
+  lensProp,
+  over,
+  propEq,
+  mergeLeft,
+  compose,
+  flatten,
+  map,
+  prop
+} from 'ramda';
+
 import { get, post, del } from '../core/request';
 
 const defaultForm = () => ({
@@ -8,12 +24,15 @@ const defaultForm = () => ({
   level: 1
 });
 
+const flatedChildren = compose(flatten, map(prop('children')));
+
 export const subjects = {
   name: 'subjects',
   state: {
-    list: [],
+    subjectTree: [],
     display: [],
     form: defaultForm(),
+    flatedChildren: [],
     creating: false,
   },
   reducers: {
@@ -36,20 +55,23 @@ export const subjects = {
     setDisplay: (state, payload) => {
       return assoc('display', payload)(state);
     },
-    set: (state, payload) => {
-      return assoc('list', payload)(state);
+    setSubjectTree: (state, payload) => {
+      return assoc('subjectTree', payload)(state);
+    },
+    setFlatedChildren: (state, payload) => {
+      return assoc('flatedChildren', payload)(state);
     },
     add: (state, payload) => {
       return ifElse(
         () => payload.parentId,
         over(
-          lensProp('list'),
+          lensProp('subjectTree'),
           over(
-            lensIndex(findIndex(propEq('id', payload.parentId))(state.list)),
+            lensIndex(findIndex(propEq('id', payload.parentId))(state.subjectTree)),
             over(lensProp('children'), append(payload)),
           ),
         ),
-        over(lensProp('list'), append(payload)),
+        over(lensProp('subjectTree'), append(payload)),
       )(state);
     },
   },
@@ -68,11 +90,12 @@ export const subjects = {
       return subjects;
     },
     load: async (payload, rootState) => {
-      const subjects = await get({
+      const subjectTree = await get({
         path: 'api/subjects',
         data: payload,
       });
-      dispatch.subjects.set(subjects);
+      dispatch.subjects.setSubjectTree(subjectTree);
+      dispatch.subjects.setFlatedChildren(flatedChildren(subjectTree));
     },
     create: async (payload, rootState) => {
       await post({

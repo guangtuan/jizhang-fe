@@ -48,7 +48,6 @@ function DetailEdit({
 }) {
     const classes = useStyles();
     const form = detailEdit.form;
-    console.log('current form ', form);
     return (
         <Dialog
             open={detailEdit.dialogVisibility}
