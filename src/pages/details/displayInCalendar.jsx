@@ -8,6 +8,7 @@ import * as weekOfYear from 'dayjs/plugin/weekOfYear';
 import * as updateLocale from 'dayjs/plugin/updateLocale';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
+import TodayIcon from '@material-ui/icons/Today';
 import JizhangCalendar from '../../comp/jizhangCalendar';
 import DetailCard from './detailCard';
 import DetailEdit from './detailEdit';
@@ -94,6 +95,14 @@ const DisplayInCalendar = ({
           color="primary"
           startIcon={<SkipPreviousIcon />}
         >上个月</Button>
+        <Button
+          size="small"
+          className={classes.button}
+          onClick={() => setCurrentDate(dayjs(new Date()))}
+          variant="contained"
+          color="primary"
+          startIcon={<TodayIcon />}
+        >今天</Button>
         <Button
           size="small"
           className={classes.button}
