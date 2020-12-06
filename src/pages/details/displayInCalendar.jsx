@@ -10,6 +10,7 @@ import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import JizhangCalendar from '../../comp/jizhangCalendar';
 import DetailCard from './detailCard';
+import DetailEdit from './detailEdit';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(updateLocale);
@@ -49,12 +50,13 @@ const DisplayInCalendar = ({
 
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [groupContent, setGroupContent] = useState({});
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     const start = currentDate.date(1).hour(0).minute(0).second(0);
     const end = currentDate.date(dayjs(currentDate).daysInMonth()).hour(23).minute(59).second(59);
-    onQuery({ start, end });  
-  }, [currentDate]);
+    onQuery({ start, end });
+  }, [currentDate, tick]);
 
   useEffect(() => {
     setGroupContent(groupBy(compose(d => dayjs(d).date(), prop('createdAt')))(content));
@@ -124,9 +126,11 @@ const DisplayInCalendar = ({
         />
       }}>
     </JizhangCalendar>
+    <DetailEdit
+      onCreateDone={() => setTick(tick + 1)}
+    ></DetailEdit>
   </Box>;
 }
-
 
 const mapState = pick(['accounts', 'users', 'details', 'subjects', 'detailEdit']);
 

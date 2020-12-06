@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import * as R from 'ramda';
@@ -9,7 +9,6 @@ import {
   Backdrop,
 } from '@material-ui/core';
 
-import DetailEdit from './detailEdit';
 import DisplayInCalendar from './displayInCalendar';
 import DisplayInTable from './displayInTable';
 
@@ -100,7 +99,6 @@ function Details({
           }
         })()
       }
-      <DetailEdit></DetailEdit>
       <Backdrop className={classes.backdrop} open={deleteLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>

@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Box, Card, CardContent, CardActions, Button } from '@material-ui/core';
+import { Box, Card, CardContent, CardActions } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { sortBy, compose, slice, prop, reverse, pick } from 'ramda';
+import { sortBy, compose, slice, prop, reverse } from 'ramda';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         height: 100,
         padding: 0,
@@ -24,11 +24,15 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: 0,
         paddingLeft: 0,
         paddingRight: 0,
+        display: 'flex',
+        justifyContent: 'space-between'
     },
+    amount: {},
+    account: {},
+    subject: {},
     copy: {
         color: 'blue',
         cursor: 'pointer',
-        float: 'right'
     }
 }));
 
@@ -47,9 +51,12 @@ const DetailCard = ({
             <Box>
                 {
                     headThree(details).map((detail, index) => {
-                        return <Box key={`detail-card-listitem-${index}-${detail.id}`} className={classes.listitem}>
-                            {`¥${detail.amount / 100} @${detail.sourceAccountName} #${detail.subjectName}`}
-                            <span key={`detail-card-listitem-${index}-${detail.id}-copy`} className={classes.copy} onClick={onClickCopy(detail)}>复制</span>
+                        const keyPrefix = 'detail-card-line';
+                        return <Box key={`${keyPrefix}-${index}-${detail.id}`} className={classes.listitem}>
+                            <span key={`${keyPrefix}-${index}-${detail.id}-amount`} className={classes.amount}>{`¥${detail.amount / 100}`}</span>
+                            <span key={`${keyPrefix}-${index}-${detail.id}-account`} className={classes.account}>{`@${detail.sourceAccountName}`}</span>
+                            <span key={`${keyPrefix}-${index}-${detail.id}-subject`} className={classes.subject}>{`#${detail.subjectName}`}</span>
+                            <span key={`${keyPrefix}-${index}-${detail.id}-copy`} className={classes.copy} onClick={onClickCopy(detail)}>复制</span>
                         </Box>
                     })
                 }

@@ -1,6 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { propSatisfies, ifElse, map, defaultTo, prop, pick, compose, nthArg, find, propEq } from 'ramda';
+import {
+  propSatisfies,
+  ifElse,
+  map,
+  prop,
+  pick,
+  compose,
+  nthArg,
+  find,
+  propEq,
+  defaultTo
+} from 'ramda';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 
@@ -10,7 +21,6 @@ const SubjectSelector = ({
   subjects,
   title,
   onChange,
-  onClear = () => {},
   value,
   multiple = false
 }) => {
@@ -21,17 +31,17 @@ const SubjectSelector = ({
   );
   return (
     <Autocomplete
-      disableCloseOnSelect={multiple}
       multiple={multiple}
-      groupBy={prop('parent')}
+      disableCloseOnSelect={multiple}
+      defaultValue={getDefaultValue(subjects.flatedChildren)}
       options={subjects.flatedChildren}
+      groupBy={prop('parent')}
       getOptionLabel={display}
       onChange={
         multiple ?
           compose(onChange, map(prop('id')), defaultTo([]), nthArg(1)) :
-          compose(onChange, prop('id'), defaultTo({ id: -1 }), nthArg(1))
+          compose(onChange, prop('id'), nthArg(1))
       }
-      defaultValue={getDefaultValue(subjects.flatedChildren)}
       renderInput={(params) => (
         <TextField
           {...params}

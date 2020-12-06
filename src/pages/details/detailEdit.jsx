@@ -1,24 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { pick, defaultTo } from 'ramda';
-import Dialog from '@material-ui/core/Dialog';
-import Slide from '@material-ui/core/Slide';
+import { pick, clone } from 'ramda';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import DateFnsUtils from '@date-io/date-fns';
-import FormControl from '@material-ui/core/FormControl';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import {
+    Dialog,
+    Slide,
+    Button,
+    TextField,
+    FormControl,
+    DialogActions,
+    DialogContent,
+    DialogTitle
+} from '@material-ui/core';
 import SubjectSelector from '../../comp/subjectSelector';
 import AccountSelector from '../../comp/accountSelector';
 import UserSelector from '../../comp/userSelector';
-
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
+import JizhangDateSelector from '../../comp/jizhangDateSelector';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -35,19 +32,35 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const notStrangeValue = defaultTo(undefined);
-
 function DetailEdit({
     detailEdit,
     hideDialog,
-    changeProperty,
+    onCreateDone = () => { },
     updateDetail,
     createDetail,
     clearForm,
     updateSingleRow
 }) {
     const classes = useStyles();
-    const form = detailEdit.form;
+    const [userId, setUserId] = useState(undefined);
+    const [sourceAccountId, setSourceAccountId] = useState(undefined);
+    const [destAccountId, setDestAccountId] = useState(undefined);
+    const [subjectId, setSubjectId] = useState(undefined);
+    const [amount, setAmount] = useState(undefined);
+    const [remark, setRemark] = useState(undefined);
+    const [createdAt, setCreatedAt] = useState(undefined);
+
+    useEffect(() => {
+        const cloneForm = clone(detailEdit.form);
+        setUserId(cloneForm.userId);
+        setSourceAccountId(cloneForm.sourceAccountId);
+        setDestAccountId(cloneForm.destAccountId);
+        setSubjectId(cloneForm.subjectId);
+        setAmount(cloneForm.amount);
+        setRemark(cloneForm.remark);
+        setCreatedAt(cloneForm.createdAt);
+    }, [detailEdit.form]);
+
     return (
         <Dialog
             open={detailEdit.dialogVisibility}
@@ -58,110 +71,78 @@ function DetailEdit({
                 <FormControl fullWidth className={classes.formControl}>
                     <UserSelector
                         title="用户"
-                        value={form.userId}
-                        onChange={val => {
-                            changeProperty({
-                                key: 'userId',
-                                val: val
-                            });
-                        }} />
+                        value={userId}
+                        onChange={setUserId}
+                    />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <AccountSelector
-                        fullWidth={true}
                         title="来源账户"
-                        value={form.sourceAccountId}
-                        onChange={val => {
-                            changeProperty({
-                                key: 'sourceAccountId',
-                                val: val
-                            });
-                        }} />
+                        value={sourceAccountId}
+                        onChange={setSourceAccountId}
+                    />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <AccountSelector
-                        fullWidth={true}
                         title="目标账户"
-                        value={form.destAccountId}
-                        onChange={val => {
-                            changeProperty({
-                                key: 'destAccountId',
-                                val: val
-                            });
-                        }} />
+                        value={destAccountId}
+                        onChange={setDestAccountId}
+                    />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <SubjectSelector
-                        fullWidth={true}
-                        title="科目"
-                        value={form.subjectId}
                         multiple={false}
-                        onChange={val => {
-                            changeProperty({
-                                key: 'subjectId',
-                                val: val
-                            });
-                        }} />
+                        title="科目"
+                        value={subjectId}
+                        onChange={setSubjectId}
+                    />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <TextField
-                        value={notStrangeValue(form.amount)}
+                        value={amount}
                         label="金额（单位：元）"
-                        onChange={event => {
-                            changeProperty({
-                                key: 'amount',
-                                val: event.target.value
-                            });
-                        }}
+                        onChange={setAmount}
                     />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <TextField
-                        value={notStrangeValue(form.remark)}
+                        defaultValue={remark}
                         label="备注"
-                        onChange={event => {
-                            changeProperty({
-                                key: 'remark',
-                                val: event.target.value
-                            });
-                        }}
+                        multiline
+                        rowsMax={4}
+                        onChange={event => setRemark(event.target.value)}
                     />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                            label="请选择消费日期"
-                            onChange={date => {
-                                changeProperty({
-                                    key: 'createdAt',
-                                    val: date
-                                });
-                            }}
-                            value={form.createdAt}
-                        />
-                    </MuiPickersUtilsProvider>
+                    <JizhangDateSelector
+                        label="请选择消费日期"
+                        setValue={setCreatedAt}
+                        value={createdAt}
+                    />
                 </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button color="secondary" onClick={hideDialog}>取消</Button>
                 <Button color="primary" onClick={() => {
-                    const pack = pick(['userId', 'sourceAccountId', 'destAccountId', 'subjectId', 'remark', 'amount', 'createdAt', 'id'])(form)
-                    pack.amount = pack.amount * 100
+                    const pack = {
+                        userId, sourceAccountId, destAccountId, subjectId, remark, amount: amount * 100, createdAt
+                    };
                     if (detailEdit.creating) {
                         createDetail(pack).then(() => {
                             clearForm()
                             hideDialog()
+                            onCreateDone();
                         });
-                    } else if (detailEdit.editing) {
-                        updateDetail({ payload: pack, id: pack.id }).then(updated => {
+                    }
+                    if (detailEdit.editing) {
+                        updateDetail({ payload: pack, id: detailEdit.form.id }).then(updated => {
                             clearForm()
                             hideDialog()
                             updateSingleRow(updated)
                         });
-                    } else {
-                        // nothing
                     }
-                }}>保存</Button>
+                }}>保存
+                </Button>
             </DialogActions>
         </Dialog>
     )
@@ -174,7 +155,6 @@ const mapDispatch = dispatch => ({
     createDetail: dispatch.detailEdit.create,
     hideDialog: dispatch.detailEdit.hideDialog,
     showEditDialog: dispatch.detailEdit.showEditDialog,
-    changeProperty: dispatch.detailEdit.changeProperty,
     clearForm: dispatch.detailEdit.clearForm,
     updateSingleRow: dispatch.details.updateSingleRow
 });
