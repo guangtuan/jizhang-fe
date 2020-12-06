@@ -1,16 +1,13 @@
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Fab, Box
+  Paper, TableRow, TableHead, TableContainer, TableCell, TableBody, Table, Fab, Box, Collapse, Chip
 } from '@material-ui/core';
-import * as R from 'ramda';
-import React, { useEffect, useState } from 'react';
+import { prop, pick } from 'ramda';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import Button from '@material-ui/core/Button';
+import { Button } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import JizhangSelector from '../../comp/jizhangSelector';
 import SubjectEdit from './subjectEdit';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,7 +15,17 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 650,
   },
   container: {
-    maxHeight: 600,
+    padding: theme.spacing(1),
+  },
+  childrenContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    listStyle: 'none',
+    padding: theme.spacing(0.5),
+    margin: 0,
+  },
+  children: {
+    margin: theme.spacing(0.5),
   },
   fab: {
     position: 'absolute',
@@ -32,48 +39,15 @@ const useStyles = makeStyles((theme) => ({
 
 function Subjects({
   subjects,
-  loadSubjects,
   showCreateDialog,
   changeProperty,
-  clearForm,
+  loadSubjects,
   delSubject
 }) {
 
-  const LEVEL_1 = 1;
-  const LEVEL_2 = 2;
   const classes = useStyles();
-  const [level, setLevel] = useState(LEVEL_1);
-  const [parentId, setParentId] = useState(undefined);
-  const [firstLevel, setFirstLevel] = useState([]);
 
-  const load = async () => {
-    loadSubjects({ level, parentId });
-  }
-
-  const initFirstLevel = async () => {
-    const firstLevel = await loadSubjects({ level: 1 });
-    setFirstLevel(firstLevel);
-  }
-
-  useEffect(() => {
-    if (level === LEVEL_1) {
-      setParentId(undefined);
-    }
-  }, [level]);
-
-  useEffect(() => {
-    initFirstLevel();
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [level, parentId]);
-
-  const level1Columns = [
-    {
-      label: '',
-      arrow: true,
-    },
+  const columns = [
     {
       label: '名字',
       prop: 'name',
@@ -95,22 +69,11 @@ function Subjects({
               variant="contained"
               color="primary"
               onClick={() => {
-                changeProperty({ key: 'parentId', val: subject.id });
-                changeProperty({ key: 'level', val: 2 });
+                changeProperty({ key: "parentId", val: subject.id });
+                changeProperty({ key: "parentName", val: subject.name });
                 showCreateDialog();
               }}
             >添加子类</Button>
-            <Button
-              className={classes.opt}
-              size="small"
-              startIcon={<VisibilityIcon />}
-              variant="contained"
-              onClick={() => {
-                setLevel(LEVEL_2);
-                setParentId(subject.id);
-                load();
-              }}
-            >查看子类</Button>
             <Button
               className={classes.opt}
               size="small"
@@ -120,7 +83,7 @@ function Subjects({
               onClick={async () => {
                 delSubject(subject.id).then(ret => {
                   console.log(ret);
-                  load();
+                  loadSubjects();
                 }).catch(err => {
                   console.log(err);
                 });
@@ -132,117 +95,68 @@ function Subjects({
     },
   ];
 
-  const level2Columns = [
-    {
-      label: '序号',
-      render: (subject, rowNumber, colNumber) => {
-        return <TableCell key={`${subject.id}-${rowNumber}-${colNumber}`}>{rowNumber}</TableCell>;
-      },
-    },
-    {
-      label: '名字',
-      prop: 'name',
-    },
-    {
-      label: '描述',
-      prop: 'description',
-    },
-    {
-      label: '操作',
-      render: ({ subject, rowNumber, colNumber }) => {
-        return <TableCell key={`${subject.id}-${rowNumber}-${colNumber}`}>
-          <Box>
-            <Button
-              className={classes.opt}
-              size="small"
-              startIcon={<EditIcon />}
-              variant="contained"
-              color="primary"
-              onClick={() => {
-              }}
-            >编辑</Button>
-            <Button
-              className={classes.opt}
-              size="small"
-              startIcon={<DeleteIcon />}
-              variant="contained"
-              color="secondary"
-              onClick={async () => {
-              }}
-            >删除</Button>
-          </Box>
-        </TableCell>;
-      },
-    },
-  ];
-
-  const columns = (level) => {
-    if (level === 1) {
-      return level1Columns;
-    } else {
-      return level2Columns;
-    }
-  };
+  function Row({
+    subject,
+    rowNumber
+  }) {
+    return <>
+      <TableRow key={subject.id}>
+        {
+          columns.map((col, colNumber) => {
+            if (col.render) {
+              return col.render({ subject, rowNumber, colNumber });
+            }
+            return <TableCell key={`${col.prop}-${rowNumber}-${colNumber}`}>
+              {prop(col.prop)(subject)}
+            </TableCell>;
+          })
+        }
+      </TableRow>
+      <TableRow key={`children-${subject.id}`}>
+        <TableCell colSpan={3}>
+          <Collapse in={true} timeout="auto" unmountOnExit>
+            <Box className={classes.childrenContainer}>
+              {
+                subject.children.map(
+                  child => <Chip
+                    className={classes.children}
+                    key={`children-chip-${child.id}`}
+                    label={child.name}
+                    onDelete={() => { }}
+                    onClick={() => { }}
+                  ></Chip>
+                )
+              }
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>;
+  }
 
   return (
     <React.Fragment>
-      <JizhangSelector
-        clearable={false}
-        state={[
-          { name: '大类', id: LEVEL_1, },
-          { name: '子类', id: LEVEL_2, }
-        ]}
-        title={'请选择类别等级'}
-        onChange={setLevel}
-        value={level}
-        multiple={false}
-      />
-      {
-        (() => {
-          if (level == LEVEL_2) {
-            return <JizhangSelector
-              clearable={true}
-              state={firstLevel}
-              title={'请选择大类'}
-              onChange={setParentId}
-              value={parentId}
-              multiple={false}
-            />
-          }
-        })(level)
-      }
       <TableContainer className={classes.container} component={Paper}>
         <Table size="small" stickyHeader className={classes.table}>
           <TableHead>
             <TableRow>
-              {columns(level).map(R.prop('label')).map((label) => {
+              {columns.map(prop('label')).map((label) => {
                 return <TableCell key={`table-header-${label}`}>{label}</TableCell>;
               })}
             </TableRow>
           </TableHead>
           <TableBody>
-            {subjects.display.map((subject, rowNumber) => {
-              return <TableRow key={subject.id}>
-                {
-                  columns(level).map((col, colNumber) => {
-                    if (col.render) {
-                      return col.render({ subject, rowNumber, colNumber });
-                    }
-                    return <TableCell key={`${col.prop}-${rowNumber}-${colNumber}`}>
-                      {R.prop(col.prop)(subject)}
-                    </TableCell>;
-                  })
-                }
-              </TableRow>;
-            })}
+            {subjects.subjectTree.map((subject, rowNumber) => <Row
+              subject={subject}
+              rowNumber={rowNumber}
+            ></Row>)}
           </TableBody>
         </Table>
       </TableContainer>
-      <SubjectEdit
-        firstLevel={firstLevel}
-        onSubjcetCreate={load} />
+      <SubjectEdit />
       <Fab aria-label="Add" className={classes.fab} color={'primary'} onClick={() => {
-        changeProperty({ key: "parentId", val: parentId });
+        changeProperty({ key: "parentId", val: undefined });
+        changeProperty({ key: "parentName", val: undefined });
         showCreateDialog();
       }}>
         <AddIcon />
@@ -251,15 +165,14 @@ function Subjects({
   );
 }
 
-const mapState = R.pick(["subjects"]);
+const mapState = pick(["subjects"]);
 
 const mapDispatch = dispatch => ({
-  loadSubjects: dispatch.subjects.loadByLevel,
+  loadSubjects: dispatch.subjects.load,
   delSubject: dispatch.subjects.del,
   showCreateDialog: dispatch.subjects.showDialog,
   changeProperty: dispatch.subjects.changeProperty,
   setForm: dispatch.subjects.setForm,
-  clearForm: dispatch.subjects.clearForm,
 });
 
 export default connect(mapState, mapDispatch)(Subjects);

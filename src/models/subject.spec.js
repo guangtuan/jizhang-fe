@@ -1,10 +1,10 @@
-import {init} from '@rematch/core';
-import {subjects} from './subjects';
+import { init } from '@rematch/core';
+import { subjects } from './subjects';
 
 describe('test subjects', () => {
   const getStore = () => {
     return init({
-      models: {subjects},
+      models: { subjects },
     });
   };
 
@@ -13,7 +13,7 @@ describe('test subjects', () => {
     expect(Object.keys(store.getState()).includes('subjects')).toBe(true);
   });
 
-  it('subjects.list.add', () => {
+  it('subjects.subjectTree.add', () => {
     const store = getStore();
     const subjectEat = {
       name: 'eat',
@@ -21,7 +21,7 @@ describe('test subjects', () => {
       children: [],
     };
     store.dispatch.subjects.add(subjectEat);
-    expect(store.getState().subjects.list).toStrictEqual([
+    expect(store.getState().subjects.subjectTree).toStrictEqual([
       subjectEat,
     ]);
     const subjectBreakfest = {
@@ -30,7 +30,7 @@ describe('test subjects', () => {
       parentId: 1,
     };
     store.dispatch.subjects.add(subjectBreakfest);
-    expect(store.getState().subjects.list).toStrictEqual([{
+    expect(store.getState().subjects.subjectTree).toStrictEqual([{
       name: 'eat',
       id: 1,
       children: [{
@@ -39,5 +39,36 @@ describe('test subjects', () => {
         parentId: 1,
       }],
     }]);
+  });
+
+  it('subjects.subjectTree.add, ensure order', () => {
+    const store = getStore();
+    const subjectEat = {
+      name: 'eat',
+      id: 1,
+      children: [],
+    };
+    store.dispatch.subjects.add(subjectEat);
+    expect(store.getState().subjects.subjectTree).toStrictEqual([
+      subjectEat,
+    ]);
+    const subjectDress = {
+      name: 'dress',
+      id: 2,
+      children: [],
+    };
+    store.dispatch.subjects.add(subjectDress);
+    expect(store.getState().subjects.subjectTree).toStrictEqual([
+      {
+        name: 'dress',
+        id: 2,
+        children: [],
+      },
+      {
+        name: 'eat',
+        id: 1,
+        children: [],
+      }
+    ]);
   });
 });

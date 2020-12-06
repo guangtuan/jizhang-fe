@@ -1,5 +1,4 @@
 import {
-  append,
   assoc,
   assocPath,
   findIndex,
@@ -12,7 +11,8 @@ import {
   compose,
   flatten,
   map,
-  prop
+  prop,
+  insert
 } from 'ramda';
 
 import { get, post, del } from '../core/request';
@@ -62,16 +62,17 @@ export const subjects = {
       return assoc('flatedChildren', payload)(state);
     },
     add: (state, payload) => {
+      const addNew = insert(0);
       return ifElse(
         () => payload.parentId,
         over(
           lensProp('subjectTree'),
           over(
             lensIndex(findIndex(propEq('id', payload.parentId))(state.subjectTree)),
-            over(lensProp('children'), append(payload)),
+            over(lensProp('children'), addNew(payload)),
           ),
         ),
-        over(lensProp('subjectTree'), append(payload)),
+        over(lensProp('subjectTree'), addNew(payload)),
       )(state);
     },
   },
@@ -98,11 +99,11 @@ export const subjects = {
       dispatch.subjects.setFlatedChildren(flatedChildren(subjectTree));
     },
     create: async (payload, rootState) => {
-      await post({
+      const newSubject = await post({
         path: 'api/subjects',
         data: payload,
       });
-      dispatch.subjects.add(subjects);
+      dispatch.subjects.add(newSubject);
       return true;
     },
   }),

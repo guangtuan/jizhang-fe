@@ -1,15 +1,17 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Slide from '@material-ui/core/Slide';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import { prop, propEq, find, pick, compose } from 'ramda';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import {
+  Button,
+  Dialog,
+  TextField,
+  Slide,
+  FormControl,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { pick, clone } from 'ramda';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -32,15 +34,25 @@ const useStyles = makeStyles((theme) => ({
 
 function SubjectEdit({
   hideDialog,
-  changeProperty,
   subjects,
   clearForm,
   createSubject,
-  onSubjcetCreate,
-  firstLevel
 }) {
   const classes = useStyles();
-  const form = subjects.form;
+
+  const [name, setName] = useState(undefined);
+  const [description, setDescription] = useState(undefined);
+  const [parentId, setParentId] = useState(undefined);
+  const [parentName, setParentName] = useState(undefined);
+
+  useEffect(() => {
+    const copyForm = clone(subjects.form);
+    setName(copyForm.name);
+    setDescription(copyForm.description);
+    setParentId(copyForm.parentId);
+    setParentName(copyForm.parentName);
+  }, [subjects.form]);
+
   return (
     <Dialog
       open={subjects.creating}
@@ -49,52 +61,46 @@ function SubjectEdit({
       <DialogTitle id="form-dialog-title">新建科目</DialogTitle>
       <DialogContent>
         {
-          (parentId => {
-            if (parentId) {
-              const displaySelectedParentId = compose(prop('name'), find(propEq('id', form.parentId)));
-              return <FormControl className={classes.formControl}>
+          (({ parentId, parentName }) => {
+            if (parentId && parentName) {
+              return <FormControl fullWidth className={classes.formControl}>
                 <TextField
                   label="大类"
                   disabled
-                  value={displaySelectedParentId(firstLevel)}
+                  value={parentName}
                 />
               </FormControl>
             }
-          })(form.parentId)
+          })({ parentId, parentName })
         }
-        <FormControl className={classes.formControl}>
+        <FormControl fullWidth className={classes.formControl}>
           <TextField
-            value={form.name}
+            value={name}
             label="名称"
-            onChange={event => {
-              changeProperty({
-                key: 'name',
-                val: event.target.value
-              });
-            }}
+            onChange={event => setName(event.target.value)}
           />
         </FormControl>
-        <FormControl className={classes.formControl}>
+        <FormControl fullWidth className={classes.formControl}>
           <TextField
-            value={form.description}
+            value={description}
             label="描述"
-            onChange={event => {
-              changeProperty({
-                key: 'description',
-                val: event.target.value
-              });
-            }}
+            onChange={event => setDescription(event.target.value)}
           />
         </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={hideDialog}>取消</Button>
         <Button onClick={() => {
-          const pack = pick(['name', 'description', 'level', 'parentId'])(form);
+          const pack = { name, description };
+          if (parentId && parentName) {
+            pack.level = 2;
+            pack.parentId = parentId;
+          } else {
+            pack.level = 1;
+          }
           createSubject(pack).then(resp => {
             clearForm();
             hideDialog();
-            onSubjcetCreate();
           });
         }}>确认</Button>
       </DialogActions>
