@@ -12,6 +12,7 @@ import TodayIcon from '@material-ui/icons/Today';
 import JizhangCalendar from '../../comp/jizhangCalendar';
 import DetailCard from './detailCard';
 import DetailEdit from './detailEdit';
+import Today from './Today';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(updateLocale);
@@ -52,6 +53,9 @@ const DisplayInCalendar = ({
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [groupContent, setGroupContent] = useState({});
   const [tick, setTick] = useState(0);
+  const [detailsToday, setDetailsToday] = useState([]);
+  const [todayDialogShow, setTodayDialogShow] = useState(false);
+  const [popDateStr, setPopDateStr] = useState(undefined);
 
   useEffect(() => {
     const start = currentDate.date(1).hour(0).minute(0).second(0);
@@ -123,6 +127,11 @@ const DisplayInCalendar = ({
         return <DetailCard
           key={dayObject.format(fmt)}
           details={list}
+          onClickShowAll={detailsToday => () => {
+            setDetailsToday(detailsToday);
+            setTodayDialogShow(true);
+            setPopDateStr(dayObject.format("YYYY-MM-DD"));
+          }}
           onClickCreate={() => {
             setEdittingDetail({ createdAt: new Date(dayObject.valueOf()) });
             showCreateDialog();
@@ -138,6 +147,12 @@ const DisplayInCalendar = ({
     <DetailEdit
       onCreateDone={() => setTick(tick + 1)}
     ></DetailEdit>
+    <Today
+      dateStr={popDateStr}
+      show={todayDialogShow}
+      details={detailsToday}
+      onClockClose={() => { setTodayDialogShow(false) }}
+    ></Today>
   </Box>;
 }
 
