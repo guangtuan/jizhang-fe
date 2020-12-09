@@ -101,7 +101,7 @@ function DetailEdit({
                     <TextField
                         value={amount}
                         label="金额（单位：元）"
-                        onChange={setAmount}
+                        onChange={event => setAmount(event.target.value)}
                     />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
