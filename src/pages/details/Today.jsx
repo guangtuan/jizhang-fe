@@ -45,7 +45,10 @@ export default function Today({
     dateStr,
     show,
     details,
-    onClockClose
+    onClickClose = () => {},
+    onClickEdit = () => { },
+    onClickDelete = () => { },
+    onClickCopy = () => { },
 }) {
 
     const classes = useStyles();
@@ -103,39 +106,39 @@ export default function Today({
         //         }
         //     }
         // },
-        {
-            label: '操作',
-            render: ({ detail, rowIndex, colIndex }) => {
-                const key = `opt-${rowIndex}-${colIndex}`;
-                return (
-                    <TableCell key={key}>
-                        <Button
-                            className={classes.opt}
-                            size="small"
-                            startIcon={<FileCopyIcon />}
-                            variant="contained"
-                            onClick={() => { }}
-                        >复制</Button>
-                        <Button
-                            className={classes.opt}
-                            size="small"
-                            startIcon={<EditIcon />}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => { }}
-                        >编辑</Button>
-                        <Button
-                            className={classes.opt}
-                            size="small"
-                            startIcon={<DeleteIcon />}
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => { }}
-                        >删除</Button>
-                    </TableCell>
-                );
-            }
-        }
+        // {
+        //     label: '操作',
+        //     render: ({ detail, rowIndex, colIndex }) => {
+        //         const key = `opt-${rowIndex}-${colIndex}`;
+        //         return (
+        //             <TableCell key={key}>
+        //                 <Button
+        //                     className={classes.opt}
+        //                     size="small"
+        //                     startIcon={<FileCopyIcon />}
+        //                     variant="contained"
+        //                     onClick={onClickCopy(detail)}
+        //                 >复制</Button>
+        //                 <Button
+        //                     className={classes.opt}
+        //                     size="small"
+        //                     startIcon={<EditIcon />}
+        //                     variant="contained"
+        //                     color="primary"
+        //                     onClick={onClickEdit(detail)}
+        //                 >编辑</Button>
+        //                 <Button
+        //                     className={classes.opt}
+        //                     size="small"
+        //                     startIcon={<DeleteIcon />}
+        //                     variant="contained"
+        //                     color="secondary"
+        //                     onClick={onClickDelete(detail)}
+        //                 >删除</Button>
+        //             </TableCell>
+        //         );
+        //     }
+        // }
     ];
 
     const label = prop('label');
@@ -179,7 +182,7 @@ export default function Today({
             </TableContainer>
         </DialogContent>
         <DialogActions>
-            <Button color="secondary" onClick={onClockClose}>关闭</Button>
+            <Button color="secondary" onClick={onClickClose}>关闭</Button>
         </DialogActions>
     </Dialog>
 

@@ -151,7 +151,7 @@ const DisplayInCalendar = ({
       dateStr={popDateStr}
       show={todayDialogShow}
       details={detailsToday}
-      onClockClose={() => { setTodayDialogShow(false) }}
+      onClickClose={() => { setTodayDialogShow(false) }}
     ></Today>
   </Box>;
 }

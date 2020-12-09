@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Card, CardContent, CardActions } from '@material-ui/core';
+import { Box, Button, Card, CardContent, CardActions } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { sortBy, compose, slice, prop, reverse } from 'ramda';
 
@@ -63,14 +63,18 @@ const DetailCard = ({
             </Box>
         </CardContent>
         <CardActions className={classes.actions}>
-            <Box
+            <Button
+                color="secondary"
+                size='small'
                 onClick={onClickShowAll(details)}>
                 查看今天
-            </Box>
-            <Box
+            </Button>
+            <Button
+                color="primary"
+                size='small'
                 onClick={onClickCreate}>
                 添加一笔
-            </Box>
+            </Button>
         </CardActions>
     </Card>
 };
