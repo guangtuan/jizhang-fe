@@ -1,21 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as R from 'ramda';
+import {
+    prop,
+    find,
+    propEq,
+    map,
+    defaultTo,
+    pick,
+    compose,
+    nthArg
+} from 'ramda';
 
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
+import { TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 
 function AccountTypeSelector({
     accountTypeDefine,
@@ -24,32 +21,29 @@ function AccountTypeSelector({
     value,
     multiple
 }) {
-    const toSelectItem = accountType => <MenuItem key={accountType.value} value={accountType.value}>{accountType.name}</MenuItem>;
-    return (
-        <>
-            <InputLabel>{title}</InputLabel>
-            <Select
-                multiple={!!multiple}
-                MenuProps={MenuProps}
-                value={value}
-                onChange={event => {
-                    const val = event.target.value
-                    if (!multiple) {
-                        onChange(val)
-                        return
-                    }
-                    if (val.some(id => id === undefined)) {
-                        onChange([])
-                        return
-                    }
-                    onChange(val)
-                }}>
-                {accountTypeDefine.map(toSelectItem)}
-            </Select>
-        </>
-    )
+
+    return <Autocomplete
+        multiple={multiple}
+        disableCloseOnSelect={multiple}
+        defaultValue={find(propEq('value', value))(accountTypeDefine)}
+        options={accountTypeDefine}
+        getOptionLabel={prop('name')}
+        onChange={
+            multiple ?
+                compose(onChange, map(prop('id')), defaultTo([]), nthArg(1)) :
+                compose(onChange, prop('id'), nthArg(1))
+        }
+        renderInput={(params) => (
+            <TextField
+                {...params}
+                variant="standard"
+                label={title}
+                placeholder={title}
+            />
+        )}
+    />
 }
 
-const mapState = R.pick(['accountTypeDefine']);
+const mapState = pick(['accountTypeDefine']);
 
 export default connect(mapState)(AccountTypeSelector);
