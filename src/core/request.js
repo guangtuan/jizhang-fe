@@ -7,6 +7,7 @@ const SESSION_KEY = 'SESSION';
 
 class JizhangAppError extends Error {
   constructor(status, message) {
+    super(message);
     this.status = status;
     this.message = message;
     this.stack = (new Error()).stack;

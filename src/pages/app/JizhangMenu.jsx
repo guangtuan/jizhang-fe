@@ -10,6 +10,8 @@ import HomeIcon from '@material-ui/icons/Home';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import PaymentIcon from '@material-ui/icons/Payment';
 import CreditCardIcon from '@material-ui/icons/CreditCard';
+import ListIcon from '@material-ui/icons/List';
+import DateRangeIcon from '@material-ui/icons/DateRange';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -19,9 +21,15 @@ import ListItemText from '@material-ui/core/ListItemText';
 const pages = [
     {
         'type': 'base',
-        'text': '明细',
-        'icon': <HomeIcon></HomeIcon>,
+        'text': '日历',
+        'icon': <DateRangeIcon></DateRangeIcon>,
         'path': '/'
+    },
+    {
+        'type': 'base',
+        'text': '列表',
+        'icon': <ListIcon></ListIcon>,
+        'path': '/list'
     },
     {
         'type': 'base',

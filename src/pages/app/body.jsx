@@ -18,6 +18,8 @@ import Accounts from '../accounts';
 import CreditCards from '../creditCards';
 import Statistics from '../statistics';
 import JiZhangMenu from './JizhangMenu';
+import DisplayInTable from '../details/displayInTable';
+
 import { Menu as MenuIcon } from '@material-ui/icons/';
 
 import { Drawer, AppBar, Divider, Toolbar, IconButton, Backdrop, CircularProgress, CssBaseline } from '@material-ui/core';
@@ -185,6 +187,9 @@ export function Body({
                         </Route>
                         <Route path="/statistics">
                             <Statistics />
+                        </Route>
+                        <Route path="/list">
+                            <DisplayInTable/>
                         </Route>
                     </Switch>
                     <Backdrop className={classes.backdrop} open={initLoaidng}>

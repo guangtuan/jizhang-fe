@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import {
-    pick,
-    defaultTo
+    pick
 } from 'ramda';
 
 import {
@@ -18,23 +17,17 @@ import {
     TableRow,
     Box,
     Button,
-    Switch,
     FormControl,
-    FormControlLabel,
 } from '@material-ui/core';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-
-import {
-    KeyboardDatePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import CallSplitIcon from '@material-ui/icons/CallSplit';
 
 import AccountSelector from '../../comp/accountSelector';
 import SubjectSelector from '../../comp/subjectSelector';
+import JizhangDateSelector from '../../comp/jizhangDateSelector';
 
 import dayJs from 'dayjs';
 
@@ -48,19 +41,21 @@ const useStyles = makeStyles((theme) => ({
     opt: {
         margin: theme.spacing(1),
     },
+    formControl: {
+        width: 200,
+        margin: theme.spacing(1),
+    },
+    formControlSubject: {
+        width: 300,
+        margin: theme.spacing(1),
+    }
 }));
 
 const DisplayInTable = ({
-    displayInCalendar = false,
-    setDisplayInCalendar,
-    onClickEdit,
-    onClickDelete,
-    onClickCopy,
-    onChangePage,
+    loadDetails,
     details,
     count,
-    subjects,
-    onClickQuery = () => { }
+    subjects
 }) => {
 
     const classes = useStyles();
@@ -68,10 +63,31 @@ const DisplayInTable = ({
     const [sourceAccountId, setSourceAccountId] = useState(undefined);
     const [destAccountId, setDestAccountId] = useState(undefined);
     const [subjectIds, setSubjectIds] = useState([]);
-    const [start, setStart] = useState(null);
-    const [end, setEnd] = useState(null);
+    const [start, setStart] = useState(new Date(dayJs(new Date()).startOf('month').valueOf()));
+    const [end, setEnd] = useState(new Date(dayJs(new Date()).endOf('month').valueOf()));
     const [page, setPage] = useState(0);
     const size = 10;
+
+    const load = async params => {
+        loadDetails(params);
+    }
+
+    useEffect(
+        () => {
+            load({
+                page: 0,
+                size: 10,
+                queryParam: {
+                    start,
+                    end,
+                    subjectIds,
+                    sourceAccountId,
+                    destAccountId
+                }
+            });
+        },
+        [start, end, subjectIds, sourceAccountId, destAccountId, page]
+    );
 
     const defines = [
         {
@@ -136,9 +152,17 @@ const DisplayInTable = ({
                         <Button
                             className={classes.opt}
                             size="small"
+                            startIcon={<CallSplitIcon />}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => { }}
+                        >分摊</Button>
+                        {/* <Button
+                            className={classes.opt}
+                            size="small"
                             startIcon={<FileCopyIcon />}
                             variant="contained"
-                            onClick={onClickCopy(detail)}
+                            onClick={() => { }}
                         >复制</Button>
                         <Button
                             className={classes.opt}
@@ -146,7 +170,7 @@ const DisplayInTable = ({
                             startIcon={<EditIcon />}
                             variant="contained"
                             color="primary"
-                            onClick={onClickEdit(detail)}
+                            onClick={() => { }}
                         >编辑</Button>
                         <Button
                             className={classes.opt}
@@ -154,8 +178,8 @@ const DisplayInTable = ({
                             startIcon={<DeleteIcon />}
                             variant="contained"
                             color="secondary"
-                            onClick={onClickDelete(detail)}
-                        >删除</Button>
+                            onClick={() => { }}
+                        >删除</Button> */}
                     </TableCell>
                 );
             }
@@ -164,20 +188,6 @@ const DisplayInTable = ({
 
     return <Box>
         <Box>
-            <FormControlLabel
-                className={classes.controlSwitch}
-                control={
-                    <Switch
-                        checked={displayInCalendar}
-                        onChange={() => {
-                            setDisplayInCalendar(!displayInCalendar)
-                        }}
-                        name="displayInCalendar"
-                        color="primary"
-                    />
-                }
-                label="以📅形式展示"
-            />
             <FormControl className={classes.formControl}>
                 <AccountSelector
                     value={sourceAccountId}
@@ -192,7 +202,7 @@ const DisplayInTable = ({
                     title="目标账户"
                 />
             </FormControl>
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.formControlSubject}>
                 <SubjectSelector
                     state={subjects.list}
                     title="科目"
@@ -202,47 +212,37 @@ const DisplayInTable = ({
                 />
             </FormControl>
             <FormControl className={classes.formControl}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        label="从"
-                        onChange={setStart}
-                        value={start}
-                    ></KeyboardDatePicker>
-                </MuiPickersUtilsProvider>
+                <JizhangDateSelector
+                    label={"从"}
+                    value={start}
+                    setValue={setStart}>
+                </JizhangDateSelector>
             </FormControl>
             <FormControl className={classes.formControl}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                        label="到"
-                        onChange={setEnd}
-                        value={end}
-                    ></KeyboardDatePicker>
-                </MuiPickersUtilsProvider>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <Button variant="contained" color="primary" onClick={onClickQuery}>查询</Button>
+                <JizhangDateSelector
+                    label={"到"}
+                    value={end}
+                    setValue={setEnd}>
+                </JizhangDateSelector>
             </FormControl>
         </Box>
         <TableContainer className={classes.container} component={Paper}>
             <Table size="small" stickyHeader className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        {defines.map((item) => {
-                            return (<TableCell key={`header${item.label}`}>{item.label}</TableCell>);
-                        })}
+                        {defines.map((item) => <TableCell key={`header${item.label}`}>{item.label}</TableCell>)}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {
-                        details.map((detail, rowIndex) => (
+                        details.content.map((detail, rowIndex) => (
                             <TableRow key={`detail-row-${rowIndex}`}>
                                 {
                                     defines.map((def, colIndex) => {
                                         if (def.render) {
                                             return def.render({ detail, rowIndex, colIndex });
                                         } else {
-                                            const key = def.prop + rowIndex + colIndex;
-                                            return <TableCell key={key}>{detail[def.prop]}</TableCell>;
+                                            return <TableCell key={def.prop + rowIndex + colIndex}>{detail[def.prop]}</TableCell>;
                                         }
                                     })
                                 }
@@ -253,12 +253,9 @@ const DisplayInTable = ({
             </Table>
             <TablePagination
                 component="div"
-                onChangePage={(event, newPage) => {
-                    onChangePage(newPage);
-                }}
                 rowsPerPage={size}
                 page={page}
-                count={count}
+                count={details.total}
             />
         </TableContainer>
     </Box>;
