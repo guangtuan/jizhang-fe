@@ -25,6 +25,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 
+import DetailSplit from './detailSplit';
+
 import AccountSelector from '../../comp/accountSelector';
 import SubjectSelector from '../../comp/subjectSelector';
 import JizhangDateSelector from '../../comp/jizhangDateSelector';
@@ -66,6 +68,8 @@ const DisplayInTable = ({
     const [start, setStart] = useState(new Date(dayJs(new Date()).startOf('month').valueOf()));
     const [end, setEnd] = useState(new Date(dayJs(new Date()).endOf('month').valueOf()));
     const [page, setPage] = useState(0);
+    const [splitDialogVisible, setSplitDialogVisible] = useState(false);
+    const [detailToSplit, setDetailToSplit] = useState();
     const size = 10;
 
     const load = async params => {
@@ -155,7 +159,10 @@ const DisplayInTable = ({
                             startIcon={<CallSplitIcon />}
                             variant="contained"
                             color="primary"
-                            onClick={() => { }}
+                            onClick={() => {
+                                setDetailToSplit(detail);
+                                setSplitDialogVisible(true);
+                            }}
                         >分摊</Button>
                         {/* <Button
                             className={classes.opt}
@@ -258,6 +265,14 @@ const DisplayInTable = ({
                 count={details.total}
             />
         </TableContainer>
+        <DetailSplit 
+        base={detailToSplit}
+        dislogVisible={splitDialogVisible}
+        afterSplit={() => {}}
+        onClickCancel={() => {
+            setSplitDialogVisible(false);
+        }}
+        ></DetailSplit>
     </Box>;
 }
 
