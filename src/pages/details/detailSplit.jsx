@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { pick, clone, prop, append } from 'ramda';
+import { pick, clone, prop, append, last, dissoc, map, assoc, divide, compose, remove, length } from 'ramda';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     Dialog,
@@ -16,6 +16,7 @@ import {
     TableRow,
 } from '@material-ui/core';
 import dayJs from 'dayjs';
+import JizhangDateSelector from '../../comp/jizhangDateSelector';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -40,40 +41,31 @@ function DetailSplit({
     afterSplit = () => { },
 }) {
     const classes = useStyles();
-    const [userId, setUserId] = useState(undefined);
-    const [sourceAccountId, setSourceAccountId] = useState(undefined);
-    const [destAccountId, setDestAccountId] = useState(undefined);
-    const [subjectId, setSubjectId] = useState(undefined);
-    const [amount, setAmount] = useState(undefined);
-    const [remark, setRemark] = useState(undefined);
-    const [createdAt, setCreatedAt] = useState(undefined);
-    const [cloneForm, setCloneForm] = useState(undefined);
     const [details, setDetails] = useState([]);
+    const [totalAmount, setTotalAmount] = useState(undefined);
 
     useEffect(() => {
         if (base) {
+            console.log('clone base');
             const cloneForm = clone(base);
+            cloneForm.total = true;
+            setTotalAmount(cloneForm.amount);
             setDetails(append(cloneForm)(details));
-            // setUserId(cloneForm.userId);
-            // setSourceAccountId(cloneForm.sourceAccountId);
-            // setDestAccountId(cloneForm.destAccountId);
-            // setSubjectId(cloneForm.subjectId);
-            // setAmount(cloneForm.amount);
-            // setRemark(cloneForm.remark);
-            // setCreatedAt(cloneForm.createdAt);
         }
     }, [base]);
 
     const defines = [
         {
-            label: '创建时间',
+            label: '记录日期',
             render: ({ detail, rowIndex, colIndex }) => {
-                const key = 'createdAt' + rowIndex + colIndex;
-                if (detail.createdAt) {
-                    return <TableCell key={key}>{dayJs(detail.createdAt).format('YYYY-MM-DD')}</TableCell>
-                } else {
-                    return <TableCell key={key}></TableCell>
-                }
+                return <TableCell key={`createdAt-${rowIndex}-${colIndex}`}>
+                    <JizhangDateSelector
+                        key={`createdAt-select-${rowIndex}-${colIndex}`}
+                        value={detail.createdAt}
+                        setValue={date => { detail.createdAt = date }}
+                    >
+                    </JizhangDateSelector>
+                </TableCell>
             }
         },
         {
@@ -107,6 +99,37 @@ function DetailSplit({
             label: '备注',
             prop: 'remark',
         },
+        {
+            label: '操作',
+            render: ({ detail, rowIndex, colIndex }) => {
+                const displayCreate = rowIndex === length(details) - 1;
+                const displayDelete = length(details) > 1;
+                return <TableCell key={`split-append-cell-${rowIndex}-${colIndex}`}>
+                    <Button
+                        disabled={!displayCreate}
+                        key={`split-append-button-${rowIndex}-${colIndex}`}
+                        onClick={() => {
+                            const setTotalFalse = assoc('total', false);
+                            const newOne = compose(setTotalFalse, clone, last)(details);
+                            const ava = divide(totalAmount, length(details) + 1);
+                            const setAmount = assoc('amount', ava);
+                            compose(setDetails, map(dissoc('id')), map(setAmount), append(newOne))(details);
+                            console.log(JSON.stringify(details));
+                        }}
+                    >添加</Button>
+                    <Button
+                        disabled={!displayDelete}
+                        key={`split-remove-button-${rowIndex}-${colIndex}`}
+                        onClick={() => {
+                            const indexToRemove = rowIndex;
+                            const ava = divide(totalAmount, length(details) - 1);
+                            const setAmount = assoc('amount', ava);
+                            compose(setDetails, map(dissoc('id')), map(setAmount), remove(indexToRemove, 1))(details);
+                        }}
+                    >删除</Button>
+                </TableCell>
+            }
+        }
     ];
 
     const label = prop('label');
@@ -120,7 +143,7 @@ function DetailSplit({
         >
             <DialogTitle id="form-dialog-title">分摊</DialogTitle>
             <DialogContent>
-                <Table size="small" stickyHeader className={classes.table}>
+                <Table stickyHeader className={classes.table}>
                     <TableHead>
                         <TableRow>
                             {defines.map(label).map((l, index) => {
