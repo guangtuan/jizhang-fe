@@ -1,7 +1,22 @@
-import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { pick, clone, prop, append, last, dissoc, map, assoc, divide, compose, remove, length } from 'ramda';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import {
+    pick,
+    clone,
+    prop,
+    append,
+    last,
+    over,
+    lensIndex,
+    dissoc,
+    map,
+    assoc,
+    divide,
+    compose,
+    remove,
+    length
+} from 'ramda';
 import {
     Dialog,
     Slide,
@@ -15,9 +30,7 @@ import {
     TableHead,
     TableRow,
 } from '@material-ui/core';
-import dayJs from 'dayjs';
 import JizhangDateSelector from '../../comp/jizhangDateSelector';
-
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -62,7 +75,9 @@ function DetailSplit({
                     <JizhangDateSelector
                         key={`createdAt-select-${rowIndex}-${colIndex}`}
                         value={detail.createdAt}
-                        setValue={date => { detail.createdAt = date }}
+                        setValue={date => {
+                            compose(setDetails, over(lensIndex(rowIndex), assoc('createdAt', date)))(details);
+                        }}
                     >
                     </JizhangDateSelector>
                 </TableCell>
@@ -102,11 +117,11 @@ function DetailSplit({
         {
             label: '操作',
             render: ({ detail, rowIndex, colIndex }) => {
-                const displayCreate = rowIndex === length(details) - 1;
-                const displayDelete = length(details) > 1;
+                const createEnable = rowIndex === length(details) - 1;
+                const deleteEnable = length(details) > 1;
                 return <TableCell key={`split-append-cell-${rowIndex}-${colIndex}`}>
                     <Button
-                        disabled={!displayCreate}
+                        disabled={!createEnable}
                         key={`split-append-button-${rowIndex}-${colIndex}`}
                         onClick={() => {
                             const setTotalFalse = assoc('total', false);
@@ -114,11 +129,10 @@ function DetailSplit({
                             const ava = divide(totalAmount, length(details) + 1);
                             const setAmount = assoc('amount', ava);
                             compose(setDetails, map(dissoc('id')), map(setAmount), append(newOne))(details);
-                            console.log(JSON.stringify(details));
                         }}
                     >添加</Button>
                     <Button
-                        disabled={!displayDelete}
+                        disabled={!deleteEnable}
                         key={`split-remove-button-${rowIndex}-${colIndex}`}
                         onClick={() => {
                             const indexToRemove = rowIndex;
