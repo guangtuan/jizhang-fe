@@ -3,7 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 
 import {
-    pick
+    pick,
+    equals,
+    prop,
+    not,
+    compose
 } from 'ramda';
 
 import {
@@ -20,9 +24,6 @@ import {
     FormControl,
 } from '@material-ui/core';
 
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
 import CallSplitIcon from '@material-ui/icons/CallSplit';
 
 import DetailSplit from './detailSplit';
@@ -72,23 +73,23 @@ const DisplayInTable = ({
     const [detailToSplit, setDetailToSplit] = useState();
     const size = 10;
 
-    const load = async params => {
-        loadDetails(params);
+    const load = async () => {
+        loadDetails({
+            page: 0,
+            size: 10,
+            queryParam: {
+                start,
+                end,
+                subjectIds,
+                sourceAccountId,
+                destAccountId
+            }
+        });
     }
 
     useEffect(
         () => {
-            load({
-                page: 0,
-                size: 10,
-                queryParam: {
-                    start,
-                    end,
-                    subjectIds,
-                    sourceAccountId,
-                    destAccountId
-                }
-            });
+            load();
         },
         [start, end, subjectIds, sourceAccountId, destAccountId, page]
     );
@@ -154,6 +155,7 @@ const DisplayInTable = ({
                 return (
                     <TableCell key={key}>
                         <Button
+                            disabled={compose(not, equals(0), prop('splited'))(detail)}
                             className={classes.opt}
                             size="small"
                             startIcon={<CallSplitIcon />}
@@ -164,29 +166,6 @@ const DisplayInTable = ({
                                 setSplitDialogVisible(true);
                             }}
                         >分摊</Button>
-                        {/* <Button
-                            className={classes.opt}
-                            size="small"
-                            startIcon={<FileCopyIcon />}
-                            variant="contained"
-                            onClick={() => { }}
-                        >复制</Button>
-                        <Button
-                            className={classes.opt}
-                            size="small"
-                            startIcon={<EditIcon />}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => { }}
-                        >编辑</Button>
-                        <Button
-                            className={classes.opt}
-                            size="small"
-                            startIcon={<DeleteIcon />}
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => { }}
-                        >删除</Button> */}
                     </TableCell>
                 );
             }
@@ -265,13 +244,17 @@ const DisplayInTable = ({
                 count={details.total}
             />
         </TableContainer>
-        <DetailSplit 
-        base={detailToSplit}
-        dislogVisible={splitDialogVisible}
-        afterSplit={() => {}}
-        onClickCancel={() => {
-            setSplitDialogVisible(false);
-        }}
+        <DetailSplit
+            parent={detailToSplit}
+            dislogVisible={splitDialogVisible}
+            afterSplit={() => {
+                setSplitDialogVisible(false);
+                // TODO set parent to a splited parent
+                load();
+            }}
+            onClickCancel={() => {
+                setSplitDialogVisible(false);
+            }}
         ></DetailSplit>
     </Box>;
 }

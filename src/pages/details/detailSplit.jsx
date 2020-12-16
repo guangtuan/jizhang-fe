@@ -15,7 +15,8 @@ import {
     divide,
     compose,
     remove,
-    length
+    length,
+    dissocPath
 } from 'ramda';
 import {
     Dialog,
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function DetailSplit({
-    base,
+    parent,
     dislogVisible,
     onClickCancel = () => { },
     afterSplit = () => { },
@@ -57,16 +58,23 @@ function DetailSplit({
     const classes = useStyles();
     const [details, setDetails] = useState([]);
     const [totalAmount, setTotalAmount] = useState(undefined);
+    const [parentId, setParentId] = useState(undefined);
+
+    const setSplited = assoc('splited', 1);
+    const removeId = dissoc('id');
+
+    const toASplitedDetail = parentId => compose(assoc('parentId', parentId), setSplited, removeId);
 
     useEffect(() => {
-        if (base) {
-            console.log('clone base');
-            const cloneForm = clone(base);
+        if (parent) {
+            console.log('clone parent');
+            const cloneForm = clone(parent);
             cloneForm.total = true;
             setTotalAmount(cloneForm.amount);
-            setDetails(append(cloneForm)(details));
+            setParentId(parent.id);
+            compose(setDetails, map(toASplitedDetail(parentId)), append(cloneForm))(details);
         }
-    }, [base]);
+    }, [parent]);
 
     const defines = [
         {
@@ -129,7 +137,7 @@ function DetailSplit({
                             const newOne = compose(setTotalFalse, clone, last)(details);
                             const ava = divide(totalAmount, length(details) + 1);
                             const setAmount = assoc('amount', ava);
-                            compose(setDetails, map(dissoc('id')), map(setAmount), append(newOne))(details);
+                            compose(setDetails, map(toASplitedDetail(parentId)), map(setAmount), append(newOne))(details);
                         }}
                     >添加</Button>
                     <Button
@@ -139,7 +147,7 @@ function DetailSplit({
                             const indexToRemove = rowIndex;
                             const ava = divide(totalAmount, length(details) - 1);
                             const setAmount = assoc('amount', ava);
-                            compose(setDetails, map(dissoc('id')), map(setAmount), remove(indexToRemove, 1))(details);
+                            compose(setDetails, map(toASplitedDetail(parentId)), map(setAmount), remove(indexToRemove, 1))(details);
                         }}
                     >删除</Button>
                 </TableCell>
