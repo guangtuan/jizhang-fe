@@ -7,6 +7,12 @@ export const model = {
             data,
         });
     },
+    createBatch: async (data) => {
+        return await post({
+            path: 'api/details/batch',
+            data,
+        });
+    },
     create: async (data) => {
         return await post({
             path: 'api/details',
@@ -18,5 +24,4 @@ export const model = {
             path: `api/details/${data}`,
         });
     },
-
 }

@@ -31,6 +31,7 @@ import {
     TableRow,
 } from '@material-ui/core';
 import JizhangDateSelector from '../../comp/jizhangDateSelector';
+import { model } from './model';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -187,8 +188,9 @@ function DetailSplit({
             </DialogContent>
             <DialogActions>
                 <Button color="secondary" onClick={onClickCancel}>取消</Button>
-                <Button color="primary" onClick={() => {
-
+                <Button color="primary" onClick={async () => {
+                    await model.createBatch(details);
+                    afterSplit();
                 }}>保存
                 </Button>
             </DialogActions>
