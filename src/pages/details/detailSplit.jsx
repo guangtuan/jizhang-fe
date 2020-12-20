@@ -15,8 +15,7 @@ import {
     divide,
     compose,
     remove,
-    length,
-    dissocPath
+    length
 } from 'ramda';
 import {
     Dialog,

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
+import * as color from '../../color';
+import { SPLIT_FLAGS } from '../../models/splitFlag';
 
 import {
     pick,
@@ -51,7 +53,13 @@ const useStyles = makeStyles((theme) => ({
     formControlSubject: {
         width: 300,
         margin: theme.spacing(1),
-    }
+    },
+    splited: {
+        background: color.weak,
+    },
+    splitParent: {
+        background: color.secondary,
+    },
 }));
 
 const DisplayInTable = ({
@@ -62,6 +70,14 @@ const DisplayInTable = ({
 }) => {
 
     const classes = useStyles();
+
+    const getRowClasses = splitFlag => {
+        if (SPLIT_FLAGS.SPLITED === splitFlag) {
+            return classes.splited;
+        } else {
+            return classes.splitParent;
+        }
+    }
 
     const [sourceAccountId, setSourceAccountId] = useState(undefined);
     const [destAccountId, setDestAccountId] = useState(undefined);
@@ -222,7 +238,7 @@ const DisplayInTable = ({
                 <TableBody>
                     {
                         details.content.map((detail, rowIndex) => (
-                            <TableRow key={`detail-row-${rowIndex}`}>
+                            <TableRow className={getRowClasses(detail.splited)} key={`detail-row-${rowIndex}`}>
                                 {
                                     defines.map((def, colIndex) => {
                                         if (def.render) {
