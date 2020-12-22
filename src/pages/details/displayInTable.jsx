@@ -6,10 +6,8 @@ import { SPLIT_FLAGS } from '../../models/splitFlag';
 
 import {
     pick,
-    equals,
-    prop,
-    not,
-    compose
+    propEq,
+    or
 } from 'ramda';
 
 import {
@@ -55,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
     },
     splited: {
-        background: color.weak,
+        background: color.accent,
     },
     splitParent: {
         background: color.secondary,
@@ -66,7 +64,8 @@ const DisplayInTable = ({
     loadDetails,
     details,
     count,
-    subjects
+    subjects,
+    updateSplitFlag
 }) => {
 
     const classes = useStyles();
@@ -91,8 +90,8 @@ const DisplayInTable = ({
 
     const load = async () => {
         loadDetails({
-            page: 0,
-            size: 10,
+            page,
+            size,
             queryParam: {
                 start,
                 end,
@@ -171,7 +170,7 @@ const DisplayInTable = ({
                 return (
                     <TableCell key={key}>
                         <Button
-                            disabled={compose(not, equals(0), prop('splited'))(detail)}
+                            disabled={or(propEq('splited', SPLIT_FLAGS.SPLITED)(detail), propEq('splited', SPLIT_FLAGS.SPLIT_PARENT)(detail))}
                             className={classes.opt}
                             size="small"
                             startIcon={<CallSplitIcon />}
@@ -257,15 +256,19 @@ const DisplayInTable = ({
                 component="div"
                 rowsPerPage={size}
                 page={page}
+                onChangePage={(event, newPage) => {
+                    console.log(newPage);
+                    setPage(newPage);
+                }}
                 count={details.total}
             />
         </TableContainer>
         <DetailSplit
             parent={detailToSplit}
             dislogVisible={splitDialogVisible}
-            afterSplit={() => {
+            afterSplit={async () => {
                 setSplitDialogVisible(false);
-                // TODO set parent to a splited parent
+                await updateSplitFlag({ id: detailToSplit.id, flag: SPLIT_FLAGS.SPLIT_PARENT });
                 load();
             }}
             onClickCancel={() => {
@@ -280,6 +283,7 @@ const mapState = pick(['accounts', 'users', 'details', 'subjects', 'detailEdit']
 const mapDispatch = (dispatch) => ({
     loadDetails: dispatch.details.load,
     delDetail: dispatch.details.del,
+    updateSplitFlag: dispatch.details.updateSplitFlag,
     showCreateDialog: dispatch.detailEdit.showCreateDialog,
     showEditDialog: dispatch.detailEdit.showEditDialog,
     setEdittingDetail: dispatch.detailEdit.setForm,

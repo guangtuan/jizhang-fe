@@ -1,5 +1,5 @@
-import {post, del} from '../core/request';
-import {prop, propEq, assoc, findIndex, update, compose} from 'ramda';
+import { post, put, del } from '../core/request';
+import { prop, propEq, assoc, findIndex, update, compose } from 'ramda';
 
 export const details = {
   state: {
@@ -12,8 +12,8 @@ export const details = {
       const indexById = findIndex(propEq('id', payload.id));
       const indexToUpdate = indexById(getContent(state));
       return assoc(
-          'content',
-          update(indexToUpdate, payload)(getContent(state)),
+        'content',
+        update(indexToUpdate, payload)(getContent(state)),
       )(state);
     },
     set: (state, payload) => {
@@ -27,14 +27,23 @@ export const details = {
         data: payload,
       });
       const modify = compose(
-          assoc(
-              'content', details.content,
-          ),
-          assoc('total', details.total),
+        assoc(
+          'content', details.content,
+        ),
+        assoc('total', details.total),
       );
       dispatch.details.set(
-          modify(rootState.details),
+        modify(rootState.details),
       );
+    },
+    updateSplitFlag: async (payload, rootState) => {
+      const tips = await put({
+        path: `api/details/${payload.id}/splitFlag`,
+        params: {
+          flag: payload.flag
+        }
+      });
+      return tips;
     },
     create: async (payload, rootState) => {
       await post({

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import queryString from 'query-string';
-import {path} from 'ramda';
-import {session} from '../models/session';
+import { path } from 'ramda';
+import { session } from '../models/session';
 
 const SESSION_KEY = 'SESSION';
 
@@ -15,20 +15,20 @@ class JizhangAppError extends Error {
 }
 
 axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      console.log(error);
-      if (error.response) {
+  (response) => {
+    return response;
+  },
+  (error) => {
+    console.log(error);
+    if (error.response) {
       // clear token
-        if (error.response.status === 401) {
-          window.location.href = '/';
-          session.reducers.clear();
-        }
+      if (error.response.status === 401) {
+        window.location.href = '/';
+        session.reducers.clear();
       }
-      throw new JizhangAppError(error.response.status, error.message);
-    },
+    }
+    throw new JizhangAppError(error.response.status, error.message);
+  },
 );
 
 const getFromWindow = () => {
@@ -51,7 +51,7 @@ const getHeaders = () => {
   }
 };
 
-export const get = async ({path, data}) => {
+export const get = async ({ path, data }) => {
   const url = [path, queryString.stringify(data)].join('?');
   const resp = await axios({
     url,
@@ -61,7 +61,7 @@ export const get = async ({path, data}) => {
   return resp.data;
 };
 
-export const post = async ({path, data}) => {
+export const post = async ({ path, data }) => {
   const resp = await axios({
     headers: getHeaders(),
     method: 'post',
@@ -71,8 +71,11 @@ export const post = async ({path, data}) => {
   return resp.data;
 };
 
-export const put = async ({path, data}) => {
-  const url = [getFromWindow(), path].join('/');
+export const put = async ({ path, data, params }) => {
+  const url = [
+    [getFromWindow(), path].join('/'),
+    queryString.stringify(params)
+  ].join('?');
   const resp = await axios({
     headers: getHeaders(),
     method: 'put',
@@ -82,7 +85,7 @@ export const put = async ({path, data}) => {
   return resp.data;
 };
 
-export const del = async ({path, data}) => {
+export const del = async ({ path, data }) => {
   const url = [getFromWindow(), path].join('/');
   const resp = await axios({
     headers: getHeaders(),
