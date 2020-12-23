@@ -61,11 +61,11 @@ function CreditCards() {
                         return <Box className={classes.display}>
                             {defaultTo([])(displayAsBill[date]).map((card, index) => {
                                 const key = `credit-card-unit-repay-${date}-${index}`;
-                                return <Box key={key}>{`账单：${card.name}`}</Box>
+                                return <Box key={key}>{`账单：${card.name}@${card.nickname}`}</Box>
                             })}
                             {defaultTo([])(displayAsRepay[date]).map((card, index) => {
                                 const key = `credit-card-unit-repay-${date}-${index}`;
-                                return <Box key={key}>{`还款：${card.name}`}</Box>
+                                return <Box key={key}>{`还款：${card.name}@${card.nickname}`}</Box>
                             })}
                         </Box>
                     }}
@@ -99,6 +99,11 @@ function CreditCards() {
                         type: DynamicFormDialog.FORM_TYPE.NUMBER,
                         key: 'dateBill',
                         label: '还款日',
+                    },
+                    {
+                        type: DynamicFormDialog.FORM_TYPE.USER_SELECTOR,
+                        key: 'userId',
+                        label: '用户',
                     },
                 ]}
                 formData={form}

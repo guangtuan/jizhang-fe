@@ -40,7 +40,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const FORM_TYPE = {
     TEXT: 'text',
-    NUMBER: 'number'
+    NUMBER: 'number',
+    USER_SELECTOR: 'USER_SELECTOR'
 }
 
 const mapToForm = ({
@@ -74,6 +75,16 @@ const mapToForm = ({
                 formData[key] = parseInt(event.target.value)
             }}
         />;
+    }
+    if (type == FORM_TYPE.USER_SELECTOR) {
+        return <UserSelector
+            title={label}
+            onChange={value => {
+                formData[key] = value;
+            }}
+            value={formData[key]}
+            multiple={false}>
+        </UserSelector>
     }
 
     return <></>;
