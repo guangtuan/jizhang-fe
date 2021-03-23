@@ -30,8 +30,8 @@ function AccountTypeSelector({
         getOptionLabel={prop('name')}
         onChange={
             multiple ?
-                compose(onChange, map(prop('id')), defaultTo([]), nthArg(1)) :
-                compose(onChange, prop('id'), nthArg(1))
+                compose(onChange, map(prop('value')), defaultTo([]), nthArg(1)) :
+                compose(onChange, prop('value'), nthArg(1))
         }
         renderInput={(params) => (
             <TextField
