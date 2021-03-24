@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import * as color from '../../color';
-import { SPLIT_FLAGS } from '../../models/splitFlag';
 
 import {
     pick,
-    propEq,
-    or
 } from 'ramda';
 
 import {
@@ -24,9 +21,9 @@ import {
     FormControl,
 } from '@material-ui/core';
 
-import CallSplitIcon from '@material-ui/icons/CallSplit';
+import EditIcon from '@material-ui/icons/Edit';
 
-import DetailSplit from './detailSplit';
+import DetailEdit from './detailEdit';
 
 import AccountSelector from '../../comp/accountSelector';
 import SubjectSelector from '../../comp/subjectSelector';
@@ -63,20 +60,12 @@ const useStyles = makeStyles((theme) => ({
 const DisplayInTable = ({
     loadDetails,
     details,
-    count,
     subjects,
-    updateSplitFlag
+    showEditDialog,
+    setEdittingDetail
 }) => {
 
     const classes = useStyles();
-
-    const getRowClasses = splitFlag => {
-        if (SPLIT_FLAGS.SPLITED === splitFlag) {
-            return classes.splited;
-        } else {
-            return classes.splitParent;
-        }
-    }
 
     const [sourceAccountId, setSourceAccountId] = useState(undefined);
     const [destAccountId, setDestAccountId] = useState(undefined);
@@ -84,8 +73,6 @@ const DisplayInTable = ({
     const [start, setStart] = useState(new Date(dayJs(new Date()).startOf('month').valueOf()));
     const [end, setEnd] = useState(new Date(dayJs(new Date()).endOf('month').valueOf()));
     const [page, setPage] = useState(0);
-    const [splitDialogVisible, setSplitDialogVisible] = useState(false);
-    const [detailToSplit, setDetailToSplit] = useState();
     const size = 10;
 
     const load = async () => {
@@ -170,17 +157,16 @@ const DisplayInTable = ({
                 return (
                     <TableCell key={key}>
                         <Button
-                            disabled={or(propEq('splited', SPLIT_FLAGS.SPLITED)(detail), propEq('splited', SPLIT_FLAGS.SPLIT_PARENT)(detail))}
                             className={classes.opt}
                             size="small"
-                            startIcon={<CallSplitIcon />}
+                            startIcon={<EditIcon />}
                             variant="contained"
                             color="primary"
                             onClick={() => {
-                                setDetailToSplit(detail);
-                                setSplitDialogVisible(true);
+                                setEdittingDetail(detail)
+                                showEditDialog()
                             }}
-                        >分摊</Button>
+                        >编辑</Button>
                     </TableCell>
                 );
             }
@@ -237,7 +223,7 @@ const DisplayInTable = ({
                 <TableBody>
                     {
                         details.content.map((detail, rowIndex) => (
-                            <TableRow className={getRowClasses(detail.splited)} key={`detail-row-${rowIndex}`}>
+                            <TableRow key={`detail-row-${rowIndex}`}>
                                 {
                                     defines.map((def, colIndex) => {
                                         if (def.render) {
@@ -263,18 +249,7 @@ const DisplayInTable = ({
                 count={details.total}
             />
         </TableContainer>
-        <DetailSplit
-            parent={detailToSplit}
-            dislogVisible={splitDialogVisible}
-            afterSplit={async () => {
-                setSplitDialogVisible(false);
-                await updateSplitFlag({ id: detailToSplit.id, flag: SPLIT_FLAGS.SPLIT_PARENT });
-                load();
-            }}
-            onClickCancel={() => {
-                setSplitDialogVisible(false);
-            }}
-        ></DetailSplit>
+        <DetailEdit></DetailEdit>
     </Box>;
 }
 
