@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function DetailEdit({
+    session,
     detailEdit,
     hideDialog,
     onCreateDone = () => { },
@@ -52,7 +53,7 @@ function DetailEdit({
 
     useEffect(() => {
         const cloneForm = clone(detailEdit.form);
-        setUserId(cloneForm.userId);
+        setUserId(cloneForm.userId || session.userId);
         setSourceAccountId(cloneForm.sourceAccountId);
         setDestAccountId(cloneForm.destAccountId);
         setSubjectId(cloneForm.subjectId);
@@ -148,7 +149,7 @@ function DetailEdit({
     )
 }
 
-const mapState = pick(['detailEdit']);
+const mapState = pick(['detailEdit', 'session']);
 
 const mapDispatch = dispatch => ({
     updateDetail: dispatch.detailEdit.update,
@@ -156,7 +157,7 @@ const mapDispatch = dispatch => ({
     hideDialog: dispatch.detailEdit.hideDialog,
     showEditDialog: dispatch.detailEdit.showEditDialog,
     clearForm: dispatch.detailEdit.clearForm,
-    updateSingleRow: dispatch.details.updateSingleRow
+    updateSingleRow: dispatch.details.updateSingleRow,
 });
 
 export default connect(mapState, mapDispatch)(DetailEdit);
