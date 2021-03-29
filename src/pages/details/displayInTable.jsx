@@ -24,6 +24,7 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 
 import DetailEdit from './detailEdit';
+import AlertDialog from '../../comp/alertDialog';
 
 import AccountSelector from '../../comp/accountSelector';
 import SubjectSelector from '../../comp/subjectSelector';
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DisplayInTable = ({
     loadDetails,
+    delDetail,
     details,
     subjects,
     showEditDialog,
@@ -73,6 +75,8 @@ const DisplayInTable = ({
     const [start, setStart] = useState(new Date(dayJs(new Date()).startOf('month').valueOf()));
     const [end, setEnd] = useState(new Date(dayJs(new Date()).endOf('month').valueOf()));
     const [page, setPage] = useState(0);
+    const [alertDialogOpen, setAlertDialogOpen] = useState(false);
+    const [idToDelete, setIdToDelete] = useState(false);
     const size = 10;
 
     const load = async () => {
@@ -167,6 +171,17 @@ const DisplayInTable = ({
                                 showEditDialog()
                             }}
                         >编辑</Button>
+                        <Button
+                            className={classes.opt}
+                            size="small"
+                            startIcon={<EditIcon />}
+                            variant="contained"
+                            color="warning"
+                            onClick={() => {
+                                setIdToDelete(detail.id);
+                                setAlertDialogOpen(true);
+                            }}
+                        >删除</Button>
                     </TableCell>
                 );
             }
@@ -250,6 +265,20 @@ const DisplayInTable = ({
             />
         </TableContainer>
         <DetailEdit></DetailEdit>
+        <AlertDialog
+            maxWidth="lg"
+            open={alertDialogOpen}
+            title="删除确认"
+            message="是否删除明细"
+            onOK={async () => {
+                setAlertDialogOpen(false);
+                await delDetail(idToDelete);
+                await load();
+            }}
+            onCancel={() => {
+                setAlertDialogOpen(false);
+            }}
+        ></AlertDialog>
     </Box>;
 }
 
