@@ -1,23 +1,13 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import {
-    Delete as DeleteIcon,
-    Edit as EditIcon,
-    FileCopy as FileCopyIcon
-} from '@material-ui/icons/';
-import dayJs from 'dayjs';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import {
     Dialog,
     Slide,
     Button,
-    TextField,
-    FormControl,
     DialogActions,
     DialogContent,
     DialogTitle,
-    ListItem,
-    Chip,
     Table,
     TableBody,
     TableContainer,
@@ -25,7 +15,7 @@ import {
     TableRow,
     TableHead,
 } from '@material-ui/core';
-import { prop } from 'ramda';
+import { prop, sortWith, descend, ascend } from 'ramda';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -40,12 +30,29 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+    body: {
+        fontSize: 14,
+    },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+        },
+    },
+}))(TableRow);
 
 export default function Today({
     dateStr,
     show,
     details,
-    onClickClose = () => {},
+    onClickClose = () => { },
     onClickEdit = () => { },
     onClickDelete = () => { },
     onClickCopy = () => { },
@@ -53,17 +60,6 @@ export default function Today({
 
     const classes = useStyles();
     const defines = [
-        // {
-        //     label: '创建时间',
-        //     render: ({ detail, rowIndex, colIndex }) => {
-        //         const key = 'createdAt' + rowIndex + colIndex;
-        //         if (detail.createdAt) {
-        //             return <TableCell key={key}>{dayJs(detail.createdAt).format('YYYY-MM-DD')}</TableCell>
-        //         } else {
-        //             return <TableCell key={key}></TableCell>
-        //         }
-        //     }
-        // },
         {
             label: '用户',
             prop: 'username',
@@ -72,10 +68,10 @@ export default function Today({
             label: '金额',
             render: ({ detail, rowIndex, colIndex }) => {
                 const key = 'amount' + rowIndex + colIndex;
-                if (detail.createdAt) {
-                    return <TableCell key={key}>{`¥${detail.amount / 100}`}</TableCell>
+                if (detail.amount) {
+                    return <StyledTableCell key={key}>{`¥${detail.amount / 100}`}</StyledTableCell>
                 } else {
-                    return <TableCell key={key}></TableCell>
+                    return <StyledTableCell key={key}></StyledTableCell>
                 }
             }
         },
@@ -95,53 +91,24 @@ export default function Today({
             label: '备注',
             prop: 'remark',
         },
-        // {
-        //     label: '更新时间',
-        //     render: ({ detail, rowIndex, colIndex }) => {
-        //         const key = 'updatedAt' + rowIndex + colIndex;
-        //         if (detail.updatedAt) {
-        //             return <TableCell key={key}>{dayJs(detail.updatedAt).format('YYYY-MM-DD')}</TableCell>
-        //         } else {
-        //             return <TableCell key={key}></TableCell>
-        //         }
-        //     }
-        // },
-        // {
-        //     label: '操作',
-        //     render: ({ detail, rowIndex, colIndex }) => {
-        //         const key = `opt-${rowIndex}-${colIndex}`;
-        //         return (
-        //             <TableCell key={key}>
-        //                 <Button
-        //                     className={classes.opt}
-        //                     size="small"
-        //                     startIcon={<FileCopyIcon />}
-        //                     variant="contained"
-        //                     onClick={onClickCopy(detail)}
-        //                 >复制</Button>
-        //                 <Button
-        //                     className={classes.opt}
-        //                     size="small"
-        //                     startIcon={<EditIcon />}
-        //                     variant="contained"
-        //                     color="primary"
-        //                     onClick={onClickEdit(detail)}
-        //                 >编辑</Button>
-        //                 <Button
-        //                     className={classes.opt}
-        //                     size="small"
-        //                     startIcon={<DeleteIcon />}
-        //                     variant="contained"
-        //                     color="secondary"
-        //                     onClick={onClickDelete(detail)}
-        //                 >删除</Button>
-        //             </TableCell>
-        //         );
-        //     }
-        // }
     ];
 
     const label = prop('label');
+
+    const renderLine = (detail, rowIndex) => (
+        <StyledTableRow key={`detail-row-${rowIndex}`}>
+            {
+                defines.map((def, colIndex) => {
+                    if (def.render) {
+                        return def.render({ detail, rowIndex, colIndex });
+                    } else {
+                        const key = def.prop + rowIndex + colIndex;
+                        return <StyledTableCell key={key}>{detail[def.prop]}</StyledTableCell>;
+                    }
+                })
+            }
+        </StyledTableRow>
+    );
 
     return <Dialog
         fullWidth={true}
@@ -154,30 +121,13 @@ export default function Today({
             <TableContainer>
                 <Table size="small" stickyHeader className={classes.table}>
                     <TableHead>
-                        <TableRow>
+                        <StyledTableRow>
                             {defines.map(label).map((l, index) => {
-                                return <TableCell>{l}</TableCell>
+                                return <StyledTableCell>{l}</StyledTableCell>
                             })}
-                        </TableRow>
+                        </StyledTableRow>
                     </TableHead>
-                    <TableBody>
-                        {
-                            details.map((detail, rowIndex) => (
-                                <TableRow key={`detail-row-${rowIndex}`}>
-                                    {
-                                        defines.map((def, colIndex) => {
-                                            if (def.render) {
-                                                return def.render({ detail, rowIndex, colIndex });
-                                            } else {
-                                                const key = def.prop + rowIndex + colIndex;
-                                                return <TableCell key={key}>{detail[def.prop]}</TableCell>;
-                                            }
-                                        })
-                                    }
-                                </TableRow>
-                            ))
-                        }
-                    </TableBody>
+                    <TableBody>{sortWith([descend(prop('amount'))])(details).map(renderLine)}</TableBody>
                 </Table>
             </TableContainer>
         </DialogContent>
