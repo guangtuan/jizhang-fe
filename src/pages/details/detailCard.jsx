@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const headThree = compose(slice(0, 3), reverse, sortBy(prop('amount')));
+const headThree = compose(slice(0, 3), sortBy(prop('amount')));
 
 const DetailCard = ({
     details,

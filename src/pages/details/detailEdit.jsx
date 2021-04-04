@@ -18,7 +18,7 @@ import UserSelector from '../../comp/userSelector';
 import JizhangDateSelector from '../../comp/jizhangDateSelector';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
+    return <Slide direction='up' ref={ref} {...props} />;
 });
 
 const useStyles = makeStyles((theme) => ({
@@ -67,25 +67,25 @@ function DetailEdit({
             open={detailEdit.dialogVisibility}
             TransitionComponent={Transition}
         >
-            <DialogTitle id="form-dialog-title">编辑明细</DialogTitle>
+            <DialogTitle id='form-dialog-title'>{detailEdit.creating ? '新建明细' : '编辑明细'}</DialogTitle>
             <DialogContent>
                 <FormControl fullWidth className={classes.formControl}>
                     <UserSelector
-                        title="用户"
+                        title='用户'
                         value={userId}
                         onChange={setUserId}
                     />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <AccountSelector
-                        title="来源账户"
+                        title='来源账户'
                         value={sourceAccountId}
                         onChange={setSourceAccountId}
                     />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <AccountSelector
-                        title="目标账户"
+                        title='目标账户'
                         value={destAccountId}
                         onChange={setDestAccountId}
                     />
@@ -93,7 +93,7 @@ function DetailEdit({
                 <FormControl fullWidth className={classes.formControl}>
                     <SubjectSelector
                         multiple={false}
-                        title="科目"
+                        title='科目'
                         value={subjectId}
                         onChange={setSubjectId}
                     />
@@ -101,14 +101,14 @@ function DetailEdit({
                 <FormControl fullWidth className={classes.formControl}>
                     <TextField
                         value={amount}
-                        label="金额（单位：元）"
+                        label='金额（单位：元）'
                         onChange={event => setAmount(event.target.value)}
                     />
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <TextField
                         defaultValue={remark}
-                        label="备注"
+                        label='备注'
                         multiline
                         rowsMax={4}
                         onChange={event => setRemark(event.target.value)}
@@ -116,15 +116,15 @@ function DetailEdit({
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
                     <JizhangDateSelector
-                        label="请选择消费日期"
+                        label='请选择消费日期'
                         setValue={setCreatedAt}
                         value={createdAt}
                     />
                 </FormControl>
             </DialogContent>
             <DialogActions>
-                <Button color="secondary" onClick={hideDialog}>取消</Button>
-                <Button color="primary" onClick={() => {
+                <Button color='secondary' onClick={hideDialog}>取消</Button>
+                <Button color='primary' onClick={() => {
                     const pack = {
                         userId, sourceAccountId, destAccountId, subjectId, remark, amount: amount * 100, createdAt
                     };
