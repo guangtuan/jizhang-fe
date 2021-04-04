@@ -3,14 +3,14 @@ module.exports = function(app) {
   app.use(
       '/login',
       createProxyMiddleware({
-        target: 'http://localhost:44444',
+        target: 'http://localhost',
         changeOrigin: true,
       }),
   );
   app.use(
       '/api',
       createProxyMiddleware({
-        target: 'http://localhost:44444',
+        target: 'http://localhost',
         changeOrigin: true,
       }),
   );
