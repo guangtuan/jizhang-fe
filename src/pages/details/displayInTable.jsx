@@ -50,12 +50,6 @@ const useStyles = makeStyles((theme) => ({
         width: 300,
         margin: theme.spacing(1),
     },
-    splited: {
-        background: color.accent,
-    },
-    splitParent: {
-        background: color.secondary,
-    },
 }));
 
 const DisplayInTable = ({
@@ -287,7 +281,6 @@ const mapState = pick(['accounts', 'users', 'details', 'subjects', 'detailEdit']
 const mapDispatch = (dispatch) => ({
     loadDetails: dispatch.details.load,
     delDetail: dispatch.details.del,
-    updateSplitFlag: dispatch.details.updateSplitFlag,
     showCreateDialog: dispatch.detailEdit.showCreateDialog,
     showEditDialog: dispatch.detailEdit.showEditDialog,
     setEdittingDetail: dispatch.detailEdit.setForm,

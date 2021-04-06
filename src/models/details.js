@@ -36,15 +36,6 @@ export const details = {
         modify(rootState.details),
       );
     },
-    updateSplitFlag: async (payload, rootState) => {
-      const tips = await put({
-        path: `api/details/${payload.id}/splitFlag`,
-        params: {
-          flag: payload.flag
-        }
-      });
-      return tips;
-    },
     create: async (payload, rootState) => {
       await post({
         path: 'api/details',
