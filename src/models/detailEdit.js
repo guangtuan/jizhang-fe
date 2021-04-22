@@ -6,7 +6,7 @@ const defaultForm = () => ({
   sourceAccountId: -1,
   destAccountId: -1,
   subjectId: '',
-  remark: '',
+  remark: undefined,
   amount: undefined,
   createdAt: new Date(),
 });
