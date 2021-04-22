@@ -101,6 +101,7 @@ export function Body({
 
     const [open, setOpen] = React.useState(true);
     const [initLoaidng, setInitLoading] = React.useState(false);
+    const [inited, setInited] = React.useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -121,6 +122,7 @@ export function Body({
         }
         load().then(() => {
             setInitLoading(false);
+            setInited(true);
         }).catch(err => {
             setInitLoading(false);
         });
@@ -163,39 +165,41 @@ export function Body({
                     <Divider />
                     <JiZhangMenu></JiZhangMenu>
                 </Drawer>
-                <main
-                    className={clsx(classes.content, {
-                        [classes.contentShift]: open,
-                    })}
-                >
-                    <div className={classes.drawerHeader} />
-                    <Switch>
-                        <Route exact path="/">
-                            <Details />
-                        </Route>
-                        <Route path="/users">
-                            <Users />
-                        </Route>
-                        <Route path="/accounts">
-                            <Accounts />
-                        </Route>
-                        <Route path="/credit_cards">
-                            <CreditCards />
-                        </Route>
-                        <Route path="/subjects">
-                            <Subjects />
-                        </Route>
-                        <Route path="/statistics">
-                            <Statistics />
-                        </Route>
-                        <Route path="/list">
-                            <DisplayInTable/>
-                        </Route>
-                    </Switch>
-                    <Backdrop className={classes.backdrop} open={initLoaidng}>
-                        <CircularProgress color="inherit" />
-                    </Backdrop>
-                </main>
+                {
+                    inited && <main
+                        className={clsx(classes.content, {
+                            [classes.contentShift]: open,
+                        })}
+                    >
+                        <div className={classes.drawerHeader} />
+                        <Switch>
+                            <Route exact path="/">
+                                <Details />
+                            </Route>
+                            <Route path="/users">
+                                <Users />
+                            </Route>
+                            <Route path="/accounts">
+                                <Accounts />
+                            </Route>
+                            <Route path="/credit_cards">
+                                <CreditCards />
+                            </Route>
+                            <Route path="/subjects">
+                                <Subjects />
+                            </Route>
+                            <Route path="/statistics">
+                                <Statistics />
+                            </Route>
+                            <Route path="/list">
+                                <DisplayInTable />
+                            </Route>
+                        </Switch>
+                        <Backdrop className={classes.backdrop} open={initLoaidng}>
+                            <CircularProgress color="inherit" />
+                        </Backdrop>
+                    </main>
+                }
             </div>
         </Router>
     );
