@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  propSatisfies,
+  flip,
+  includes,
   ifElse,
   map,
   prop,
@@ -10,7 +11,8 @@ import {
   nthArg,
   find,
   propEq,
-  defaultTo
+  defaultTo,
+  filter
 } from 'ramda';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
@@ -26,7 +28,7 @@ const SubjectSelector = ({
 }) => {
   const getDefaultValue = ifElse(
     () => multiple,
-    find(propSatisfies(prop('id'), id => value.contains(id))),
+    filter(compose(flip(includes)(value), prop('id'))),
     find(propEq('id', value))
   );
   return (
