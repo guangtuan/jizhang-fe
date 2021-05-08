@@ -6,7 +6,6 @@ import * as R from 'ramda';
 
 import SubjectIcon from '@material-ui/icons/Subject';
 import PersonIcon from '@material-ui/icons/Person';
-import HomeIcon from '@material-ui/icons/Home';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import PaymentIcon from '@material-ui/icons/Payment';
 import CreditCardIcon from '@material-ui/icons/CreditCard';
@@ -20,46 +19,46 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 const pages = [
     {
-        'type': 'base',
-        'text': '日历',
-        'icon': <DateRangeIcon></DateRangeIcon>,
-        'path': '/'
+        type: 'base',
+        text: '日历',
+        icon: <DateRangeIcon></DateRangeIcon>,
+        path: '/'
     },
     {
-        'type': 'base',
-        'text': '列表',
-        'icon': <ListIcon></ListIcon>,
-        'path': '/list'
+        type: 'base',
+        text: '列表',
+        icon: <ListIcon></ListIcon>,
+        path: '/list'
     },
     {
-        'type': 'base',
-        'text': '账户',
-        'icon': <PaymentIcon></PaymentIcon>,
-        'path': '/accounts'
+        type: 'base',
+        text: '账户',
+        icon: <PaymentIcon></PaymentIcon>,
+        path: '/accounts'
     },
     {
-        'type': 'base',
-        'text': '科目',
-        'icon': <SubjectIcon></SubjectIcon>,
-        'path': '/subjects'
+        type: 'base',
+        text: '科目',
+        icon: <SubjectIcon></SubjectIcon>,
+        path: '/subjects'
     },
     {
-        'type': 'base',
-        'text': '用户',
-        'icon': <PersonIcon></PersonIcon>,
-        'path': '/users'
+        type: 'base',
+        text: '用户',
+        icon: <PersonIcon></PersonIcon>,
+        path: '/users'
     },
     {
-        'type': 'base',
-        'text': '信用卡',
-        'icon': <CreditCardIcon></CreditCardIcon>,
-        'path': '/credit_cards'
+        type: 'base',
+        text: '信用卡',
+        icon: <CreditCardIcon></CreditCardIcon>,
+        path: '/credit_cards'
     },
     {
-        'type': 'ext',
-        'text': '统计',
-        'icon': <EqualizerIcon></EqualizerIcon>,
-        'path': '/statistics'
+        type: 'ext',
+        text: '统计',
+        icon: <EqualizerIcon></EqualizerIcon>,
+        path: '/statistics'
     }
 ]
 
