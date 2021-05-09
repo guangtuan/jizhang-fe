@@ -16,16 +16,24 @@ import {
 } from 'ramda';
 import { Autocomplete } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
+import { subjectLevel } from '../core/def';
 
 const display = subject => `${subject.name}(${subject.description})`;
 
 const SubjectSelector = ({
+  level = subjectLevel.SMALL,
   subjects,
   title,
   onChange,
   value,
   multiple = false
 }) => {
+
+  const range = {
+    [subjectLevel.SMALL]: subjects.flatedChildren,
+    [subjectLevel.BIG]: subjects.justParents
+  };
+
   const getDefaultValue = ifElse(
     () => multiple,
     filter(compose(flip(includes)(value), prop('id'))),
@@ -35,8 +43,8 @@ const SubjectSelector = ({
     <Autocomplete
       multiple={multiple}
       disableCloseOnSelect={multiple}
-      defaultValue={getDefaultValue(subjects.flatedChildren)}
-      options={subjects.flatedChildren}
+      defaultValue={getDefaultValue(range[level])}
+      options={range[level]}
       groupBy={prop('parent')}
       getOptionLabel={display}
       onChange={

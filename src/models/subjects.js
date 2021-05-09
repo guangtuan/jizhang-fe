@@ -5,20 +5,29 @@ import {
   flatten,
   map,
   prop,
-  nthArg
+  nthArg,
+  filter,
+  propSatisfies,
+  gt,
+  __
 } from 'ramda';
 
 import { get, post, put, del } from '../core/request';
+import { subjectLevel } from '../core/def';
 
 const defaultForm = () => ({
   id: undefined,
-  name: '',
-  description: '',
+  name: undefined,
+  description: undefined,
   parentId: undefined,
-  level: 1,
+  level: subjectLevel.BIG,
 });
 
+const gt0 = gt(__, 0);
+const removeChildren = assoc('children', []);
+const validSubject = propSatisfies(gt0, 'id');
 const flatedChildren = compose(flatten, map(prop('children')));
+const justParents = compose(filter(validSubject), map(removeChildren));
 
 export const subjects = {
   name: 'subjects',
@@ -27,6 +36,7 @@ export const subjects = {
     display: [],
     form: defaultForm(),
     flatedChildren: [],
+    justParents: [],
     creating: false,
     editing: false
   },
@@ -57,6 +67,9 @@ export const subjects = {
     setFlatedChildren: (state, payload) => {
       return assoc('flatedChildren', payload)(state);
     },
+    setParents: (state, payload) => {
+      return assoc('justParents', payload)(state);
+    }
   },
   effects: (dispatch) => ({
     load: async (payload, rootState) => {
@@ -66,6 +79,7 @@ export const subjects = {
       });
       dispatch.subjects.setSubjectTree(subjectTree);
       dispatch.subjects.setFlatedChildren(flatedChildren(subjectTree));
+      dispatch.subjects.setParents(justParents(subjectTree));
     },
     create: async (payload, rootState) => {
       await post({

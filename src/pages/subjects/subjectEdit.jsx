@@ -13,6 +13,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { pick, clone } from 'ramda';
 
+import { subjectLevel } from '../../core/def';
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -106,10 +108,10 @@ function SubjectEdit({
         <Button onClick={() => {
           const pack = { name, description };
           if (parentId && parentName) {
-            pack.level = 2;
+            pack.level = subjectLevel.SMALL;
             pack.parentId = parentId;
           } else {
-            pack.level = 1;
+            pack.level = subjectLevel.BIG;
           }
           if (subjects.creating) {
             createSubject(pack).then(resp => {

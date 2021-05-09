@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { pick, map, prop, defaultTo, sum, compose } from 'ramda';
+import { pick, map, prop, defaultTo, sum, compose, pipe } from 'ramda';
 import { Axis, Chart, Geom, Label, Tooltip } from 'bizcharts';
 import SubjectSelector from '../../comp/subjectSelector';
 import { KeyboardDatePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
-import { FormControl, Paper, TextField } from '@material-ui/core';
+import { FormControl, FormControlLabel, FormLabel, Radio, Paper, TextField, RadioGroup } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { makeStyles } from '@material-ui/core/styles';
 import dayjs from 'dayjs';
+import { subjectLevel } from '../../core/def';
+import { writeToLocal, loadFromLocal } from '../../core/local';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -24,21 +26,56 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+
+const namespace = 'statistics';
+const loadFromLocalSt = loadFromLocal(namespace);
+const writeToLocalSt = writeToLocal(namespace);
+
 function Statistics({
     subjects: globalSubjects, loadStatistics, statistics,
 }) {
 
     const classes = useStyles();
 
-    const [start, setStart] = useState(dayjs().startOf('month').toDate().getTime());
-    const [end, setEnd] = useState(dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime());
-    const [subjects, setSubjects] = useState(compose(map(prop('id')))(globalSubjects.flatedChildren));
+    const [level, setLevel] = useState(pipe(
+        loadFromLocalSt,
+        Number.parseInt,
+        defaultTo(subjectLevel.SMALL)
+    )('level'));
+
+    const [start, setStart] = useState(pipe(
+        loadFromLocalSt,
+        Number.parseFloat,
+        defaultTo(dayjs().startOf('month').toDate().getTime())
+    )('start'));
+
+    const [end, setEnd] = useState(pipe(
+        loadFromLocalSt,
+        Number.parseFloat,
+        defaultTo(dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime())
+    )('end'));
+
+    const [subjectsSmall, setSubjectsSmall] = useState(pipe(
+        loadFromLocalSt,
+        JSON.parse,
+        defaultTo(compose(map(prop('id')))(globalSubjects.flatedChildren))
+    )('subjectsSmall'));
+
+    const [subjectsBig, setSubjectsBig] = useState(pipe(
+        loadFromLocalSt,
+        JSON.parse,
+        defaultTo(compose(map(prop('id')))(globalSubjects.subjectTree))
+    )('subjectsBig'));
 
     useEffect(
         () => {
-            loadStatistics({ start, end, subjects });
+            if (level === subjectLevel.BIG) {
+                loadStatistics({ start, end, subjects: subjectsBig, level });
+            } else {
+                loadStatistics({ start, end, subjects: subjectsSmall, level });
+            }
         },
-        [start, end, subjects]
+        [start, end, level, subjectsSmall, subjectsBig]
     );
 
     // 定义度量
@@ -50,17 +87,45 @@ function Statistics({
     return (
         <div>
             <Paper className={classes.header}>
-                <SubjectSelector
-                    title={"筛选科目"}
-                    value={subjects}
-                    multiple={true}
-                    onChange={setSubjects}
-                ></SubjectSelector>
+                <FormControl label="科目类型">
+                    <FormLabel component="legend">科目类型</FormLabel>
+                    <RadioGroup row aria-label="科目类型" name="科目类型" value={level} onChange={event => {
+                        setLevel(Number.parseInt(event.target.value));
+                        writeToLocalSt({ key: 'level', value: event.target.value });
+                    }}>
+                        <FormControlLabel value={subjectLevel.BIG} control={<Radio />} label="大类" />
+                        <FormControlLabel value={subjectLevel.SMALL} control={<Radio />} label="子类" />
+                    </RadioGroup>
+                </FormControl>
+                {
+                    level === subjectLevel.BIG && <SubjectSelector
+                        level={subjectLevel.BIG}
+                        value={subjectsBig}
+                        multiple={true}
+                        onChange={arr => {
+                            setSubjectsBig(arr);
+                            writeToLocalSt({ key: 'subjectsBig', value: JSON.stringify(arr) })
+                        }}
+                    ></SubjectSelector>
+                }
+                {
+                    level === subjectLevel.SMALL && <SubjectSelector
+                        value={subjectsSmall}
+                        multiple={true}
+                        onChange={arr => {
+                            setSubjectsSmall(arr);
+                            writeToLocalSt({ key: 'subjectsSmall', value: JSON.stringify(arr) })
+                        }}
+                    ></SubjectSelector>
+                }
                 <FormControl className={classes.formControl}>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
                             label="从"
-                            onChange={setStart}
+                            onChange={value => {
+                                setStart(value)
+                                writeToLocalSt({ key: 'start', value: value.getTime() })
+                            }}
                             value={start}
                         ></KeyboardDatePicker>
                     </MuiPickersUtilsProvider>
@@ -69,7 +134,10 @@ function Statistics({
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
                             label="到"
-                            onChange={setEnd}
+                            onChange={value => {
+                                setEnd(value)
+                                writeToLocalSt({ key: 'end', value: value.getTime() })
+                            }}
                             value={end}
                         ></KeyboardDatePicker>
                     </MuiPickersUtilsProvider>
