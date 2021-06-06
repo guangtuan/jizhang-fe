@@ -37,11 +37,11 @@ export const details = {
       );
     },
     create: async (payload, rootState) => {
-      await post({
+      const resp = await post({
         path: 'api/details',
         data: payload,
       });
-      return true;
+      return resp;
     },
     del: async (payload, rootState) => {
       await del({

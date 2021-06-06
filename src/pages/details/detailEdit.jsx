@@ -16,6 +16,7 @@ import SubjectSelector from '../../comp/subjectSelector';
 import AccountSelector from '../../comp/accountSelector';
 import UserSelector from '../../comp/userSelector';
 import JizhangDateSelector from '../../comp/jizhangDateSelector';
+import EventSelector from '../../comp/eventSelector';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction='up' ref={ref} {...props} />;
@@ -40,7 +41,8 @@ function DetailEdit({
     updateDetail,
     createDetail,
     clearForm,
-    updateSingleRow
+    updateSingleRow,
+    link
 }) {
     const classes = useStyles();
     const [userId, setUserId] = useState(undefined);
@@ -50,6 +52,7 @@ function DetailEdit({
     const [amount, setAmount] = useState(undefined);
     const [remark, setRemark] = useState(undefined);
     const [createdAt, setCreatedAt] = useState(undefined);
+    const [eventId, setEventId] = useState(undefined);
 
     useEffect(() => {
         const cloneForm = clone(detailEdit.form);
@@ -121,26 +124,46 @@ function DetailEdit({
                         value={createdAt}
                     />
                 </FormControl>
+                <FormControl fullWidth className={classes.formControl}>
+                    <EventSelector
+                        title='事件'
+                        onChange={setEventId}
+                        value={eventId}
+                    />
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button color='secondary' onClick={hideDialog}>取消</Button>
-                <Button color='primary' onClick={() => {
+                <Button color='primary' onClick={async () => {
                     const pack = {
                         userId, sourceAccountId, destAccountId, subjectId, remark, amount: amount * 100, createdAt
                     };
                     if (detailEdit.creating) {
-                        createDetail(pack).then(() => {
-                            clearForm()
-                            hideDialog()
-                            onCreateDone();
-                        });
+                        const created = await createDetail(pack)
+                        clearForm()
+                        hideDialog()
+                        onCreateDone();
+                        setEventId(undefined)
+                        if (eventId) {
+                            await link({
+                                detailId: created.id,
+                                eventId: eventId
+                            })
+                            setEventId(undefined)
+                        }
                     }
                     if (detailEdit.editing) {
-                        updateDetail({ payload: pack, id: detailEdit.form.id }).then(updated => {
-                            clearForm()
-                            hideDialog()
-                            updateSingleRow(updated)
-                        });
+                        const updated = await updateDetail({ payload: pack, id: detailEdit.form.id })
+                        clearForm()
+                        hideDialog()
+                        updateSingleRow(updated)
+                        if (eventId) {
+                            await link({
+                                detailId: updated.id,
+                                eventId: eventId
+                            })
+                            setEventId(undefined)
+                        }
                     }
                 }}>保存
                 </Button>
@@ -158,6 +181,7 @@ const mapDispatch = dispatch => ({
     showEditDialog: dispatch.detailEdit.showEditDialog,
     clearForm: dispatch.detailEdit.clearForm,
     updateSingleRow: dispatch.details.updateSingleRow,
+    link: dispatch.event.link
 });
 
 export default connect(mapState, mapDispatch)(DetailEdit);
