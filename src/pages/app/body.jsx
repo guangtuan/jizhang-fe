@@ -15,6 +15,7 @@ import Details from '../details';
 import Subjects from '../subjects';
 import Users from '../users';
 import Accounts from '../accounts';
+import Event from '../event';
 import CreditCards from '../creditCards';
 import Statistics from '../statistics';
 import JiZhangMenu from './JizhangMenu';
@@ -92,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function Body({
     loadUsers,
+    loadEvents,
     loadSubjects,
     loadAccounts,
 }) {
@@ -116,6 +118,7 @@ export function Body({
         async function load() {
             await Promise.all([
                 loadUsers(),
+                loadEvents(),
                 loadSubjects(),
                 loadAccounts(),
             ]);
@@ -194,6 +197,9 @@ export function Body({
                             <Route path="/list">
                                 <DisplayInTable />
                             </Route>
+                            <Route path="/event">
+                                <Event />
+                            </Route>
                         </Switch>
                         <Backdrop className={classes.backdrop} open={initLoaidng}>
                             <CircularProgress color="inherit" />
@@ -208,6 +214,7 @@ export function Body({
 const mapState = R.pick([]);
 
 const mapDispatch = (dispatch) => ({
+    loadEvents: dispatch.event.load, 
     loadUsers: dispatch.users.load,
     loadSubjects: dispatch.subjects.load,
     loadAccounts: dispatch.accounts.load,
