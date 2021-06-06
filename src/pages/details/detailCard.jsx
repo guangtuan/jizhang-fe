@@ -2,16 +2,19 @@ import React from 'react';
 
 import { Box, Button, Card, CardContent, CardActions } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { sortBy, compose, slice, prop, reverse } from 'ramda';
+import { compose, prop, sum, map, divide, __, length, gt } from 'ramda';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     root: {
-        height: 100,
+        height: 84,
         padding: 0,
     },
     content: {
         padding: 8,
-        height: 70,
+        height: 56,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     actions: {
         display: 'flex',
@@ -19,61 +22,42 @@ const useStyles = makeStyles(() => ({
         paddingBottom: 0,
         paddingTop: 0,
     },
-    listitem: {
-        paddingBottom: 0,
-        paddingTop: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
-        display: 'flex',
-        justifyContent: 'space-between'
-    },
-    amount: {},
-    account: {},
-    subject: {},
-    copy: {
-        color: 'blue',
-        cursor: 'pointer',
+    total: {
+        fontSize: 22,
+        color: theme.palette.text.primary
     }
 }));
 
-const headThree = compose(slice(0, 3), sortBy(prop('amount')));
+const twoDecimal = num => (Math.round(num * 100) / 100).toFixed(2);
+const renderAmount = compose(s => `¥${s}`, twoDecimal, divide(__, 100));
+const total = compose(renderAmount, sum, map(prop('amount')));
+const arrayNotEmpty = compose(gt(__, 0), length);
 
 const DetailCard = ({
     details,
     onClickShowAll = () => { },
     onClickCreate = () => { },
-    onClickCopy = () => { },
 }) => {
     const classes = useStyles();
 
     return <Card className={classes.root}>
         <CardContent className={classes.content}>
-            <Box>
-                {
-                    headThree(details).map((detail, index) => {
-                        const keyPrefix = 'detail-card-line';
-                        return <Box key={`${keyPrefix}-${index}-${detail.id}`} className={classes.listitem}>
-                            <span key={`${keyPrefix}-${index}-${detail.id}-amount`} className={classes.amount}>{`¥${detail.amount / 100}`}</span>
-                            <span key={`${keyPrefix}-${index}-${detail.id}-account`} className={classes.account}>{`@${detail.sourceAccountName}`}</span>
-                            <span key={`${keyPrefix}-${index}-${detail.id}-subject`} className={classes.subject}>{`#${detail.subjectName}`}</span>
-                            <span key={`${keyPrefix}-${index}-${detail.id}-copy`} className={classes.copy} onClick={onClickCopy(detail)}>复制</span>
-                        </Box>
-                    })
-                }
+            <Box className={classes.total}>
+                {arrayNotEmpty(details) ? total(details) : <div></div>}
             </Box>
         </CardContent>
         <CardActions className={classes.actions}>
             <Button
-                color="secondary"
-                size='small'
-                onClick={onClickShowAll(details)}>
-                查看今天
-            </Button>
-            <Button
                 color="primary"
                 size='small'
+                onClick={onClickShowAll(details)}>
+                today
+            </Button>
+            <Button
+                color="secondary"
+                size='small'
                 onClick={onClickCreate}>
-                添加一笔
+                create
             </Button>
         </CardActions>
     </Card>
