@@ -134,6 +134,10 @@ const DisplayInTable = ({
             prop: 'subjectName',
         },
         {
+            label: '事件',
+            prop: 'eventName',
+        },
+        {
             label: '备注',
             prop: 'remark',
         },
