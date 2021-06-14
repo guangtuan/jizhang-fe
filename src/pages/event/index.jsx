@@ -77,6 +77,18 @@ function Event({
             },
         },
         {
+            label: '总花费',
+            render: function ({ sumAmount }) {
+                return (<TableCell>¥{sumAmount / 100}</TableCell>);
+            },
+        },
+        {
+            label: '消费次数',
+            render: function ({ countOfDetail }) {
+                return (<TableCell>{countOfDetail}</TableCell>);
+            },
+        },
+        {
             label: '创建时间',
             render: ({ createdAt }) => {
                 if (!createdAt) {
