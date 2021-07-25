@@ -12,6 +12,7 @@ import CreditCardIcon from '@material-ui/icons/CreditCard';
 import ListIcon from '@material-ui/icons/List';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import EventIcon from '@material-ui/icons/Event';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -60,6 +61,12 @@ const pages = [
         text: '统计',
         icon: <EqualizerIcon></EqualizerIcon>,
         path: '/statistics'
+    },
+    {
+        type: 'ext',
+        text: '趋势',
+        icon: <TrendingUpIcon></TrendingUpIcon>,
+        path: '/subjectStat'
     },
     {
         type: 'ext',

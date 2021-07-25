@@ -13,6 +13,7 @@ import * as R from 'ramda';
 
 import Details from '../details';
 import Subjects from '../subjects';
+import SubjectStat from '../subjects/stat';
 import Users from '../users';
 import Accounts from '../accounts';
 import Event from '../event';
@@ -191,6 +192,9 @@ export function Body({
                             <Route path="/subjects">
                                 <Subjects />
                             </Route>
+                            <Route path="/subjectStat">
+                                <SubjectStat />
+                            </Route>
                             <Route path="/statistics">
                                 <Statistics />
                             </Route>
@@ -214,7 +218,7 @@ export function Body({
 const mapState = R.pick([]);
 
 const mapDispatch = (dispatch) => ({
-    loadEvents: dispatch.event.load, 
+    loadEvents: dispatch.event.load,
     loadUsers: dispatch.users.load,
     loadSubjects: dispatch.subjects.load,
     loadAccounts: dispatch.accounts.load,
