@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import { get } from '../../core/request';
+import { post } from '../../core/request';
 import { pick, map, prop, defaultTo, sum, compose, pipe, head } from 'ramda';
 import dayjs from 'dayjs';
 import SubjectSelector from '../../comp/subjectSelector';
@@ -62,22 +61,23 @@ function SubjectStat({
         defaultTo(dayjs().set('hour', 23).set('minute', 59).set('second', 59).toDate().getTime()),
     )('end'));
 
-    const [subjectSmall, setSubjectSmall] = useState(pipe(
+    const [subjectsSmall, setSubjectsSmall] = useState(pipe(
         loadFromLocalSt,
         JSON.parse,
-        defaultTo(compose(head, map(prop('id')))(globalSubjects.flatedChildren)),
+        defaultTo(compose(map(prop('id')))(globalSubjects.flatedChildren)),
     )('subjectsSmall'));
 
-    const [subjectBig, setSubjectBig] = useState(pipe(
+    const [subjectsBig, setSubjectsBig] = useState(pipe(
         loadFromLocalSt,
         JSON.parse,
-        defaultTo(compose(head, map(prop('id')))(globalSubjects.subjectTree)),
+        defaultTo(compose(map(prop('id')))(globalSubjects.subjectTree)),
     )('subjectsBig'));
 
-    const loadStatistics = async ({ start, end, subject }) => {
-        const result = await get({
-            path: `api/subjects/${subject}/stat`,
+    const loadStatistics = async ({ start, end, ids }) => {
+        const result = await post({
+            path: `api/subjects/stat`,
             data: {
+                ids,
                 start,
                 end,
                 level
@@ -90,12 +90,12 @@ function SubjectStat({
     useEffect(
         () => {
             if (level === subjectLevel.BIG) {
-                loadStatistics({ start, end, subject: subjectBig });
+                loadStatistics({ start, end, ids: subjectsBig });
             } else {
-                loadStatistics({ start, end, subject: subjectSmall });
+                loadStatistics({ start, end, ids: subjectsSmall });
             }
         },
-        [start, end, level, subjectSmall, subjectBig]
+        [start, end, level, subjectsSmall, subjectsBig]
     );
 
     const scale = {
@@ -120,29 +120,27 @@ function SubjectStat({
                         <FormControlLabel value={subjectLevel.SMALL} control={<Radio />} label="子类" />
                     </RadioGroup>
                 </FormControl>
-                <FormControl className={classes.formControlSubject}>
-                    {
-                        level === subjectLevel.BIG && <SubjectSelector
-                            level={subjectLevel.BIG}
-                            value={subjectBig}
-                            multiple={false}
-                            onChange={val => {
-                                setSubjectBig(val);
-                                writeToLocalSt({ key: 'subjectsBig', value: JSON.stringify(val) })
-                            }}
-                        />
-                    }
-                    {
-                        level === subjectLevel.SMALL && <SubjectSelector
-                            value={subjectSmall}
-                            multiple={false}
-                            onChange={val => {
-                                setSubjectSmall(val);
-                                writeToLocalSt({ key: 'subjectsSmall', value: JSON.stringify(val) })
-                            }}
-                        />
-                    }
-                </FormControl>
+                {
+                    level === subjectLevel.BIG && <SubjectSelector
+                        level={subjectLevel.BIG}
+                        value={subjectsBig}
+                        multiple={true}
+                        onChange={val => {
+                            setSubjectsBig(val);
+                            writeToLocalSt({ key: 'subjectsBig', value: JSON.stringify(val) })
+                        }}
+                    />
+                }
+                {
+                    level === subjectLevel.SMALL && <SubjectSelector
+                        value={subjectsSmall}
+                        multiple={true}
+                        onChange={val => {
+                            setSubjectsSmall(val);
+                            writeToLocalSt({ key: 'subjectsSmall', value: JSON.stringify(val) })
+                        }}
+                    />
+                }
                 <FormControl className={classes.formControl}>
                     <JizhangDateSelector
                         label={'选择开始日期'}
