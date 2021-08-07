@@ -1,5 +1,5 @@
-import { get, post } from '../core/request';
-import * as R from 'ramda';
+import { get, post } from '../core/request'
+import * as R from 'ramda'
 
 export const event = {
     state: {
@@ -7,21 +7,21 @@ export const event = {
     },
     reducers: {
         setContent: (state, payload) => {
-            return R.assoc('content', payload)(state);
+            return R.assoc('content', payload)(state)
         },
     },
     effects: (dispatch) => ({
         load: async (payload, rootState) => {
-            const result = await get({ path: 'api/event' });
-            dispatch.event.setContent(result);
-            return result;
+            const result = await get({ path: 'api/event' })
+            dispatch.event.setContent(result)
+            return result
         },
         create: async ({ name }, rootState) => {
             await post({
                 path: 'api/event',
                 data: {
-                    name
-                }
+                    name,
+                },
             })
             return true
         },
@@ -30,10 +30,10 @@ export const event = {
                 path: 'api/event/link',
                 data: {
                     detailId,
-                    eventId
-                }
+                    eventId,
+                },
             })
             return true
         },
     }),
-};
+}

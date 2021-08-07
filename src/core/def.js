@@ -1,4 +1,4 @@
 export const subjectLevel = {
     BIG: 1,
-    SMALL: 2
-};
+    SMALL: 2,
+}

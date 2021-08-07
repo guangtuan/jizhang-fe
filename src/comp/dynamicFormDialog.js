@@ -1,10 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import { connect } from 'react-redux';
-
-import * as R from 'ramda';
-
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 import {
     Button,
@@ -14,34 +10,26 @@ import {
     FormControl,
     DialogActions,
     DialogTitle,
-    DialogContent
-} from '@material-ui/core';
+    DialogContent,
+} from '@material-ui/core'
 
-import SubjectSelector from './subjectSelector';
-import AccountSelector from './accountSelector';
-import UserSelector from './userSelector';
+import UserSelector from './userSelector'
 
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
-});
+const Transition = React.forwardRef(function Transition (props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />
+})
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
         margin: theme.spacing(1),
-        minWidth: 120
+        minWidth: 120,
     },
-}));
+}))
 
 export const FORM_TYPE = {
     TEXT: 'text',
     NUMBER: 'number',
-    USER_SELECTOR: 'USER_SELECTOR'
+    USER_SELECTOR: 'USER_SELECTOR',
 }
 
 const mapToForm = ({
@@ -49,10 +37,10 @@ const mapToForm = ({
         type,
         key,
         label,
-        enable = true
+        enable = true,
     },
     formData,
-    compKey
+    compKey,
 }) => {
     if (type === FORM_TYPE.TEXT) {
         return <TextField
@@ -60,10 +48,10 @@ const mapToForm = ({
             label={label}
             disabled={!enable}
             value={formData[key]}
-            onChange={event => {
+            onChange={(event) => {
                 formData[key] = event.target.value
             }}
-        />;
+        />
     }
     if (type === FORM_TYPE.NUMBER) {
         return <TextField
@@ -71,35 +59,35 @@ const mapToForm = ({
             label={label}
             disabled={!enable}
             value={formData[key]}
-            onChange={event => {
+            onChange={(event) => {
                 formData[key] = parseInt(event.target.value)
             }}
-        />;
+        />
     }
-    if (type == FORM_TYPE.USER_SELECTOR) {
+    if (type === FORM_TYPE.USER_SELECTOR) {
         return <UserSelector
             title={label}
-            onChange={value => {
-                formData[key] = value;
+            onChange={(value) => {
+                formData[key] = value
             }}
             value={formData[key]}
             multiple={false}>
         </UserSelector>
     }
 
-    return <></>;
+    return <></>
 }
 
 
-function DynamicFormDialog({
+function DynamicFormDialog ({
     title,
     ifOpen,
     forms,
     formData,
     onClickCancel,
-    onClickOK
+    onClickOK,
 }) {
-    const classes = useStyles();
+    const classes = useStyles()
 
     return <Dialog
         open={ifOpen}
@@ -109,10 +97,14 @@ function DynamicFormDialog({
         <DialogContent>
             {
                 forms.map((form, index) => {
-                    const formKey = `form-dialog-${title}-form-${index}`;
-                    const compKey = `form-dialog-${title}-comp-${index}`;
+                    const formKey = `form-dialog-${title}-form-${index}`
+                    const compKey = `form-dialog-${title}-comp-${index}`
                     return <FormControl fullWidth className={classes.formControl} key={formKey}>
-                        {mapToForm({ form, formData, compKey })}
+                        {mapToForm({
+                            form,
+                            formData,
+                            compKey,
+                        })}
                     </FormControl>
                 })
             }
@@ -122,8 +114,8 @@ function DynamicFormDialog({
             <Button onClick={onClickOK}>确认</Button>
         </DialogActions>
     </Dialog>
-};
+}
 
-DynamicFormDialog.FORM_TYPE = FORM_TYPE;
+DynamicFormDialog.FORM_TYPE = FORM_TYPE
 
-export default DynamicFormDialog;
+export default DynamicFormDialog

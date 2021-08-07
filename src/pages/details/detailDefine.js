@@ -1,16 +1,16 @@
 export const KEY_MAP = {
-    DEST_ACCOUNT: "DEST_ACCOUNT",
-    SRC_ACCOUNT: "SRC_ACCOUNT",
-    SUBJECT: "SUBJECT",
-    CREATED_AT: "CREATED_AT",
-    UPDATED_AT: "UPDATED_AT",
-    REMARK: "REMARK",
-    AMOUNT: "AMOUNT",
-    USERNAME: "USERNAME",
-};
+    DEST_ACCOUNT: 'DEST_ACCOUNT',
+    SRC_ACCOUNT: 'SRC_ACCOUNT',
+    SUBJECT: 'SUBJECT',
+    CREATED_AT: 'CREATED_AT',
+    UPDATED_AT: 'UPDATED_AT',
+    REMARK: 'REMARK',
+    AMOUNT: 'AMOUNT',
+    USERNAME: 'USERNAME',
+}
 
 export const OPT = {
-    EDIT: "EDIT",
-    COPY: "COPY",
-    DEL: "DEL",
-};
+    EDIT: 'EDIT',
+    COPY: 'COPY',
+    DEL: 'DEL',
+}
