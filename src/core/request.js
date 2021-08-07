@@ -1,7 +1,7 @@
 import axios from 'axios'
 import queryString from 'query-string'
 import { path } from 'ramda'
-import { session } from '../models/session'
+import { session } from '../models'
 
 const SESSION_KEY = 'SESSION'
 
