@@ -55,23 +55,23 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Accounts ({
-    setForm,
-    accountTypeDefine,
-    accounts,
-    loadAccounts,
-    deleteAccount,
-    showEditDialog,
-    showCreateDialog,
-}) {
+                       setForm,
+                       accountTypeDefine,
+                       accounts,
+                       loadAccounts,
+                       deleteAccount,
+                       showEditDialog,
+                       showCreateDialog,
+                   }) {
     const classes = useStyles()
 
     const columns = [
         {
             label: '账户类型',
-            render: ({ type }) => {
+            render: ({ account, colIndex, rowIndex }) => {
                 return (
-                    <TableCell>
-                        {R.prop('name')(R.find(R.propEq('value', type))(accountTypeDefine))}
+                    <TableCell key={"accountType" + rowIndex + "-" + colIndex}>
+                        {R.prop('name')(R.find(R.propEq('value', account.type))(accountTypeDefine))}
                     </TableCell>
                 )
             },
@@ -79,6 +79,10 @@ function Accounts ({
         {
             label: '账户名字',
             prop: 'name',
+        },
+        {
+            label: '尾号',
+            prop: 'tail',
         },
         {
             label: '所属用户',
@@ -90,27 +94,20 @@ function Accounts ({
         },
         {
             label: '创建时间',
-            render: ({ createdAt }) => {
-                if (!createdAt) {
+            render: ({ account, colIndex, rowIndex }) => {
+                if (!account.createdAt) {
                     return <TableCell/>
                 }
-                return (<TableCell>{dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>)
-            },
-        },
-        {
-            label: '更新时间',
-            render: ({ updatedAt }) => {
-                if (!updatedAt) {
-                    return <TableCell/>
-                }
-                return (<TableCell>{dayjs(updatedAt).format('YYYY-MM-DD HH:mm:ss')}</TableCell>)
+                return (<TableCell key={`createdAt-${colIndex}-${rowIndex}`}>
+                    {dayjs(account.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                </TableCell>)
             },
         },
         {
             label: '操作',
-            render: function (data) {
+            render: ({ account, colIndex, rowIndex }) => {
                 return (
-                    <TableCell>
+                    <TableCell key={`opt-${colIndex}-${rowIndex}`}>
                         <div>
                             <Button
                                 className={classes.opt}
@@ -119,7 +116,7 @@ function Accounts ({
                                 variant="contained"
                                 color="primary"
                                 onClick={() => {
-                                    setForm(data)
+                                    setForm(account)
                                     showEditDialog()
                                 }}
                             >编辑</Button>
@@ -130,7 +127,7 @@ function Accounts ({
                                 variant="contained"
                                 color="secondary"
                                 onClick={async () => {
-                                    deleteAccount(data)
+                                    deleteAccount(account)
                                 }}
                             >删除</Button>
                         </div>
@@ -156,22 +153,19 @@ function Accounts ({
                                 })}
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {
-                                accounts.map((account) => {
-                                    return <TableRow>{
-                                        columns.map((col) => {
-                                            if (col.render) {
-                                                return col.render(account)
-                                            } else {
-                                                return <TableCell>{R.prop(col.prop)(account)}</TableCell>
-                                            }
-                                        })
-                                    }</TableRow>
-                                },
-                                )
-                            }
-                        </TableBody>
+                        <TableBody>{
+                            accounts.map((account, rowIndex) => <TableRow key={`account-row-${rowIndex}`}>{
+                                columns.map((col, colIndex) => {
+                                    if (col.render) {
+                                        return col.render({ account, colIndex, rowIndex })
+                                    } else {
+                                        return <TableCell
+                                            key={`${rowIndex}-${colIndex}`}>{R.prop(col.prop)(account)}
+                                        </TableCell>
+                                    }
+                                })
+                            }</TableRow>)
+                        }</TableBody>
                     </Table>
                 </TableContainer>
             </Paper>
