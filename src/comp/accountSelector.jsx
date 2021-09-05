@@ -22,12 +22,19 @@ function AccountSelector({
   multiple
 }) {
 
+  const optionLabel = ({name, tail}) => {
+    if (tail) {
+      return `${name}(${tail})`;
+    }
+    return name;
+  }
+
   return <Autocomplete
     multiple={multiple}
     disableCloseOnSelect={multiple}
     defaultValue={find(propEq('id', value))(accounts)}
     options={accounts}
-    getOptionLabel={prop('name')}
+    getOptionLabel={optionLabel}
     onChange={
       multiple ?
         compose(onChange, map(prop('id')), defaultTo([]), nthArg(1)) :
